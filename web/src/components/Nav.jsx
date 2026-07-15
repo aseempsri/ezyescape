@@ -1,5 +1,7 @@
 import useNavRailBounce from '../hooks/useNavRailBounce';
 import assetUrl from '../utils/assetUrl';
+import AuthButton from './AuthButton';
+import WalletNav from './WalletNav';
 
 const links = [
   { href: '#stays', label: 'Homestays', short: 'Stays' },
@@ -28,9 +30,15 @@ export default function Nav() {
               <li key={href}><a href={href}>{label}</a></li>
             ))}
             <li><a href="#quiz" className="nav-cta">Match My Stay</a></li>
+            <li className="nav-wallet"><WalletNav /></li>
+            <li className="nav-auth"><AuthButton /></li>
           </ul>
 
-          <a href="#quiz" className="nav-cta nav-cta-compact">Match →</a>
+          <div className="nav-actions">
+            <WalletNav />
+            <AuthButton compact />
+            <a href="#quiz" className="nav-cta nav-cta-compact">Match →</a>
+          </div>
         </div>
 
         <div className="nav-rail" ref={railRef} aria-label="Page sections">

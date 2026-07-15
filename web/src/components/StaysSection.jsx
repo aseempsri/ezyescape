@@ -1,6 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 import { STAYS } from '../data/stays';
 import Typewriter from './Typewriter';
+import { useBookingFlow } from './BookingFlow';
+import { fetchStays } from '../lib/api';
+
+// Normalize an API stay into the shape the cards + booking flow expect.
+function normalizeApiStay(s) {
+  return {
+    id: s.id,
+    cat: s.cat || '',
+    location: s.location,
+    title: s.title,
+    disPrice: s.hasDiscount ? s.price : null,
+    price: s.finalPrice,
+    guest: s.guests,
+    rooms: s.rooms,
+    image: s.image,
+    images: s.images || [],
+    videos: s.videos || [],
+    best: s.best || '',
+  };
+}
+
+// Fallback (used if the API is unreachable, e.g. static hosting with no backend).
+const FALLBACK_STAYS = STAYS.map((s) => ({ ...s, disPrice: s.disPrice ?? null }));
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -12,7 +35,22 @@ const FILTERS = [
 
 export default function StaysSection() {
   const [filter, setFilter] = useState('all');
+  const [stays, setStays] = useState(FALLBACK_STAYS);
   const wrapRef = useRef(null);
+  const draggedRef = useRef(false);
+  const { openListing, modals } = useBookingFlow();
+
+  useEffect(() => {
+    let active = true;
+    fetchStays()
+      .then((data) => {
+        if (active && Array.isArray(data) && data.length) {
+          setStays(data.map(normalizeApiStay));
+        }
+      })
+      .catch(() => { /* keep fallback */ });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -23,6 +61,7 @@ export default function StaysSection() {
 
     const onDown = (e) => {
       isDown = true;
+      draggedRef.current = false;
       wrap.classList.add('dragging');
       startX = e.pageX - wrap.offsetLeft;
       scrollLeft = wrap.scrollLeft;
@@ -32,6 +71,7 @@ export default function StaysSection() {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - wrap.offsetLeft;
+      if (Math.abs(x - startX) > 5) draggedRef.current = true;
       wrap.scrollLeft = scrollLeft - (x - startX) * 1.8;
     };
 
@@ -59,12 +99,13 @@ export default function StaysSection() {
       card.addEventListener('mousemove', onMove);
       card.addEventListener('mouseleave', onLeave);
     });
-  }, [filter]);
+  }, [filter, stays]);
 
   const visible = (cat) => filter === 'all' || cat.includes(filter);
 
   return (
     <section className="stays-section" id="stays" style={{ paddingTop: 100, paddingBottom: 120 }}>
+      {modals}
       <div className="container">
         <div className="stays-header">
           <div data-reveal="left">
@@ -93,15 +134,20 @@ export default function StaysSection() {
         </div>
         <div className="stays-track-wrap" id="staysWrap" ref={wrapRef}>
           <div className="stays-track" id="staysTrack">
-            {STAYS.map((stay) => (
+            {stays.map((stay) => (
               <div
                 key={stay.id}
                 className="stay-card"
                 data-cat={stay.cat}
+                role="button"
+                tabIndex={0}
+                onClick={() => { if (!draggedRef.current) openListing(stay); }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openListing(stay); } }}
                 style={{
                   opacity: visible(stay.cat) ? 1 : 0.25,
                   transform: visible(stay.cat) ? '' : 'scale(0.97)',
                   pointerEvents: visible(stay.cat) ? 'auto' : 'none',
+                  cursor: 'pointer',
                 }}
               >
                 <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
@@ -114,11 +160,20 @@ export default function StaysSection() {
                 <div className="stay-body">
                   <div className="stay-host">{stay.location}</div>
                   <div className="stay-name">{stay.title}</div>
-                  <del style={{ fontSize: 18 }}> ₹ {stay.disPrice} </del> /per Night &nbsp;&nbsp;
+                  {stay.disPrice ? (
+                    <del style={{ fontSize: 18 }}> ₹ {stay.disPrice} </del>
+                  ) : null}
+                  {stay.disPrice ? ' ' : null}/per Night &nbsp;&nbsp;
                   <span className="price"><span>₹ {stay.price}</span></span>
                   <div className="stay-footer">
                     <span className="stay-best">{stay.best}</span>
-                    <a href="#" className="stay-link">View Story →</a>
+                    <button
+                      type="button"
+                      className="stay-link stay-book-btn"
+                      onClick={(e) => { e.stopPropagation(); openListing(stay); }}
+                    >
+                      Book Stay →
+                    </button>
                   </div>
                 </div>
               </div>
