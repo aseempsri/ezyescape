@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProfileModal({ open, onClose }) {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, signOut } = useAuth();
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [busy, setBusy] = useState(false);
@@ -105,6 +105,16 @@ export default function ProfileModal({ open, onClose }) {
               </label>
               <button type="submit" className="btn btn-amber auth-submit" disabled={busy}>
                 {busy ? 'Saving…' : 'Save changes'}
+              </button>
+              <button
+                type="button"
+                className="auth-btn auth-btn--ghost profile-signout"
+                onClick={async () => {
+                  await signOut();
+                  onClose();
+                }}
+              >
+                Sign out
               </button>
             </form>
           </>
