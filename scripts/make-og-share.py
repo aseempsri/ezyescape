@@ -33,15 +33,16 @@ def main():
     canvas = ImageEnhance.Color(canvas).enhance(1.1)
     base = canvas.convert('RGBA')
 
+    # Soft vignette + bottom shade so bottom-right copy stays readable
     shade = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     sd = ImageDraw.Draw(shade)
-    for x in range(W):
-        t = max(0.0, 1.0 - (x / (W * 0.7)))
-        sd.line([(x, 0), (x, H)], fill=(8, 10, 16, int(155 * t)))
     for y in range(H):
         edge = min(y / 70, (H - y) / 90, 1.0)
         if edge < 1:
-            sd.line([(0, y), (W, y)], fill=(0, 0, 0, int(50 * (1 - edge))))
+            sd.line([(0, y), (W, y)], fill=(0, 0, 0, int(45 * (1 - edge))))
+    for y in range(int(H * 0.4), H):
+        t = (y - H * 0.4) / (H * 0.6)
+        sd.line([(0, y), (W, y)], fill=(8, 10, 16, int(150 * t)))
     base = Image.alpha_composite(base, shade)
 
     logo_w = 440
@@ -69,24 +70,45 @@ def main():
     ], 60)
     sans = load_font(['/System/Library/Fonts/Supplemental/Arial.ttf'], 23)
 
-    def text_shadow(xy, text, font, fill, shadow=(0, 0, 0, 170), offset=2):
-        x, y = xy
+    def text_width(text, font):
+        box = draw.textbbox((0, 0), text, font=font)
+        return box[2] - box[0]
+
+    def text_shadow_right(y, text, font, fill, shadow=(0, 0, 0, 170), offset=2):
+        x = W - margin - text_width(text, font)
         draw.text((x + offset, y + offset), text, font=font, fill=shadow)
         draw.text((x, y), text, font=font, fill=fill)
+        return x
 
-    x_text = 52
-    y1 = 230
-    draw.line([(x_text, y1 - 16), (x_text + 44, y1 - 16)], fill=(245, 166, 35, 255), width=3)
-    text_shadow((x_text, y1), 'Tourists book their stays', sans_bold, (245, 166, 35, 255))
-    y2 = draw.textbbox((x_text, y1), 'Tourists book their stays', font=sans_bold)[3] + 10
-    text_shadow((x_text, y2), 'Travellers match their vibes', script, (255, 255, 255, 255))
-    y3 = draw.textbbox((x_text, y2), 'Travellers match their vibes', font=script)[3] + 20
-    for i, part in enumerate([
+    margin = 48
+    line1 = 'Tourists book their stays'
+    line2 = 'Travellers match their vibes'
+    sub_lines = [
         'Discover authentic mountain homes hosted by local',
         'families — matched to how you actually travel.',
-    ]):
-        text_shadow(
-            (x_text, y3 + i * 28),
+    ]
+
+    h1 = draw.textbbox((0, 0), line1, font=sans_bold)[3]
+    h2 = draw.textbbox((0, 0), line2, font=script)[3]
+    h_sub = draw.textbbox((0, 0), sub_lines[0], font=sans)[3]
+    gap12, gap2s, sub_gap = 10, 18, 8
+    block_h = h1 + gap12 + h2 + gap2s + h_sub * len(sub_lines) + sub_gap * (len(sub_lines) - 1)
+    y1 = H - margin - block_h
+
+    accent_w = 44
+    x_right = W - margin
+    draw.line(
+        [(x_right - accent_w, y1 - 16), (x_right, y1 - 16)],
+        fill=(245, 166, 35, 255),
+        width=3,
+    )
+    text_shadow_right(y1, line1, sans_bold, (245, 166, 35, 255))
+    y2 = y1 + h1 + gap12
+    text_shadow_right(y2, line2, script, (255, 255, 255, 255))
+    y3 = y2 + h2 + gap2s
+    for i, part in enumerate(sub_lines):
+        text_shadow_right(
+            y3 + i * (h_sub + sub_gap),
             part,
             sans,
             (235, 235, 235, 235),
