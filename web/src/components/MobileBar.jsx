@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { whatsappChatUrl } from '../utils/whatsapp';
 
 function WhatsAppIcon() {
   return (
@@ -28,7 +29,13 @@ export default function MobileBar() {
       <a href="#quiz" className="mobile-bar-cta">
         Match My Stay <span aria-hidden="true">→</span>
       </a>
-      <a href="#" className="mobile-bar-wa" aria-label="WhatsApp us">
+      <a
+        href={whatsappChatUrl()}
+        className="mobile-bar-wa"
+        aria-label="WhatsApp us"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <WhatsAppIcon />
       </a>
     </div>
