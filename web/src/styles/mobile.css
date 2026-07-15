@@ -476,74 +476,25 @@
     background: var(--amber);
     color: var(--bg);
     font-family: 'Poppins', sans-serif;
-    font-size: 0.84rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    padding: 14px 16px;
+    padding: 14px 20px;
     border-radius: 100px;
     text-decoration: none;
     box-shadow: 0 4px 24px rgba(245, 166, 35, 0.35);
-    white-space: nowrap;
   }
-  .mobile-bar-wa,
-  .mobile-bar-avatar,
-  .mobile-bar-coins,
-  .mobile-bar-signin {
+  .mobile-bar-wa {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    width: 48px;
     height: 48px;
-    border-radius: 100px;
-    text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.08);
-    color: #fff;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .mobile-bar-wa {
-    width: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
     background: rgba(37, 211, 102, 0.12);
-    border-color: rgba(37, 211, 102, 0.25);
+    border: 1px solid rgba(37, 211, 102, 0.25);
     font-size: 1.2rem;
-  }
-  .mobile-bar-avatar {
-    width: 48px;
-    padding: 0;
-    overflow: hidden;
-    border-color: rgba(245, 166, 35, 0.45);
-  }
-  .mobile-bar-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .mobile-bar-avatar span {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--amber);
-  }
-  .mobile-bar-coins {
-    gap: 5px;
-    padding: 0 12px;
-    min-width: 48px;
-    font-size: 0.82rem;
-    color: var(--amber);
-    border-color: rgba(245, 166, 35, 0.35);
-    background: rgba(245, 166, 35, 0.12);
-  }
-  .mobile-bar-coins strong {
-    font-weight: 700;
-    color: #fff;
-  }
-  .mobile-bar-signin {
-    padding: 0 14px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #1a1a1a;
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(255, 255, 255, 0.95);
+    text-decoration: none;
   }
 }
 
