@@ -15,6 +15,7 @@ import useScrollNav from './hooks/useScrollNav';
 import useReveal from './hooks/useReveal';
 import useCounterAnimation from './hooks/useCounterAnimation';
 import assetUrl from './utils/assetUrl';
+import { whatsappChatUrl } from './utils/whatsapp';
 import './styles/index.css';
 import './styles/mobile.css';
 import './styles/hero-nav.css';
@@ -441,7 +442,16 @@ export default function App() {
           </div>
           <div className="cta-btns" data-reveal="up" data-delay="2">
             <Magnetic><a href="#quiz" className="btn btn-amber">Match My Stay <span className="btn-arrow">→</span></a></Magnetic>
-            <Magnetic><a href="#" className="btn btn-ghost">💬 Talk to a Trip Curator</a></Magnetic>
+            <Magnetic>
+              <a
+                href={whatsappChatUrl()}
+                className="btn btn-ghost"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                💬 Talk to a Trip Curator
+              </a>
+            </Magnetic>
           </div>
         </div>
       </section>
