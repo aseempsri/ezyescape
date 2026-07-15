@@ -10,6 +10,7 @@ import InlineQuiz from './components/InlineQuiz';
 import StaysSection from './components/StaysSection';
 import Footer from './components/Footer';
 import MobileBar from './components/MobileBar';
+import MobileAccountDock from './components/MobileAccountDock';
 import useCustomCursor from './hooks/useCustomCursor';
 import useScrollNav from './hooks/useScrollNav';
 import useReveal from './hooks/useReveal';
@@ -70,6 +71,7 @@ export default function App() {
       <Cursor />
       <Grain />
       <Loader onHeroReady={handleHeroReady} />
+      <MobileAccountDock />
       <Nav />
 
       <section className={`hero${heroLoaded ? ' loaded' : ''}`} id="heroSection">

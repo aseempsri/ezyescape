@@ -2,7 +2,6 @@ import useNavRailBounce from '../hooks/useNavRailBounce';
 import assetUrl from '../utils/assetUrl';
 import AuthButton from './AuthButton';
 import WalletNav from './WalletNav';
-import MobileAccountDock from './MobileAccountDock';
 
 const links = [
   { href: '#stays', label: 'Homestays', short: 'Stays' },
@@ -57,8 +56,6 @@ export default function Nav() {
             </a>
           </div>
         </div>
-
-        <MobileAccountDock />
       </div>
     </nav>
   );
