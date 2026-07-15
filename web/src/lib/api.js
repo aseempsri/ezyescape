@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Same-origin by default (Vite proxy in dev, nginx in prod). Avoid localhost —
+// that triggers Chrome's "Access other apps on this device" on the live site.
+const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 export function getApiUrl(path = '') {
   return `${API_URL.replace(/\/$/, '')}${path}`;

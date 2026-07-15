@@ -152,6 +152,8 @@ Optional: `SMTP_*`, `WHATSAPP_*` (blank WhatsApp → OTPs in `pm2 logs`).
 
 ### B4. Build + install
 
+The web app uses same-origin API paths (no `VITE_API_URL` needed when nginx proxies `/api` and `/auth`).
+
 ```bash
 cd /var/www/ezyescape/web && npm ci && npm run build
 cd /var/www/ezyescape/server && npm ci && mkdir -p uploads
