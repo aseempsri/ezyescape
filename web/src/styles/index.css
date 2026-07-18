@@ -1042,6 +1042,7 @@ nav.solid {
   display: inline-block;
   white-space: nowrap;
   font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  margin-bottom: 0.55em;
 }
 .why-section .why-script-line {
   display: inline-block;
@@ -1051,6 +1052,7 @@ nav.solid {
   font-size: clamp(2.4rem, 3.9vw, 3.55rem);
   line-height: 1.05;
   color: #1a181c;
+  margin-top: 0.15em;
 }
 .why-section .why-script-line em,
 .why-section .why-script-line .typewriter-cursor,
