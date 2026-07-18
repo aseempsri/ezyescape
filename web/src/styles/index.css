@@ -900,6 +900,15 @@ nav.solid {
   pointer-events:none; user-select:none;
 }
 .honest-section .honest-left {
+  margin-top: 20px;
+  padding-right: 8px;
+}
+.honest-section .honest-layout {
+  align-items: start;
+  gap: 56px;
+}
+.honest-section .honest-layout .compare-stack {
+  min-height: 400px;
   margin-top: 0;
 }
 .honest-section .honest-desc {
