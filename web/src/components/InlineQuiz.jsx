@@ -12,13 +12,15 @@ export default function InlineQuiz() {
   const [anim, setAnim] = useState('in');
 
   const q = QUESTIONS[cur];
+  const selectedOpt = q?.opts.find((o) => o.v === sel) || null;
+  const sceneImg = selectedOpt?.img || q?.scene;
   const progress = ((cur + (sel ? 0.35 : 0)) / QUESTIONS.length) * 100;
 
   useEffect(() => {
     const section = document.getElementById('quiz');
-    if (!section || !q?.scene) return;
-    section.style.setProperty('--quiz-scene', `url('${q.scene}')`);
-  }, [q]);
+    if (!section || !sceneImg) return;
+    section.style.setProperty('--quiz-scene', `url('${sceneImg}')`);
+  }, [sceneImg]);
 
   const goNext = () => {
     if (!sel) return;
@@ -45,11 +47,12 @@ export default function InlineQuiz() {
 
   const goBack = () => {
     if (cur === 0) return;
+    const prevAnswer = answers[cur - 1] ?? null;
     setAnim('out');
     window.setTimeout(() => {
       setCur((c) => c - 1);
       setAnswers((a) => a.slice(0, -1));
-      setSel(null);
+      setSel(prevAnswer);
       setAnim('in');
     }, 220);
   };
@@ -130,8 +133,8 @@ export default function InlineQuiz() {
         <aside className="match-scene">
           <div
             className="match-scene-photo"
-            style={{ backgroundImage: `url('${q.scene}')` }}
-            key={q.id}
+            style={{ backgroundImage: `url('${sceneImg}')` }}
+            key={sceneImg}
           />
           <div className="match-scene-shade" />
           <div className="match-scene-copy">
