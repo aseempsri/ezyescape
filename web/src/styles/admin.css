@@ -218,7 +218,8 @@ body:has(.admin-login) {
 .admin-field em { font-style: normal; opacity: 0.7; font-size: 0.72rem; }
 
 .admin-field input,
-.admin-field select {
+.admin-field select,
+.admin-field textarea {
   border: 0.5px solid var(--admin-line);
   border-radius: 10px;
   padding: 10px;
@@ -226,6 +227,12 @@ body:has(.admin-login) {
   color: #fff;
   font: inherit;
   font-size: 0.9rem;
+}
+
+.admin-field textarea {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.45;
 }
 
 .admin-field input:disabled { opacity: 0.5; }

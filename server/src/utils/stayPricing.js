@@ -18,6 +18,7 @@ export function serializeStay(stay) {
 
   return {
     id: stay._id,
+    slug: stay.slug || '',
     title: stay.title,
     location: stay.location,
     cat: stay.cat,
@@ -29,6 +30,10 @@ export function serializeStay(stay) {
     discountValue: stay.discountValue,
     finalPrice,
     hasDiscount,
+    description: stay.description || '',
+    story: stay.story || '',
+    directions: stay.directions || '',
+    highlights: stay.highlights || [],
     images: stay.images || [],
     videos: stay.videos || [],
     image: (stay.images && stay.images[0]) || '',

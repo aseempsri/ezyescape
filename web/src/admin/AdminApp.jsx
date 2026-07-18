@@ -23,6 +23,7 @@ const DELETE_PASSWORD = 'ezyescape-delete';
 
 const EMPTY_STAY = {
   title: '',
+  slug: '',
   location: '',
   cat: '',
   best: '',
@@ -31,6 +32,10 @@ const EMPTY_STAY = {
   price: 0,
   discountType: 'none',
   discountValue: 0,
+  description: '',
+  story: '',
+  directions: '',
+  highlights: [],
   images: [],
   videos: [],
   active: true,
@@ -153,6 +158,9 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
         rooms: Number(form.rooms),
         price: Number(form.price),
         discountValue: Number(form.discountValue),
+        highlights: (Array.isArray(form.highlights) ? form.highlights : String(form.highlights || '').split('\n'))
+          .map((s) => String(s).trim())
+          .filter(Boolean),
         images: form.images.map((s) => s.trim()).filter(Boolean),
         videos: form.videos.map((s) => s.trim()).filter(Boolean),
       });
@@ -169,6 +177,10 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
           <input value={form.title} onChange={set('title')} placeholder="The Kumaoni Family Home" />
         </label>
         <label className="admin-field admin-col-2">
+          <span>URL slug <em>(optional — auto from title)</em></span>
+          <input value={form.slug || ''} onChange={set('slug')} placeholder="kumaoni-family-home" />
+        </label>
+        <label className="admin-field admin-col-2">
           <span>Location *</span>
           <input value={form.location} onChange={set('location')} placeholder="Almora, Kumaon" />
         </label>
@@ -179,6 +191,42 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
         <label className="admin-field admin-col-2">
           <span>Best for</span>
           <input value={form.best} onChange={set('best')} placeholder="Couples · Writers" />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>Short description</span>
+          <textarea
+            rows={2}
+            value={form.description || ''}
+            onChange={set('description')}
+            placeholder="One or two sentences for the top of the stay page."
+          />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>The story</span>
+          <textarea
+            rows={5}
+            value={form.story || ''}
+            onChange={set('story')}
+            placeholder="Longer narrative about the home, hosts, and atmosphere."
+          />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>How to get there</span>
+          <textarea
+            rows={3}
+            value={form.directions || ''}
+            onChange={set('directions')}
+            placeholder="Nearest station/airport, drive time, last-mile tips."
+          />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>Highlights <em>(one per line)</em></span>
+          <textarea
+            rows={4}
+            value={Array.isArray(form.highlights) ? form.highlights.join('\n') : (form.highlights || '')}
+            onChange={(e) => setForm((f) => ({ ...f, highlights: e.target.value.split('\n') }))}
+            placeholder={"Sunrise balcony\nHome-cooked meals"}
+          />
         </label>
         <label className="admin-field">
           <span>Guests</span>

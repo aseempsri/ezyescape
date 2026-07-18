@@ -116,6 +116,13 @@ export async function fetchStays() {
   return res.json();
 }
 
+export async function fetchStay(idOrSlug) {
+  const res = await fetch(getApiUrl(`/api/stays/${encodeURIComponent(idOrSlug)}`));
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to load stay');
+  return res.json();
+}
+
 // ── Admin ──
 export async function adminLogin(password) {
   const res = await fetch(getApiUrl('/api/admin/login'), {

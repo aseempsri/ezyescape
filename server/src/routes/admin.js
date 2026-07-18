@@ -44,14 +44,28 @@ router.post('/upload', (req, res) => {
   });
 });
 
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
 function parseStayBody(body) {
   const toArray = (v) =>
     (Array.isArray(v) ? v : String(v || '').split('\n'))
       .map((s) => String(s).trim())
       .filter(Boolean);
 
+  const title = body.title?.trim();
+  const slugInput = body.slug?.trim();
+
   return {
-    title: body.title?.trim(),
+    title,
+    slug: slugify(slugInput || title),
     location: body.location?.trim(),
     cat: body.cat?.trim() || '',
     best: body.best?.trim() || '',
@@ -60,6 +74,10 @@ function parseStayBody(body) {
     price: Math.max(0, Number(body.price) || 0),
     discountType: ['none', 'percent', 'flat'].includes(body.discountType) ? body.discountType : 'none',
     discountValue: Math.max(0, Number(body.discountValue) || 0),
+    description: body.description?.trim() || '',
+    story: body.story?.trim() || '',
+    directions: body.directions?.trim() || '',
+    highlights: toArray(body.highlights),
     images: toArray(body.images),
     videos: toArray(body.videos),
     active: body.active !== false,

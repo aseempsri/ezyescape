@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { STAYS } from '../data/stays';
 import Typewriter from './Typewriter';
-import { useBookingFlow } from './BookingFlow';
 import { fetchStays } from '../lib/api';
+import { goStay } from '../utils/paths';
 
-// Normalize an API stay into the shape the cards + booking flow expect.
+// Normalize an API stay into the shape the cards expect.
 function normalizeApiStay(s) {
   return {
     id: s.id,
+    slug: s.slug || s.id,
     cat: s.cat || '',
     location: s.location,
     title: s.title,
@@ -19,6 +20,10 @@ function normalizeApiStay(s) {
     images: s.images || [],
     videos: s.videos || [],
     best: s.best || '',
+    description: s.description || '',
+    story: s.story || '',
+    directions: s.directions || '',
+    highlights: s.highlights || [],
   };
 }
 
@@ -38,7 +43,6 @@ export default function StaysSection() {
   const [stays, setStays] = useState(FALLBACK_STAYS);
   const wrapRef = useRef(null);
   const draggedRef = useRef(false);
-  const { openListing, modals } = useBookingFlow();
 
   useEffect(() => {
     let active = true;
@@ -102,10 +106,13 @@ export default function StaysSection() {
   }, [filter, stays]);
 
   const visible = (cat) => filter === 'all' || cat.includes(filter);
+  const openStay = (stay) => {
+    if (draggedRef.current) return;
+    goStay(stay.slug || stay.id);
+  };
 
   return (
     <section className="stays-section" id="stays" style={{ paddingTop: 100, paddingBottom: 120 }}>
-      {modals}
       <div className="container">
         <div className="stays-header">
           <div data-reveal="left">
@@ -139,10 +146,15 @@ export default function StaysSection() {
                 key={stay.id}
                 className="stay-card"
                 data-cat={stay.cat}
-                role="button"
+                role="link"
                 tabIndex={0}
-                onClick={() => { if (!draggedRef.current) openListing(stay); }}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openListing(stay); } }}
+                onClick={() => openStay(stay)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openStay(stay);
+                  }
+                }}
                 style={{
                   opacity: visible(stay.cat) ? 1 : 0.25,
                   transform: visible(stay.cat) ? '' : 'scale(0.97)',
@@ -167,13 +179,7 @@ export default function StaysSection() {
                   <span className="price"><span>₹ {stay.price}</span></span>
                   <div className="stay-footer">
                     <span className="stay-best">{stay.best}</span>
-                    <button
-                      type="button"
-                      className="stay-link stay-book-btn"
-                      onClick={(e) => { e.stopPropagation(); openListing(stay); }}
-                    >
-                      Book Stay →
-                    </button>
+                    <span className="stay-link stay-book-btn">View stay →</span>
                   </div>
                 </div>
               </div>
@@ -182,9 +188,6 @@ export default function StaysSection() {
         </div>
         <div className="stays-scroll-hint">
           Swipe to explore <span>→</span>
-        </div>
-        <div className="w" style={{ textAlign: 'center', marginTop: 8 }} data-reveal="up">
-          <a href="#" className="btn btn-ghost" style={{ fontSize: '.85rem' }}>View All Homestays <span className="btn-arrow">→</span></a>
         </div>
       </div>
     </section>
