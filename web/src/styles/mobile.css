@@ -352,7 +352,8 @@
     width: 100%;
     overflow-x: auto;
     flex-wrap: nowrap;
-    padding-bottom: 4px;
+    justify-content: flex-start;
+    padding: 0 4px 4px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     mask-image: linear-gradient(to right, #000 85%, transparent);
@@ -546,7 +547,9 @@
   }
 
   .stays-section .stays-filter-row {
-    justify-content: center;
+    justify-content: flex-start;
+    padding-inline: 4px 12px;
+    scroll-padding-inline: 4px;
   }
 
   /* Guest-stories script — keep one line, large type */
