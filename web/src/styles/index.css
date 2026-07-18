@@ -1133,7 +1133,7 @@ nav#mainNav.solid {
 .stories-script {
   display: inline-block;
   font-family: 'Tangerine', cursive;
-  font-size: clamp(4rem, 10vw, 12rem);
+  font-size: clamp(2rem, 5vw, 6rem);
   color: #fff;
   line-height: 1.05;
 }
