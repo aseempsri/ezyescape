@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import Cursor from './Cursor';
 import BookingForm from './BookingForm';
 import { BookingSuccessToast } from './BookingFlow';
+import useCustomCursor from '../hooks/useCustomCursor';
 import { fetchStay } from '../lib/api';
 import { STAYS } from '../data/stays';
 import { appPath, goHome, staysIndexPath } from '../utils/paths';
@@ -62,6 +64,8 @@ export default function StayDetailPage({ idOrSlug }) {
   const [index, setIndex] = useState(0);
   const [bookingResult, setBookingResult] = useState(null);
 
+  useCustomCursor();
+
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -112,6 +116,7 @@ export default function StayDetailPage({ idOrSlug }) {
   if (loading) {
     return (
       <div className="stay-page stay-page--loading">
+        <Cursor />
         <p>Loading stay…</p>
       </div>
     );
@@ -120,6 +125,7 @@ export default function StayDetailPage({ idOrSlug }) {
   if (notFound || !stay) {
     return (
       <div className="stay-page stay-page--missing">
+        <Cursor />
         <h1>Stay not found</h1>
         <p>This homestay may have been removed or the link is incorrect.</p>
         <a className="btn btn-amber" href={appPath()}>Back to home</a>
@@ -135,6 +141,7 @@ export default function StayDetailPage({ idOrSlug }) {
 
   return (
     <div className="stay-page">
+      <Cursor />
       <header className="stay-page-nav">
         <a href={appPath()} className="stay-page-logo" onClick={(e) => { e.preventDefault(); goHome(); }}>
           <img

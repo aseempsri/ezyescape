@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import Cursor from './Cursor';
+import useCustomCursor from '../hooks/useCustomCursor';
 import { fetchStays } from '../lib/api';
 import {
   FALLBACK_STAYS,
@@ -18,6 +20,8 @@ export default function HomestaysPage() {
   const [filter, setFilter] = useState('all');
   const [stays, setStays] = useState(FALLBACK_STAYS);
   const [loading, setLoading] = useState(true);
+
+  useCustomCursor();
 
   useEffect(() => {
     document.title = 'Homestays — Ezy Escape';
@@ -41,6 +45,7 @@ export default function HomestaysPage() {
 
   return (
     <div className="homestays-page">
+      <Cursor />
       <header className="stay-page-nav">
         <a
           href={appPath()}
