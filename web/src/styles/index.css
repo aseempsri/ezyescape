@@ -1033,7 +1033,7 @@ nav.solid {
 }
 .why-big-text {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(1.75rem, 5vw, 2.8rem);
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
   font-weight: 400; line-height: 1.08; color: #f2a625;
   margin-bottom: 28px; letter-spacing: -0.02em;
 
@@ -1041,13 +1041,14 @@ nav.solid {
 .why-section .why-big-line {
   display: inline-block;
   white-space: nowrap;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
 }
 .why-section .why-script-line {
   display: inline-block;
   white-space: nowrap;
   max-width: 100%;
   font-family: 'Tangerine', cursive;
-  font-size: clamp(1.9rem, 3.2vw, 3.1rem);
+  font-size: clamp(2.4rem, 3.9vw, 3.55rem);
   line-height: 1.05;
   color: #1a181c;
 }
