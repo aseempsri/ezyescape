@@ -201,7 +201,7 @@ export const RESULTS = {
     type: 'Your Vibe',
     t: 'The Open Traveller',
     d: "You're adaptable and curious. You'll thrive in almost any of our homes. Talk to a trip curator who can narrow things down to your dates and region.",
-    tags: ['Flexible Match', 'Any Region', 'Curator Pick'],
+    tags: ['Talk to a Trip Curator', 'Browse All Stays'],
     img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1200&q=80',
   },
 };

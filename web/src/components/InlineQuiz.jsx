@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { QUESTIONS, RESULTS, tallyAnswers } from '../data/quiz';
+import Magnetic from './Magnetic';
+import { staysIndexPath } from '../utils/paths';
+import { whatsappChatUrl } from '../utils/whatsapp';
 
 export default function InlineQuiz() {
   const [cur, setCur] = useState(0);
@@ -81,6 +84,19 @@ export default function InlineQuiz() {
             ))}
           </div>
           <div className="match-result-actions">
+            <Magnetic>
+              <a href={staysIndexPath()} className="btn btn-amber">
+                See matched stays <span className="btn-arrow">→</span>
+              </a>
+            </Magnetic>
+            <a
+              href={whatsappChatUrl(`Hi! I just finished the Mountain Matchmaker and got "${res.t}". Can you help me pick a stay?`)}
+              className="btn btn-ghost match-result-wa"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Talk to a curator
+            </a>
             <button type="button" className="retake-btn" onClick={retake}>
               Retake quiz
             </button>
