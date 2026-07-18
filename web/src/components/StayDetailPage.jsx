@@ -57,6 +57,18 @@ function paragraphs(text) {
     .filter(Boolean);
 }
 
+function highlightIcon(text) {
+  const t = String(text).toLowerCase();
+  if (/sunrise|view|balcony|mountain/.test(t)) return '🌄';
+  if (/meal|food|cook|kitchen|kumaoni/.test(t)) return '🍲';
+  if (/walk|trail|village|forest/.test(t)) return '🥾';
+  if (/quiet|writer|work|workspace/.test(t)) return '✍️';
+  if (/fire|bonfire|evening|culture|music/.test(t)) return '🔥';
+  if (/tea|coffee/.test(t)) return '🫖';
+  if (/star|night/.test(t)) return '🌌';
+  return '✦';
+}
+
 export default function StayDetailPage({ idOrSlug }) {
   const [stay, setStay] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -102,6 +114,10 @@ export default function StayDetailPage({ idOrSlug }) {
   }, [stay]);
 
   const media = useMemo(() => buildMedia(stay), [stay]);
+  const photos = useMemo(() => {
+    if (!stay) return [];
+    return stay.images?.length ? stay.images : stay.image ? [stay.image] : [];
+  }, [stay]);
 
   useEffect(() => {
     if (!media.length) return undefined;
@@ -138,10 +154,20 @@ export default function StayDetailPage({ idOrSlug }) {
   const go = (dir) => setIndex((i) => (i + dir + media.length) % media.length);
   const storyParas = paragraphs(stay.story || stay.description);
   const waMessage = `Hi! I'm interested in "${stay.title}" (${stay.location}). Could you share availability and help me plan my stay?`;
+  const heroBg = current?.type === 'image' ? current.url : photos[0] || stay.image;
+
+  const openPhoto = (url) => {
+    const i = media.findIndex((m) => m.url === url);
+    if (i >= 0) {
+      setIndex(i);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="stay-page">
       <Cursor />
+
       <header className="stay-page-nav">
         <a href={appPath()} className="stay-page-logo" onClick={(e) => { e.preventDefault(); goHome(); }}>
           <img
@@ -150,19 +176,26 @@ export default function StayDetailPage({ idOrSlug }) {
             onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }}
           />
         </a>
-        <a href={staysIndexPath()} className="stay-page-back">← All stays</a>
+        <div className="stay-page-nav-actions">
+          <a href={staysIndexPath()} className="stay-page-back">← All stays</a>
+          <a href="#book" className="stay-page-book-chip">Book</a>
+        </div>
       </header>
 
-      <section className="stay-hero">
-        <div className="stay-hero-gallery">
-          <div className="stay-hero-main">
+      <section className="stay-cinematic" style={heroBg ? { '--stay-hero': `url('${heroBg}')` } : undefined}>
+        <div className="stay-cinematic-bg" aria-hidden="true" />
+        <div className="stay-cinematic-veil" aria-hidden="true" />
+
+        <div className="stay-cinematic-stage">
+          <div className="stay-cinematic-frame">
             {media.length === 0 ? (
               <div className="stay-hero-empty">No photos yet</div>
             ) : current.type === 'video' ? (
-              <video src={current.url} controls playsInline className="stay-hero-media" />
+              <video src={current.url} controls playsInline className="stay-cinematic-media" />
             ) : (
-              <img src={current.url} alt={stay.title} className="stay-hero-media" />
+              <img src={current.url} alt={stay.title} className="stay-cinematic-media" key={current.url} />
             )}
+
             {media.length > 1 && (
               <>
                 <button type="button" className="stay-hero-nav stay-hero-nav--prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
@@ -171,111 +204,135 @@ export default function StayDetailPage({ idOrSlug }) {
               </>
             )}
           </div>
-          {media.length > 1 && (
-            <div className="stay-hero-thumbs">
-              {media.map((m, i) => (
-                <button
-                  type="button"
-                  key={`${m.url}-${i}`}
-                  className={`stay-hero-thumb${i === index ? ' is-active' : ''}`}
-                  onClick={() => setIndex(i)}
-                  aria-label={`View ${m.type} ${i + 1}`}
-                >
-                  {m.type === 'video' ? (
-                    <video src={m.url} muted className="stay-hero-thumb-media" />
-                  ) : (
-                    <img src={m.url} alt="" className="stay-hero-thumb-media" />
-                  )}
-                </button>
-              ))}
+
+          <div className="stay-cinematic-copy">
+            <p className="stay-hero-location">{stay.location}</p>
+            <h1>{stay.title}</h1>
+            <div className="stay-stat-row">
+              <span className="stay-stat"><em>{stay.guest}</em> guests</span>
+              <span className="stay-stat"><em>{stay.rooms}</em> rooms</span>
+              {stay.best && <span className="stay-stat stay-stat--best">{stay.best}</span>}
             </div>
-          )}
+            {tags.length > 0 && (
+              <div className="stay-hero-tags">
+                {tags.map((t) => <span key={t} className="stay-hero-tag">{t}</span>)}
+              </div>
+            )}
+            {stay.description && <p className="stay-hero-desc">{stay.description}</p>}
+            <div className="stay-cinematic-foot">
+              <div className="stay-hero-price">
+                {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
+                <strong>₹{stay.price}</strong>
+                <span>/ night</span>
+              </div>
+              <div className="stay-hero-actions">
+                <a href="#book" className="btn btn-amber">Book this stay →</a>
+                <a
+                  href={whatsappChatUrl(waMessage)}
+                  className="btn btn-ghost"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ask on WhatsApp
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="stay-hero-copy">
-          <p className="stay-hero-location">{stay.location}</p>
-          <h1>{stay.title}</h1>
-          <div className="stay-hero-meta">
-            <span>{stay.guest} guests</span>
-            <span>·</span>
-            <span>{stay.rooms} rooms</span>
+        {media.length > 1 && (
+          <div className="stay-filmstrip" aria-label="Stay gallery">
+            {media.map((m, i) => (
+              <button
+                type="button"
+                key={`${m.url}-${i}`}
+                className={`stay-film-frame${i === index ? ' is-active' : ''}`}
+                onClick={() => setIndex(i)}
+                aria-label={`View ${m.type} ${i + 1}`}
+              >
+                {m.type === 'video' ? (
+                  <video src={m.url} muted className="stay-film-media" />
+                ) : (
+                  <img src={m.url} alt="" className="stay-film-media" />
+                )}
+              </button>
+            ))}
           </div>
-          {tags.length > 0 && (
-            <div className="stay-hero-tags">
-              {tags.map((t) => <span key={t} className="stay-hero-tag">{t}</span>)}
-            </div>
-          )}
-          {stay.best && <p className="stay-hero-best">Best for: {stay.best}</p>}
-          {stay.description && <p className="stay-hero-desc">{stay.description}</p>}
-          <div className="stay-hero-price">
-            {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-            <strong>₹{stay.price}</strong>
-            <span>/ night</span>
-          </div>
-          <div className="stay-hero-actions">
-            <a href="#book" className="btn btn-amber">Book this stay →</a>
-            <a
-              href={whatsappChatUrl(waMessage)}
-              className="btn btn-ghost"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Ask on WhatsApp
-            </a>
-          </div>
-        </div>
+        )}
       </section>
+
+      {stay.highlights?.length > 0 && (
+        <section className="stay-moments">
+          <div className="stay-section-head">
+            <p className="stay-eyebrow">At a glance</p>
+            <h2>Moments that shape this stay</h2>
+          </div>
+          <div className="stay-moment-grid">
+            {stay.highlights.map((h) => (
+              <article key={h} className="stay-moment-card">
+                <span className="stay-moment-icon" aria-hidden="true">{highlightIcon(h)}</span>
+                <p>{h}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="stay-page-body">
         <div className="stay-page-main">
-          {stay.highlights?.length > 0 && (
-            <section className="stay-block">
-              <h2>At a glance</h2>
-              <ul className="stay-highlights">
-                {stay.highlights.map((h) => <li key={h}>{h}</li>)}
-              </ul>
-            </section>
-          )}
-
           {storyParas.length > 0 && (
-            <section className="stay-block">
-              <h2>The story</h2>
-              {storyParas.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+            <section className="stay-story">
+              <div className="stay-story-visual" style={photos[0] ? { backgroundImage: `url('${photos[0]}')` } : undefined}>
+                <div className="stay-story-visual-shade" />
+                <p className="stay-story-kicker">The story</p>
+                <h2>{stay.title}</h2>
+              </div>
+              <div className="stay-story-copy">
+                {storyParas.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+              </div>
             </section>
           )}
 
           {stay.directions && (
-            <section className="stay-block">
-              <h2>How to get there</h2>
-              {paragraphs(stay.directions).map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+            <section className="stay-journey">
+              <div className="stay-section-head">
+                <p className="stay-eyebrow">Getting there</p>
+                <h2>How to reach the home</h2>
+              </div>
+              <div className="stay-journey-card">
+                <span className="stay-journey-icon" aria-hidden="true">🗺</span>
+                <div>
+                  {paragraphs(stay.directions).map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+                </div>
+              </div>
             </section>
           )}
 
-          <section className="stay-block stay-block--photos">
-            <h2>Photos</h2>
-            <div className="stay-photo-grid">
-              {(stay.images?.length ? stay.images : stay.image ? [stay.image] : []).map((url) => (
-                <button
-                  type="button"
-                  key={url}
-                  className="stay-photo-tile"
-                  style={{ backgroundImage: `url('${url}')` }}
-                  onClick={() => {
-                    const i = media.findIndex((m) => m.url === url);
-                    if (i >= 0) {
-                      setIndex(i);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                  }}
-                  aria-label="View photo"
-                />
-              ))}
-            </div>
-          </section>
+          {photos.length > 0 && (
+            <section className="stay-mosaic">
+              <div className="stay-section-head">
+                <p className="stay-eyebrow">Gallery</p>
+                <h2>See the atmosphere</h2>
+              </div>
+              <div className="stay-mosaic-grid">
+                {photos.map((url, i) => (
+                  <button
+                    type="button"
+                    key={url}
+                    className={`stay-mosaic-tile stay-mosaic-tile--${i % 5 === 0 ? 'wide' : i % 3 === 0 ? 'tall' : 'std'}`}
+                    style={{ backgroundImage: `url('${url}')` }}
+                    onClick={() => openPhoto(url)}
+                    aria-label="View photo"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="stay-page-aside" id="book">
           <div className="stay-book-card">
+            <p className="stay-book-kicker">Reserve your dates</p>
             <h2>Book this stay</h2>
             <p className="stay-book-price">
               {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
@@ -286,6 +343,14 @@ export default function StayDetailPage({ idOrSlug }) {
               stay={stay}
               onSuccess={(result) => setBookingResult(result)}
             />
+            <a
+              href={whatsappChatUrl(waMessage)}
+              className="stay-book-wa"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Prefer WhatsApp? Talk to a curator →
+            </a>
           </div>
         </aside>
       </div>
