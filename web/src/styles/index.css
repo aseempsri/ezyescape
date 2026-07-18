@@ -40,13 +40,16 @@
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
   background: var(--bg);
   color: var(--mist);
-  overflow-x: hidden;
+  overflow-x: clip;
   cursor: none;
 }
 
@@ -177,16 +180,29 @@ body.hovering #cur { opacity:0; }
 /* ─────────────────────────────────────────
    NAV
 ───────────────────────────────────────── */
-nav {
-  position:sticky; top:0; width:100%; z-index:1000;
-  padding:15px 0;
-  transition: padding .5s var(--ease), background .5s;
+nav,
+nav#mainNav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 15px 0;
+  transition:
+    padding 0.4s var(--ease),
+    background 0.4s var(--ease),
+    border-color 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+  background: transparent;
+  border-bottom: 1px solid transparent;
 }
-nav.solid {
-  padding:16px 0;
-  background: rgba(6,12,21,0.85);
-  backdrop-filter: blur(24px);
-  border-bottom:1px solid rgba(255,255,255,0.04);
+nav.solid,
+nav#mainNav.solid {
+  padding: 12px 0;
+  background: rgba(6, 12, 21, 0.92);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.28);
 }
 .nav-inner {
   width:min(1300px,100% - 60px); margin:0 auto;
