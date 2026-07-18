@@ -7,6 +7,7 @@ import Marquee from './components/Marquee';
 import Magnetic from './components/Magnetic';
 import Typewriter from './components/Typewriter';
 import InlineQuiz from './components/InlineQuiz';
+import ImmersionSection from './components/ImmersionSection';
 import StaysSection from './components/StaysSection';
 import Footer from './components/Footer';
 import MobileBar from './components/MobileBar';
@@ -21,9 +22,9 @@ import './styles/index.css';
 import './styles/mobile.css';
 import './styles/hero-nav.css';
 import './styles/quiz-match.css';
+import './styles/immersion.css';
 
 const HERO_BG = assetUrl('images/ju.png');
-const EXP_BG = assetUrl('images/bg.png');
 
 function CompareStack({ badLabel, goodLabel, badItems, goodItems, minHeight }) {
   return (
@@ -260,67 +261,7 @@ export default function App() {
         </div>
       </section>
 
-      <section
-        className="exp-section"
-        id="experiences"
-        style={{
-          backgroundImage: `url(${EXP_BG}), url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80)`,
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          paddingTop: 80,
-        }}
-      >
-        <div className="container">
-          <div className="w">
-            <div data-reveal="up">
-              <div className="eyebrow" style={{ color: '#fff' }}>Local Immersion</div>
-              <h2 className="why-big-text" data-reveal>
-                Your stay can be <br />
-                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)', color: '#fff' }}>
-                  <em id="typewriter-5" className="typewriter-cursor" style={{ color: '#fff' }}>
-                    <Typewriter text="more than a stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
-                  </em>
-                </span>
-              </h2>
-              <p className="sec-sub">Cook with a local family, walk trails only locals know, sit by a bonfire or watch the stars from a quiet mountain home.</p>
-            </div>
-            <div className="bento" data-reveal="up" data-delay="2">
-              <div className="b-cell large">
-                <div className="b-corner-glow" />
-                <span className="b-emoji">🍳</span>
-                <div className="b-title">Village Kitchen Experience</div>
-                <p className="b-desc">Learn local recipes with the host family. Kumaoni dal, bhatt ki churkani and rotis on a wood fire. Take the recipe home.</p>
-              </div>
-              <div className="b-cell sm">
-                <span className="b-emoji">🌄</span>
-                <div className="b-title">Sunrise Tea Spot</div>
-                <p className="b-desc">Tea and mountain views before anyone else is awake.</p>
-              </div>
-              <div className="b-cell sm">
-                <span className="b-emoji">🌿</span>
-                <div className="b-title">Forest Walk</div>
-                <p className="b-desc">Trails known only to locals. Oak forests, rhododendron slopes.</p>
-              </div>
-              <div className="b-cell tall">
-                <div className="b-corner-glow" />
-                <span className="b-emoji">🥬</span>
-                <div className="b-title">Farm-to-Table Meal</div>
-                <p className="b-desc">Eat what grows around the home. Seasonal, local, cooked by the family who grew it. Zero food miles.</p>
-              </div>
-              <div className="b-cell sm">
-                <span className="b-emoji">🎶</span>
-                <div className="b-title">Local Culture Evening</div>
-                <p className="b-desc">Stories, music and mountain traditions around a fire.</p>
-              </div>
-              <div className="b-cell sm">
-                <span className="b-emoji">💧</span>
-                <div className="b-title">Hidden Waterfall Walk</div>
-                <p className="b-desc">Not on Google Maps. Found only through local knowledge.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ImmersionSection />
 
       <section className="impact-section" id="impact" style={{ background: '#f7f3ed', paddingTop: 80, paddingBottom: 110 }}>
         <div className="container">
