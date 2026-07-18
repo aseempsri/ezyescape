@@ -186,20 +186,19 @@ export default function App() {
         <div className="match-section-veil" aria-hidden="true" />
         <div className="container match-section-inner">
           <header className="match-intro" data-reveal="up">
-            <div className="eyebrow" style={{ justifyContent: 'center', color: '#fff' }}>
+            <div className="eyebrow match-intro-eyebrow" style={{ justifyContent: 'center', color: '#fff' }}>
               <span className="line" />Mountain Matchmaker<span className="line" />
             </div>
             <h2 className="why-big-text match-intro-title" data-reveal>
-              <span className="why-big-line">Know your vibe.</span>
-              <br />
-              <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2.4rem,6vw,5.2rem)', color: '#fff' }}>
+              <span className="why-big-line">Know your vibe.</span>{' '}
+              <span className="match-intro-script">
                 <em id="typewriter-1" className="typewriter-cursor" style={{ color: '#fff' }}>
                   <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
                 </em>
               </span>
             </h2>
             <p className="match-intro-sub">
-              Five honest questions. Atmosphere shifts with every answer — then we point you toward homes that fit how you actually travel.
+              Five honest questions. We point you toward homes that fit how you travel.
             </p>
           </header>
 
