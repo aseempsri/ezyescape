@@ -190,7 +190,8 @@ export default function App() {
               <span className="line" />Mountain Matchmaker<span className="line" />
             </div>
             <h2 className="why-big-text match-intro-title" data-reveal>
-              <span className="why-big-line">Know your vibe.</span>{' '}
+              <span className="why-big-line">Know your vibe.</span>
+              <br />
               <span className="match-intro-script">
                 <em id="typewriter-1" className="typewriter-cursor" style={{ color: '#fff' }}>
                   <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
