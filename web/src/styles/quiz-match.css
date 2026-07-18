@@ -215,7 +215,7 @@
   grid-template-columns: 0.85fr 1.25fr;
   gap: 0;
   flex: 1;
-  min-height: 0;
+  min-height: clamp(280px, 52vh, 420px);
 }
 
 .match-scene {
@@ -307,8 +307,8 @@
   display: grid;
   gap: 10px;
   margin-bottom: clamp(10px, 1.4vh, 16px);
-  flex: 1;
-  min-height: 0;
+  flex: 1 1 auto;
+  min-height: clamp(110px, 18vh, 150px);
   align-content: stretch;
 }
 
@@ -323,9 +323,8 @@
 .match-opt {
   position: relative;
   isolation: isolate;
-  min-height: 0;
+  min-height: clamp(110px, 18vh, 150px);
   height: 100%;
-  max-height: 160px;
   border-radius: 14px;
   overflow: hidden;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
@@ -600,6 +599,7 @@
 
   .match-opts {
     flex: none;
+    min-height: 0;
   }
 
   .match-opts--3,
@@ -608,8 +608,7 @@
   }
 
   .match-opt {
-    min-height: 100px;
-    max-height: none;
+    min-height: 112px;
     height: auto;
   }
 
