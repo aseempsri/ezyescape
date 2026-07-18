@@ -214,24 +214,33 @@ export default function App() {
 
       <StaysSection />
 
-      <section className="honest-section" style={{ paddingTop: 60, paddingBottom: 110 }}>
+      <section className="honest-section" style={{ paddingTop: 100, paddingBottom: 110 }}>
         <div className="container">
-          <div className="w">
-            <div data-reveal="up">
-              <div className="eyebrow" style={{ color: '#fff' }}>Honest by Design</div>
+          <div className="why-grid honest-layout">
+            <div className="why-left honest-left">
+              <div className="eyebrow" data-reveal style={{ color: '#fff' }}>
+                <span className="eyebrow-line" />Honest by Design
+              </div>
               <h2 className="why-big-text" data-reveal>
-                We are not <br />
+                <span className="why-big-line">We are not</span>
+                <br />
                 <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)', color: '#fff' }}>
                   <em id="typewriter-3" className="typewriter-cursor" style={{ color: '#fff' }}>
                     <Typewriter text="for everyone." className="" style={{ fontStyle: 'normal', color: '#fff' }} />
                   </em>
                 </span>
               </h2>
-              <p className="sec-sub">The right guest matters to us as much as the right stay matters to you. So we say this plainly.</p>
+              <p className="why-desc honest-desc" data-reveal>
+                The right guest matters to us as much as the right stay matters to you. So we say this plainly.
+              </p>
+              <Magnetic>
+                <a href="#quiz" className="btn btn-amber" data-reveal style={{ fontSize: '1rem' }}>
+                  This sounds like me — Match My Stay <span className="btn-arrow">→</span>
+                </a>
+              </Magnetic>
             </div>
-            <div className="why-right" style={{ marginTop: 90 }}>
+            <div className="why-right">
               <CompareStack
-                minHeight={350}
                 badLabel="🚫 Don't book with us if"
                 goodLabel="✦ You'll love Ezy Escape if…"
                 badItems={[
@@ -249,11 +258,6 @@ export default function App() {
                   'You want to belong to the mountains — not just visit',
                 ]}
               />
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 48 }} data-reveal="up">
-              <Magnetic>
-                <a href="#quiz" className="btn btn-amber">This sounds like me — Match My Stay <span className="btn-arrow">→</span></a>
-              </Magnetic>
             </div>
           </div>
         </div>

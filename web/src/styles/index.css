@@ -899,6 +899,16 @@ nav.solid {
   position:absolute; top:-5%; left:-2%;
   pointer-events:none; user-select:none;
 }
+.honest-section .honest-left {
+  margin-top: 0;
+}
+.honest-section .honest-desc {
+  color: rgba(237, 232, 225, 0.72);
+  max-width: 34rem;
+}
+.honest-section .why-big-line {
+  color: #f2a625;
+}
 .honest-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:24px;
   margin-top:64px;
