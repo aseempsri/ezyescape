@@ -8,6 +8,7 @@ import {
   adminSession,
   adminUploadFile,
 } from '../lib/api';
+import { stayPath } from '../utils/paths';
 import '../styles/admin.css';
 
 function computeFinal(price, type, value) {
@@ -41,7 +42,7 @@ const EMPTY_STAY = {
   active: true,
 };
 
-function MediaList({ label, items, onChange, placeholder, previews, accept, kind }) {
+function MediaList({ label, hint, items, onChange, placeholder, previews, accept, kind }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -66,12 +67,23 @@ function MediaList({ label, items, onChange, placeholder, previews, accept, kind
     }
   }
 
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+
   const isVideo = kind === 'video';
 
   return (
     <div className="admin-media">
       <div className="admin-media-head">
-        <span>{label}</span>
+        <div>
+          <span>{label}</span>
+          {hint ? <p className="admin-field-hint">{hint}</p> : null}
+        </div>
         <div className="admin-media-head-actions">
           <button type="button" className="admin-btn admin-btn--sm" onClick={() => onChange([...items, ''])}>
             + Add URL
@@ -82,7 +94,7 @@ function MediaList({ label, items, onChange, placeholder, previews, accept, kind
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
           >
-            {uploading ? 'Uploading…' : '⭱ Upload'}
+            {uploading ? 'Uploading…' : 'Upload'}
           </button>
           <input
             ref={fileRef}
@@ -95,7 +107,9 @@ function MediaList({ label, items, onChange, placeholder, previews, accept, kind
         </div>
       </div>
       {uploadError && <p className="admin-error">{uploadError}</p>}
-      {items.length === 0 && <p className="admin-hint">None yet.</p>}
+      {items.length === 0 && (
+        <p className="admin-hint">None yet — upload or paste URLs. First image becomes the cover.</p>
+      )}
       {items.map((val, i) => (
         <div className="admin-media-row" key={i}>
           {previews && val ? (
@@ -114,21 +128,37 @@ function MediaList({ label, items, onChange, placeholder, previews, accept, kind
               onChange(next);
             }}
           />
-          <button
-            type="button"
-            className="admin-btn admin-btn--ghost admin-btn--sm"
-            onClick={() => onChange(items.filter((_, j) => j !== i))}
-            aria-label={`Remove ${label} ${i + 1}`}
-          >
-            ✕
-          </button>
+          <div className="admin-media-row-actions">
+            <button type="button" className="admin-btn admin-btn--sm" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
+            <button type="button" className="admin-btn admin-btn--sm" onClick={() => move(i, 1)} disabled={i === items.length - 1} aria-label="Move down">↓</button>
+            <button
+              type="button"
+              className="admin-btn admin-btn--ghost admin-btn--sm"
+              onClick={() => onChange(items.filter((_, j) => j !== i))}
+              aria-label={`Remove ${label} ${i + 1}`}
+            >
+              ✕
+            </button>
+          </div>
         </div>
       ))}
     </div>
   );
 }
 
-function ListingForm({ initial, onSave, onCancel, saving }) {
+function FormSection({ title, blurb, children }) {
+  return (
+    <section className="admin-form-section">
+      <header className="admin-form-section-head">
+        <h3>{title}</h3>
+        {blurb ? <p>{blurb}</p> : null}
+      </header>
+      <div className="admin-grid">{children}</div>
+    </section>
+  );
+}
+
+function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
   const [form, setForm] = useState(initial);
   const [error, setError] = useState('');
 
@@ -143,6 +173,12 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setForm((f) => ({ ...f, [key]: value }));
   };
+
+  const previewSlug = (form.slug || form.title || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
   async function submit(e) {
     e.preventDefault();
@@ -171,7 +207,11 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
 
   return (
     <form className="admin-form" onSubmit={submit}>
-      <div className="admin-grid">
+      <p className="admin-form-lead">
+        Every section maps to the live property page. Fill them for a new listing and it will appear in the same layout as existing stays — gallery, moments, story, directions, pricing, and booking.
+      </p>
+
+      <FormSection title="1 · Identity" blurb="Title, location, and page URL.">
         <label className="admin-field admin-col-2">
           <span>Title *</span>
           <input value={form.title} onChange={set('title')} placeholder="The Kumaoni Family Home" />
@@ -184,50 +224,9 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
           <span>Location *</span>
           <input value={form.location} onChange={set('location')} placeholder="Almora, Kumaon" />
         </label>
-        <label className="admin-field admin-col-2">
-          <span>Category tags <em>(space separated: quiet, family, forest, accessible)</em></span>
-          <input value={form.cat} onChange={set('cat')} placeholder="quiet forest" />
-        </label>
-        <label className="admin-field admin-col-2">
-          <span>Best for</span>
-          <input value={form.best} onChange={set('best')} placeholder="Couples · Writers" />
-        </label>
-        <label className="admin-field admin-col-2">
-          <span>Short description</span>
-          <textarea
-            rows={2}
-            value={form.description || ''}
-            onChange={set('description')}
-            placeholder="One or two sentences for the top of the stay page."
-          />
-        </label>
-        <label className="admin-field admin-col-2">
-          <span>The story</span>
-          <textarea
-            rows={5}
-            value={form.story || ''}
-            onChange={set('story')}
-            placeholder="Longer narrative about the home, hosts, and atmosphere."
-          />
-        </label>
-        <label className="admin-field admin-col-2">
-          <span>How to get there</span>
-          <textarea
-            rows={3}
-            value={form.directions || ''}
-            onChange={set('directions')}
-            placeholder="Nearest station/airport, drive time, last-mile tips."
-          />
-        </label>
-        <label className="admin-field admin-col-2">
-          <span>Highlights <em>(one per line)</em></span>
-          <textarea
-            rows={4}
-            value={Array.isArray(form.highlights) ? form.highlights.join('\n') : (form.highlights || '')}
-            onChange={(e) => setForm((f) => ({ ...f, highlights: e.target.value.split('\n') }))}
-            placeholder={"Sunrise balcony\nHome-cooked meals"}
-          />
-        </label>
+      </FormSection>
+
+      <FormSection title="2 · Snapshot" blurb="Guests, rooms, tags, and short intro under the heading.">
         <label className="admin-field">
           <span>Guests</span>
           <input type="number" min={1} value={form.guests} onChange={set('guests')} />
@@ -236,6 +235,62 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
           <span>Rooms</span>
           <input type="number" min={1} value={form.rooms} onChange={set('rooms')} />
         </label>
+        <label className="admin-field admin-col-2">
+          <span>Category tags <em>(space separated — e.g. quiet forest family)</em></span>
+          <input value={form.cat} onChange={set('cat')} placeholder="quiet forest" />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>Best for</span>
+          <input value={form.best} onChange={set('best')} placeholder="Couples · Writers · Slow Travellers" />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>Short description</span>
+          <textarea
+            rows={2}
+            value={form.description || ''}
+            onChange={set('description')}
+            placeholder="One or two sentences under the heading on the property page."
+          />
+        </label>
+      </FormSection>
+
+      <FormSection title="3 · At a glance (moments)" blurb="Moment cards on the property page — one highlight per line.">
+        <label className="admin-field admin-col-2">
+          <span>Highlights</span>
+          <textarea
+            rows={5}
+            value={Array.isArray(form.highlights) ? form.highlights.join('\n') : (form.highlights || '')}
+            onChange={(e) => setForm((f) => ({ ...f, highlights: e.target.value.split('\n') }))}
+            placeholder={"Sunrise balcony with Himalayan views\nHome-cooked Kumaoni meals\nVillage walks with your hosts\nQuiet workspace for writers"}
+          />
+        </label>
+      </FormSection>
+
+      <FormSection title="4 · The story" blurb="Longer narrative (falls back to short description if empty).">
+        <label className="admin-field admin-col-2">
+          <span>Story</span>
+          <textarea
+            rows={6}
+            value={form.story || ''}
+            onChange={set('story')}
+            placeholder="Longer narrative about the home, hosts, and atmosphere."
+          />
+        </label>
+      </FormSection>
+
+      <FormSection title="5 · How to reach the home" blurb="Directions block on the property page.">
+        <label className="admin-field admin-col-2">
+          <span>Directions</span>
+          <textarea
+            rows={4}
+            value={form.directions || ''}
+            onChange={set('directions')}
+            placeholder="Nearest station/airport, drive time, last-mile tips."
+          />
+        </label>
+      </FormSection>
+
+      <FormSection title="6 · Pricing & booking" blurb="Shown on the booking card. Guests can redeem ezy coins at checkout on the site.">
         <label className="admin-field">
           <span>Price / night (₹)</span>
           <input type="number" min={0} value={form.price} onChange={set('price')} />
@@ -259,50 +314,69 @@ function ListingForm({ initial, onSave, onCancel, saving }) {
           />
         </label>
         <div className="admin-field admin-price-preview">
-          <span>Card shows</span>
+          <span>Property page shows</span>
           <div>
-            {finalPrice < Number(form.price) && (
-              <del>₹{Number(form.price)}</del>
-            )}{' '}
+            {finalPrice < Number(form.price) && <del>₹{Number(form.price)}</del>}{' '}
             <strong>₹{finalPrice}</strong> <em>/night</em>
           </div>
         </div>
-      </div>
+      </FormSection>
 
-      <MediaList
-        label="Images"
-        items={form.images}
-        onChange={(images) => setForm((f) => ({ ...f, images }))}
-        placeholder="https://…/photo.jpg or upload"
-        previews
-        accept="image/*"
-        kind="image"
-      />
-      <MediaList
-        label="Videos"
-        items={form.videos}
-        onChange={(videos) => setForm((f) => ({ ...f, videos }))}
-        placeholder="https://…/clip.mp4 or upload"
-        previews
-        accept="video/*"
-        kind="video"
-      />
+      <FormSection
+        title="7 · Image & video gallery"
+        blurb="Main gallery, filmstrip, and photo mosaic. Reorder with ↑ ↓ — first image is the cover."
+      >
+        <div className="admin-col-2">
+          <MediaList
+            label="Images"
+            hint="Used for gallery, thumbnails, story visual, and mosaic."
+            items={form.images}
+            onChange={(images) => setForm((f) => ({ ...f, images }))}
+            placeholder="https://…/photo.jpg or upload"
+            previews
+            accept="image/*"
+            kind="image"
+          />
+          <MediaList
+            label="Videos"
+            hint="Optional clips in the same gallery carousel."
+            items={form.videos}
+            onChange={(videos) => setForm((f) => ({ ...f, videos }))}
+            placeholder="https://…/clip.mp4 or upload"
+            previews
+            accept="video/*"
+            kind="video"
+          />
+        </div>
+      </FormSection>
 
-      <label className="admin-checkbox">
-        <input type="checkbox" checked={form.active} onChange={set('active')} />
-        <span>Active (visible on the site)</span>
-      </label>
+      <FormSection title="8 · Visibility" blurb="Inactive listings stay in admin but are hidden publicly.">
+        <label className="admin-checkbox admin-col-2">
+          <input type="checkbox" checked={form.active} onChange={set('active')} />
+          <span>Active (visible on the site)</span>
+        </label>
+      </FormSection>
 
       {error && <p className="admin-error">{error}</p>}
 
       <div className="admin-form-actions">
         <button type="submit" className="admin-btn admin-btn--primary" disabled={saving}>
-          {saving ? 'Saving…' : 'Save listing'}
+          {saving ? 'Saving…' : isNew ? 'Create listing' : 'Save listing'}
         </button>
         {onCancel && (
           <button type="button" className="admin-btn admin-btn--ghost" onClick={onCancel}>
             Cancel
           </button>
+        )}
+        {!isNew && previewSlug && (
+          <a
+            className="admin-btn admin-btn--ghost"
+            href={stayPath(form.slug || form.id || previewSlug)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on site →
+          </a>
         )}
       </div>
     </form>
@@ -348,7 +422,7 @@ function Dashboard({ onLogout }) {
     const entered = window.prompt(
       `Delete "${title}"? This cannot be undone.\n\nType the delete password to confirm:`
     );
-    if (entered == null) return; // cancelled
+    if (entered == null) return;
     if (entered !== DELETE_PASSWORD) {
       window.alert('Incorrect delete password. Listing was not deleted.');
       return;
@@ -362,7 +436,10 @@ function Dashboard({ onLogout }) {
       <header className="admin-header">
         <div>
           <h1>Ezy Escape · Listings</h1>
-          <p>Add, edit, and remove homestays. Prices and discounts show live on the site.</p>
+          <p>
+            Create full property pages: gallery, tags, moments, story, directions, pricing, and booking.
+            New listings use the same layout as existing stays.
+          </p>
         </div>
         <div className="admin-header-actions">
           {editing == null && (
@@ -384,6 +461,7 @@ function Dashboard({ onLogout }) {
             onSave={handleSave}
             onCancel={() => setEditing(null)}
             saving={saving}
+            isNew={editing === 'new'}
           />
         </section>
       ) : (
@@ -401,11 +479,20 @@ function Dashboard({ onLogout }) {
                 <div className="admin-listing-price">
                   {s.hasDiscount && <del>₹{s.price}</del>} <strong>₹{s.finalPrice}</strong> /night
                   <span className="admin-listing-media">
-                    {s.images.length} img · {s.videos.length} vid
+                    {(s.images || []).length} img · {(s.videos || []).length} vid
+                    {(s.highlights || []).length ? ` · ${s.highlights.length} moments` : ''}
                   </span>
                 </div>
               </div>
               <div className="admin-listing-actions">
+                <a
+                  className="admin-btn admin-btn--sm"
+                  href={stayPath(s.slug || s.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View
+                </a>
                 <button type="button" className="admin-btn admin-btn--sm" onClick={() => setEditing(s.id)}>
                   Edit
                 </button>
@@ -466,7 +553,7 @@ function LoginView({ onSuccess }) {
 }
 
 export default function AdminApp() {
-  const [authed, setAuthed] = useState(null); // null = checking
+  const [authed, setAuthed] = useState(null);
 
   useEffect(() => {
     adminSession()
