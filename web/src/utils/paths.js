@@ -6,12 +6,20 @@ export function appPath(path = '') {
   return `${base}${clean}`;
 }
 
+export function staysIndexPath() {
+  return appPath('stays');
+}
+
 export function stayPath(slugOrId) {
   return appPath(`stays/${encodeURIComponent(slugOrId)}`);
 }
 
 export function goHome() {
   window.location.assign(appPath());
+}
+
+export function goStays() {
+  window.location.assign(staysIndexPath());
 }
 
 export function goStay(slugOrId) {

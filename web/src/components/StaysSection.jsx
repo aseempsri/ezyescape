@@ -1,42 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { STAYS } from '../data/stays';
 import Typewriter from './Typewriter';
 import { fetchStays } from '../lib/api';
-import { goStay } from '../utils/paths';
-
-// Normalize an API stay into the shape the cards expect.
-function normalizeApiStay(s) {
-  return {
-    id: s.id,
-    slug: s.slug || s.id,
-    cat: s.cat || '',
-    location: s.location,
-    title: s.title,
-    disPrice: s.hasDiscount ? s.price : null,
-    price: s.finalPrice,
-    guest: s.guests,
-    rooms: s.rooms,
-    image: s.image,
-    images: s.images || [],
-    videos: s.videos || [],
-    best: s.best || '',
-    description: s.description || '',
-    story: s.story || '',
-    directions: s.directions || '',
-    highlights: s.highlights || [],
-  };
-}
-
-// Fallback (used if the API is unreachable, e.g. static hosting with no backend).
-const FALLBACK_STAYS = STAYS.map((s) => ({ ...s, disPrice: s.disPrice ?? null }));
-
-const FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'quiet', label: 'Quiet' },
-  { id: 'family', label: 'Family' },
-  { id: 'forest', label: 'Forest' },
-  { id: 'accessible', label: 'Road Access' },
-];
+import { goStay, staysIndexPath } from '../utils/paths';
+import {
+  FALLBACK_STAYS,
+  STAY_FILTERS,
+  normalizeApiStay,
+  stayMatchesFilter,
+} from '../utils/stays';
 
 export default function StaysSection() {
   const [filter, setFilter] = useState('all');
@@ -105,9 +76,9 @@ export default function StaysSection() {
     });
   }, [filter, stays]);
 
-  const visible = (cat) => filter === 'all' || cat.includes(filter);
   const openStay = (stay) => {
     if (draggedRef.current) return;
+    if (!stayMatchesFilter(stay.cat, filter)) return;
     goStay(stay.slug || stay.id);
   };
 
@@ -127,7 +98,7 @@ export default function StaysSection() {
             </h2>
           </div>
           <div className="stays-filter-row" data-reveal="right">
-            {FILTERS.map((f) => (
+            {STAY_FILTERS.map((f) => (
               <button
                 key={f.id}
                 type="button"
@@ -141,53 +112,61 @@ export default function StaysSection() {
         </div>
         <div className="stays-track-wrap" id="staysWrap" ref={wrapRef}>
           <div className="stays-track" id="staysTrack">
-            {stays.map((stay) => (
-              <div
-                key={stay.id}
-                className="stay-card"
-                data-cat={stay.cat}
-                role="link"
-                tabIndex={0}
-                onClick={() => openStay(stay)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openStay(stay);
-                  }
-                }}
-                style={{
-                  opacity: visible(stay.cat) ? 1 : 0.25,
-                  transform: visible(stay.cat) ? '' : 'scale(0.97)',
-                  pointerEvents: visible(stay.cat) ? 'auto' : 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
-                  <div className="stay-img-overlay" />
-                  <div className="stay-img-tags">
-                    <span className="s-tag">{stay.guest} Adults</span>
-                    <span className="s-tag">{stay.rooms} Rooms</span>
+            {stays.map((stay) => {
+              const active = stayMatchesFilter(stay.cat, filter);
+              return (
+                <div
+                  key={stay.id}
+                  className="stay-card"
+                  data-cat={stay.cat}
+                  role="link"
+                  tabIndex={active ? 0 : -1}
+                  onClick={() => openStay(stay)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openStay(stay);
+                    }
+                  }}
+                  style={{
+                    opacity: active ? 1 : 0.25,
+                    transform: active ? '' : 'scale(0.97)',
+                    pointerEvents: active ? 'auto' : 'none',
+                    cursor: active ? 'pointer' : 'default',
+                  }}
+                >
+                  <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
+                    <div className="stay-img-overlay" />
+                    <div className="stay-img-tags">
+                      <span className="s-tag">{stay.guest} Adults</span>
+                      <span className="s-tag">{stay.rooms} Rooms</span>
+                    </div>
+                  </div>
+                  <div className="stay-body">
+                    <div className="stay-host">{stay.location}</div>
+                    <div className="stay-name">{stay.title}</div>
+                    {stay.disPrice ? (
+                      <del style={{ fontSize: 18 }}> ₹ {stay.disPrice} </del>
+                    ) : null}
+                    {stay.disPrice ? ' ' : null}/per Night &nbsp;&nbsp;
+                    <span className="price"><span>₹ {stay.price}</span></span>
+                    <div className="stay-footer">
+                      <span className="stay-best">{stay.best}</span>
+                      <span className="stay-link stay-book-btn">View stay →</span>
+                    </div>
                   </div>
                 </div>
-                <div className="stay-body">
-                  <div className="stay-host">{stay.location}</div>
-                  <div className="stay-name">{stay.title}</div>
-                  {stay.disPrice ? (
-                    <del style={{ fontSize: 18 }}> ₹ {stay.disPrice} </del>
-                  ) : null}
-                  {stay.disPrice ? ' ' : null}/per Night &nbsp;&nbsp;
-                  <span className="price"><span>₹ {stay.price}</span></span>
-                  <div className="stay-footer">
-                    <span className="stay-best">{stay.best}</span>
-                    <span className="stay-link stay-book-btn">View stay →</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         <div className="stays-scroll-hint">
           Swipe to explore <span>→</span>
+        </div>
+        <div className="w" style={{ textAlign: 'center', marginTop: 8 }} data-reveal="up">
+          <a href={staysIndexPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
+            View All Homestays <span className="btn-arrow">→</span>
+          </a>
         </div>
       </div>
     </section>

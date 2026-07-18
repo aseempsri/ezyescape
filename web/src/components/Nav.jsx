@@ -2,9 +2,10 @@ import useNavRailBounce from '../hooks/useNavRailBounce';
 import assetUrl from '../utils/assetUrl';
 import AuthButton from './AuthButton';
 import WalletNav from './WalletNav';
+import { staysIndexPath } from '../utils/paths';
 
 const links = [
-  { href: '#stays', label: 'Homestays', short: 'Stays' },
+  { href: staysIndexPath(), label: 'Homestays', short: 'Stays' },
   { href: '#experiences', label: 'Experiences', short: 'Experiences' },
   { href: '#impact', label: 'Our Impact', short: 'Impact' },
   { href: '#stories', label: 'Stories', short: 'Stories' },

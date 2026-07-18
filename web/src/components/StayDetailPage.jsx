@@ -3,7 +3,7 @@ import BookingForm from './BookingForm';
 import { BookingSuccessToast } from './BookingFlow';
 import { fetchStay } from '../lib/api';
 import { STAYS } from '../data/stays';
-import { appPath, goHome } from '../utils/paths';
+import { appPath, goHome, staysIndexPath } from '../utils/paths';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import assetUrl from '../utils/assetUrl';
 import '../styles/index.css';
@@ -143,7 +143,7 @@ export default function StayDetailPage({ idOrSlug }) {
             onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }}
           />
         </a>
-        <a href={appPath('#stays')} className="stay-page-back">← All stays</a>
+        <a href={staysIndexPath()} className="stay-page-back">← All stays</a>
       </header>
 
       <section className="stay-hero">

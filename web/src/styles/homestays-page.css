@@ -1,0 +1,214 @@
+/* Homestays listing page */
+.homestays-page {
+  min-height: 100svh;
+  background:
+    radial-gradient(ellipse at top left, rgba(245, 166, 35, 0.1), transparent 40%),
+    linear-gradient(180deg, #0b1420 0%, #101e2c 45%, #0b1420 100%);
+  color: rgba(255, 255, 255, 0.92);
+  padding-bottom: 72px;
+}
+
+.homestays-hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 36px clamp(16px, 4vw, 40px) 8px;
+}
+
+.homestays-eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--amber, #f5a623);
+}
+
+.homestays-hero h1 {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.1;
+}
+
+.homestays-sub {
+  margin: 0;
+  max-width: 42rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+  font-size: 1rem;
+}
+
+.homestays-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 1100px;
+  margin: 22px auto 28px;
+  padding: 0 clamp(16px, 4vw, 40px);
+}
+
+.homestays-filters .s-filter {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.homestays-filters .s-filter:hover,
+.homestays-filters .s-filter.on {
+  background: var(--amber, #f5a623);
+  color: #101e2c;
+  border-color: var(--amber, #f5a623);
+}
+
+.homestays-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 40px);
+}
+
+.homestay-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.homestay-card:hover:not(.is-dimmed) {
+  transform: translateY(-4px);
+  border-color: rgba(245, 166, 35, 0.4);
+}
+
+.homestay-card.is-dimmed {
+  opacity: 0.28;
+  filter: grayscale(0.35);
+  pointer-events: none;
+  cursor: default;
+}
+
+.homestay-card-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+}
+
+.homestay-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(6, 12, 21, 0.55) 100%);
+}
+
+.homestay-card-tags {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+
+.homestay-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 16px 18px;
+}
+
+.homestay-card-loc {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--amber, #f5a623);
+}
+
+.homestay-card-body h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.homestay-card-price {
+  margin: 2px 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.homestay-card-price del {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+}
+
+.homestay-card-price strong {
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.homestay-card-price span {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.82rem;
+}
+
+.homestay-card-best {
+  margin: 2px 0 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.homestay-card-cta {
+  margin-top: 8px;
+  color: var(--amber, #f5a623);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.homestays-status,
+.homestays-footnote {
+  max-width: 1100px;
+  margin: 28px auto 0;
+  padding: 0 clamp(16px, 4vw, 40px);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.homestays-footnote a {
+  color: var(--amber, #f5a623);
+}
+
+@media (max-width: 960px) {
+  .homestays-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .homestays-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .homestays-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .homestays-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .homestays-filters .s-filter {
+    flex: 0 0 auto;
+  }
+}

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import AdminApp from './admin/AdminApp.jsx';
 import StayDetailPage from './components/StayDetailPage.jsx';
+import HomestaysPage from './components/HomestaysPage.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 
 const rawPath = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -13,12 +14,17 @@ const path = base && base !== '/' && rawPath.startsWith(base)
   : rawPath;
 
 const isAdminRoute = path === '/admin' || path.endsWith('/admin');
+const isStaysIndex = path === '/stays';
 const stayMatch = path.match(/^\/stays\/([^/]+)$/);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {isAdminRoute ? (
       <AdminApp />
+    ) : isStaysIndex ? (
+      <AuthProvider>
+        <HomestaysPage />
+      </AuthProvider>
     ) : stayMatch ? (
       <AuthProvider>
         <StayDetailPage idOrSlug={decodeURIComponent(stayMatch[1])} />

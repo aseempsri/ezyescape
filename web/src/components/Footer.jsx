@@ -1,5 +1,6 @@
 import assetUrl from '../utils/assetUrl';
 import { whatsappChatUrl } from '../utils/whatsapp';
+import { staysIndexPath } from '../utils/paths';
 
 export default function Footer() {
   const waUrl = whatsappChatUrl();
@@ -19,7 +20,7 @@ export default function Footer() {
           <div>
             <div className="f-col-title">Explore</div>
             <ul className="f-links">
-              <li><a href="#stays">Homestays</a></li>
+              <li><a href={staysIndexPath()}>Homestays</a></li>
               <li><a href="#experiences">Experiences</a></li>
               <li><a href="#quiz">Find My Stay</a></li>
               <li><a href="#quiz">Travel Styles</a></li>
