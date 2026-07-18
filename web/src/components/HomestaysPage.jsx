@@ -93,7 +93,7 @@ export default function HomestaysPage() {
     <SiteChrome title="Homestays — Ezy Escape">
       <section
         className="sp-hero sp-hero--homestays"
-        style={{ backgroundImage: `url('${assetUrl('images/ju.png')}')` }}
+        style={{ backgroundImage: `url('${assetUrl('images/ju.jpg')}')` }}
       >
         <div className="sp-hero-veil" aria-hidden="true" />
         <div className="container sp-hero-inner">

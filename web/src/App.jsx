@@ -25,7 +25,7 @@ import './styles/hero-nav.css';
 import './styles/quiz-match.css';
 import './styles/immersion.css';
 
-const HERO_BG = assetUrl('images/ju.png');
+const HERO_BG = assetUrl('images/ju.jpg');
 
 function CompareStack({ badLabel, goodLabel, badItems, goodItems, minHeight }) {
   return (
@@ -79,9 +79,7 @@ export default function App() {
       <section className={`hero${heroLoaded ? ' loaded' : ''}`} id="heroSection">
         <div
           className="hero-bg"
-          style={{
-            backgroundImage: `url(${HERO_BG}), url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80)`,
-          }}
+          style={{ backgroundImage: `url(${HERO_BG})` }}
         />
         <div className="hero-vignette" />
         <div className="hero-shade" />
