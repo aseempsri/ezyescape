@@ -146,7 +146,11 @@
   /* Nav + hero — see hero-nav.css */
 
   .marquee-wrap { padding: 14px 0; }
-  .marquee-item { padding: 0 24px; font-size: 0.72rem; }
+  .marquee-item {
+    padding: 0 24px;
+    font-size: 0.78rem;
+    color: rgba(247, 243, 237, 0.9);
+  }
 
   /* ─── TYPOGRAPHY BLOCKS ─── */
   .why-big-text {

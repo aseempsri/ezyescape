@@ -426,13 +426,14 @@ nav.solid {
 .marquee-track:hover { animation-play-state:paused; }
 .marquee-item {
   flex-shrink:0; padding:0 40px;
-  font-size:.8rem; font-weight:500; letter-spacing:.12em;
-  text-transform:uppercase; color:rgba(237,232,225,.35);
+  font-size:.88rem; font-weight:600; letter-spacing:.12em;
+  text-transform:uppercase; color:rgba(247, 243, 237, 0.88);
   display:flex; align-items:center; gap:16px;
   white-space:nowrap;
 }
 .marquee-dot {
-  width:4px; height:4px; border-radius:50%; background:var(--amber); opacity:.6; flex-shrink:0;
+  width:5px; height:5px; border-radius:50%; background:var(--amber); opacity:1; flex-shrink:0;
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.45);
 }
 @keyframes marquee {
   from { transform:translateX(0); }
