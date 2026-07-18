@@ -140,21 +140,18 @@ export default function App() {
 
       <section className="why-section" id="why" style={{ paddingBottom: 0, paddingTop: 100 }}>
         <div className="container">
-          <header className="why-header" data-reveal>
-            <div className="eyebrow"><span className="eyebrow-line" />Feel The Difference</div>
-            <h2 className="why-big-text">
-              <span className="why-big-line">Most travel sites sell rooms.</span>
-              <br />
-              <span className="why-script-line">
-                <em id="typewriter-text" className="typewriter-cursor" style={{ fontWeight: 600 }}>
-                  <Typewriter text="We match you with the right home" className="" style={{ fontStyle: 'normal' }} />
-                </em>
-              </span>
-            </h2>
-          </header>
-
           <div className="why-grid">
             <div className="why-left">
+              <div className="eyebrow" data-reveal><span className="eyebrow-line" />Feel The Difference</div>
+              <h2 className="why-big-text" data-reveal>
+                <span className="why-big-line">Most travel sites sell rooms.</span>
+                <br />
+                <span className="why-script-line">
+                  <em id="typewriter-text" className="typewriter-cursor" style={{ fontWeight: 600 }}>
+                    <Typewriter text="We match you with the right home" className="" style={{ fontStyle: 'normal' }} />
+                  </em>
+                </span>
+              </h2>
               <p className="why-desc" data-reveal>
                 Built for travellers who want meaning, culture and human connection — not a hotel wearing a homestay name. Every recommendation is shaped by how you actually like to travel.
               </p>

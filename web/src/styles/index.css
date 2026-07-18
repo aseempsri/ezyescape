@@ -1026,34 +1026,17 @@ nav.solid {
    SECTION 1: WHY — SPLIT TEXT + FLOATING CARDS
 ============================================================ */
 .why-section { background: var(--warm-white); padding: 50px 0; position: relative; overflow: hidden; }
-.why-header {
-  margin-bottom: 36px;
-  max-width: 100%;
-}
-.why-header .eyebrow {
-  margin-bottom: 16px;
-}
-.why-header .why-big-text {
-  margin-bottom: 0;
-}
-.why-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 48px 64px;
-  align-items: center;
-}
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
 .why-left {
-  margin-top: 0;
-  min-width: 0;
+    margin-top: -120px;
+    min-width: 0;
 }
 .why-big-text {
   font-family: 'Poppins', sans-serif;
   font-size: clamp(1.75rem, 5vw, 2.8rem);
-  font-weight: 400;
-  line-height: 1.08;
-  color: #f2a625;
-  margin-bottom: 28px;
-  letter-spacing: -0.02em;
+  font-weight: 400; line-height: 1.08; color: #f2a625;
+  margin-bottom: 28px; letter-spacing: -0.02em;
+
 }
 .why-section .why-big-line {
   display: inline-block;
@@ -1062,8 +1045,9 @@ nav.solid {
 .why-section .why-script-line {
   display: inline-block;
   white-space: nowrap;
+  max-width: 100%;
   font-family: 'Tangerine', cursive;
-  font-size: clamp(2.6rem, 5.2vw, 5.4rem);
+  font-size: clamp(1.9rem, 3.2vw, 3.1rem);
   line-height: 1.05;
   color: #1a181c;
 }
