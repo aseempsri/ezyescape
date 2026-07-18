@@ -1,6 +1,15 @@
 import assetUrl from '../utils/assetUrl';
 import { whatsappChatUrl } from '../utils/whatsapp';
-import { staysIndexPath } from '../utils/paths';
+import {
+  appPath,
+  staysIndexPath,
+  storiesPath,
+  shopPath,
+  partnerPath,
+  contactPath,
+  profilePath,
+  homeSectionPath,
+} from '../utils/paths';
 
 export default function Footer() {
   const waUrl = whatsappChatUrl();
@@ -10,38 +19,37 @@ export default function Footer() {
       <div className="w">
         <div className="footer-grid">
           <div className="footer-brand">
-            <a href="#" className="logo">
-            <img src={assetUrl('images/logo.png')} alt="Ezy Escape" onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }} />
+            <a href={appPath()} className="logo">
+              <img src={assetUrl('images/logo.png')} alt="Ezy Escape" onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }} />
             </a>
             <p className="footer-tag">
               Authentic mountain homestays, curated with local families. We help travellers find homes that match their personality, not just their budget.
             </p>
           </div>
-          <div>
+          <div className="footer-col footer-col--explore">
             <div className="f-col-title">Explore</div>
             <ul className="f-links">
               <li><a href={staysIndexPath()}>Homestays</a></li>
-              <li><a href="#experiences">Experiences</a></li>
-              <li><a href="#quiz">Find My Stay</a></li>
-              <li><a href="#quiz">Travel Styles</a></li>
-              <li><a href="#stories">Stories</a></li>
+              <li><a href={homeSectionPath('experiences')}>Experiences</a></li>
+              <li><a href={homeSectionPath('quiz')}>Find My Stay</a></li>
+              <li><a href={storiesPath()}>Stories</a></li>
+              <li><a href={shopPath()}>Shop With Us</a></li>
             </ul>
           </div>
-          <div>
+          <div className="footer-col footer-col--company">
             <div className="f-col-title">Company</div>
             <ul className="f-links">
-              <li><a href="#">About Us</a></li>
-              <li><a href="#impact">Our Impact</a></li>
-              <li><a href="#">Host With Us</a></li>
-              <li><a href="#">Contact</a></li>
+              <li><a href={homeSectionPath('impact')}>Our Impact</a></li>
+              <li><a href={partnerPath()}>Partner With Us</a></li>
+              <li><a href={contactPath()}>Contact</a></li>
             </ul>
           </div>
-          <div>
+          <div className="footer-col footer-col--help">
             <div className="f-col-title">Traveller Help</div>
             <ul className="f-links">
-              <li><a href="#">Good To Know</a></li>
-              <li><a href="#">FAQs</a></li>
+              <li><a href={contactPath()}>Contact Us</a></li>
               <li><a href={waUrl} target="_blank" rel="noopener noreferrer">WhatsApp Us</a></li>
+              <li><a href={profilePath()}>Your Profile</a></li>
             </ul>
           </div>
         </div>

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { whatsappChatUrl } from '../utils/whatsapp';
 
 function WhatsAppIcon() {
@@ -13,22 +12,8 @@ function WhatsAppIcon() {
 }
 
 export default function MobileBar() {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setShow(window.scrollY > window.innerHeight * 0.45);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <div className={`mobile-bar${show ? ' show' : ''}`} aria-hidden={!show}>
-      <a href="#quiz" className="mobile-bar-cta">
-        Match My Stay <span aria-hidden="true">→</span>
-      </a>
+    <div className="mobile-bar show" aria-label="Quick contact">
       <a
         href={whatsappChatUrl()}
         className="mobile-bar-wa"

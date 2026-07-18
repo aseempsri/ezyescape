@@ -1,0 +1,581 @@
+/* Profile — account, wallet, bookings */
+
+.pf-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 40px) 48px;
+}
+
+.pf-hero {
+  margin-bottom: 28px;
+}
+
+.pf-hero .sp-title {
+  margin-bottom: 10px;
+}
+
+.pf-status,
+.pf-muted {
+  color: rgba(237, 232, 225, 0.62);
+  font-size: 0.92rem;
+}
+
+.pf-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.pf-bookings {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 28px;
+  margin-top: 8px;
+}
+
+.pf-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 22px 20px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.pf-identity,
+.pf-wallet {
+  min-height: 100%;
+}
+
+.pf-identity .pf-form {
+  margin-top: auto;
+}
+
+.pf-wallet .pf-tx {
+  margin-top: auto;
+}
+
+.pf-signin {
+  text-align: center;
+  max-width: 420px;
+  margin: 24px auto;
+}
+
+.pf-signin h2 {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+}
+
+.pf-signin p {
+  margin: 0 0 18px;
+  color: rgba(237, 232, 225, 0.65);
+}
+
+.pf-identity-head {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pf-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pf-avatar--fallback {
+  display: grid;
+  place-items: center;
+  background: rgba(245, 166, 35, 0.2);
+  color: var(--amber, #f5a623);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.pf-identity-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.pf-identity-head h2 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.pf-identity-head p,
+.pf-email {
+  margin: 0;
+  color: rgba(237, 232, 225, 0.7);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pf-meta-line {
+  margin-top: 8px !important;
+  font-size: 0.78rem !important;
+  color: rgba(237, 232, 225, 0.5) !important;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.pf-meta-line span {
+  position: relative;
+}
+
+.pf-meta-line span:not(:last-child)::after {
+  content: '·';
+  margin-left: 10px;
+  opacity: 0.7;
+}
+
+.pf-form {
+  display: grid;
+  gap: 12px;
+}
+
+.pf-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: rgba(237, 232, 225, 0.62);
+}
+
+.pf-form input {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.pf-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.pf-error {
+  margin: 0;
+  color: #ff8f8f;
+  font-size: 0.85rem;
+}
+
+.pf-ok {
+  margin: 0;
+  color: #8fefb0;
+  font-size: 0.85rem;
+}
+
+.pf-wallet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pf-wallet-head h2 {
+  margin: 4px 0 0;
+  font-size: 1.25rem;
+}
+
+.pf-balance {
+  text-align: right;
+}
+
+.pf-balance strong {
+  display: block;
+  font-size: 1.8rem;
+  color: var(--amber, #f5a623);
+  line-height: 1;
+}
+
+.pf-balance span {
+  font-size: 0.75rem;
+  color: rgba(237, 232, 225, 0.55);
+}
+
+.pf-expiry {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pf-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pf-rules div {
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+  color: rgba(237, 232, 225, 0.72);
+}
+
+.pf-tx h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.pf-tx-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pf-tx-row strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.pf-tx-row span {
+  font-size: 0.72rem;
+  color: rgba(237, 232, 225, 0.5);
+}
+
+.pf-tx-row em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.pf-tx-row em.is-credit { color: #8fefb0; }
+.pf-tx-row em.is-debit { color: #ffb08f; }
+
+.pf-section-head {
+  margin-bottom: 14px;
+}
+
+.pf-section-head h2 {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+}
+
+.pf-booking-list {
+  display: grid;
+  gap: 14px;
+}
+
+.pf-booking {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 18px;
+}
+
+.pf-booking--cancelled {
+  opacity: 0.72;
+}
+
+.pf-booking-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pf-booking-status {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--amber, #f5a623);
+}
+
+.pf-booking h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.pf-booking-link {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.pf-booking-link:hover {
+  color: var(--amber, #f5a623);
+}
+
+.pf-booking-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pf-booking-meta span {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(237, 232, 225, 0.5);
+  margin-bottom: 2px;
+}
+
+.pf-booking-meta strong {
+  font-size: 0.92rem;
+}
+
+.pf-booking-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.88rem;
+}
+
+.pf-booking-foot span {
+  color: rgba(237, 232, 225, 0.5);
+  margin-right: 6px;
+}
+
+.pf-booking-foot em {
+  font-style: normal;
+  color: rgba(237, 232, 225, 0.55);
+  font-size: 0.8rem;
+}
+
+.pf-booking-earn {
+  color: #8fefb0;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.pf-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pf-empty p {
+  margin: 0;
+  flex: 1 1 100%;
+  color: rgba(237, 232, 225, 0.62);
+}
+
+@media (max-width: 860px) {
+  .pf-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-booking-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile-only profile rearrangements */
+@media (max-width: 768px) {
+  .pf-page {
+    padding: 20px 16px calc(88px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
+
+  .pf-hero {
+    margin-bottom: 20px;
+  }
+
+  .pf-hero .sp-title {
+    font-size: clamp(1.7rem, 7vw, 2.2rem);
+  }
+
+  .pf-hero .sp-lead {
+    font-size: 0.92rem;
+    max-width: none;
+  }
+
+  .pf-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .pf-card {
+    height: auto;
+    padding: 18px 16px;
+    border-radius: 16px;
+  }
+
+  .pf-identity,
+  .pf-wallet {
+    min-height: 0;
+  }
+
+  .pf-identity .pf-form,
+  .pf-wallet .pf-tx {
+    margin-top: 16px;
+  }
+
+  .pf-identity-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .pf-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .pf-identity-copy {
+    width: 100%;
+  }
+
+  .pf-identity-head h2 {
+    font-size: 1.15rem;
+  }
+
+  .pf-email {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+
+  .pf-meta-line {
+    margin-top: 10px !important;
+    gap: 8px;
+  }
+
+  .pf-meta-line span:not(:last-child)::after {
+    display: none;
+  }
+
+  .pf-meta-line span {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.7rem;
+  }
+
+  .pf-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .pf-form-actions .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .pf-wallet-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .pf-balance {
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(245, 166, 35, 0.1);
+    border: 1px solid rgba(245, 166, 35, 0.22);
+  }
+
+  .pf-balance strong {
+    font-size: 1.7rem;
+  }
+
+  .pf-expiry {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .pf-rules {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .pf-rules div {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    min-height: 52px;
+  }
+
+  .pf-tx-row {
+    align-items: flex-start;
+  }
+
+  .pf-booking-top {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pf-booking-link {
+    align-self: flex-start;
+  }
+
+  .pf-booking-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pf-section-head h2 {
+    font-size: 1.2rem;
+  }
+
+  .pf-empty {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pf-empty .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .pf-rules {
+    grid-template-columns: 1fr;
+  }
+
+  .pf-form-actions {
+    grid-template-columns: 1fr;
+  }
+}

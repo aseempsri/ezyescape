@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { fetchWallet } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -37,9 +38,23 @@ export default function WalletModal({ open, onClose }) {
     return () => { active = false; };
   }, [open, user?.id]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div className="modal wallet-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-labelledby="wallet-title">
         <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
@@ -95,6 +110,7 @@ export default function WalletModal({ open, onClose }) {
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

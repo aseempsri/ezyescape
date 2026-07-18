@@ -215,7 +215,7 @@ nav#mainNav.solid {
 }
 .logo em { font-style:italic; color:var(--amber); }
 .nav-links {
-  display:flex; gap:36px; list-style:none; align-items:center;
+  display:flex; gap:22px; list-style:none; align-items:center;
 }
 .nav-links a {
   text-decoration:none;
@@ -933,6 +933,21 @@ nav#mainNav.solid {
 .honest-section .why-big-line {
   color: #f2a625;
 }
+.honest-section .honest-script {
+  display: inline-block;
+  font-family: 'Tangerine', cursive;
+  font-size: clamp(2rem, 5vw, 6rem);
+  color: #fff;
+  line-height: 1.05;
+  max-width: 100%;
+}
+.honest-section .honest-script em,
+.honest-section .honest-script .typewriter-cursor {
+  color: #fff !important;
+  font-style: normal;
+  font-weight: 400;
+  font-size: inherit !important;
+}
 .honest-grid {
   display:grid; grid-template-columns:1fr 1fr; gap:24px;
   margin-top:64px;
@@ -1099,6 +1114,37 @@ nav#mainNav.solid {
   line-height: inherit;
 }
 .why-desc { font-size: 1rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 32px; max-width: 420px; }
+.stays-script {
+  display: inline-block;
+  font-family: 'Tangerine', cursive;
+  font-size: clamp(4.8rem, 8.8vw, 8rem);
+  color: #111d2d;
+  line-height: 1.05;
+}
+
+.stays-script em,
+.stays-script .typewriter-cursor {
+  color: inherit !important;
+  font-style: normal;
+  font-weight: 400;
+  font-size: inherit !important;
+}
+
+.stories-script {
+  display: inline-block;
+  font-family: 'Tangerine', cursive;
+  font-size: clamp(4rem, 10vw, 12rem);
+  color: #fff;
+  line-height: 1.05;
+}
+
+.stories-script em,
+.stories-script .typewriter-cursor {
+  color: #fff !important;
+  font-style: normal;
+  font-weight: 400;
+  font-size: inherit !important;
+}
 .why-right { position: relative; }
 .compare-stack { position: relative; min-height: 500px; }
 .compare-card {

@@ -326,7 +326,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         title="7 · Image & video gallery"
         blurb="Main gallery, filmstrip, and photo mosaic. Reorder with ↑ ↓ — first image is the cover."
       >
-        <div className="admin-col-2">
+        <div className="admin-col-full">
           <MediaList
             label="Images"
             hint="Used for gallery, thumbnails, story visual, and mosaic."

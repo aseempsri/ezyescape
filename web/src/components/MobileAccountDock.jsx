@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import WalletModal from './WalletModal';
+import { profilePath } from '../utils/paths';
 
 export default function MobileAccountDock() {
-  const { user, loading, openAuth, openProfile } = useAuth();
+  const { user, loading, openAuth } = useAuth();
   const [walletOpen, setWalletOpen] = useState(false);
 
   if (loading) return null;
@@ -23,10 +24,9 @@ export default function MobileAccountDock() {
               <span className="mobile-account-coins-num">{user.ezyCoins ?? 0}</span>
               <span className="mobile-account-coins-label">coins</span>
             </button>
-            <button
-              type="button"
+            <a
+              href={profilePath()}
               className="mobile-account-avatar"
-              onClick={openProfile}
               title="Your profile"
               aria-label="Open profile"
             >
@@ -35,7 +35,7 @@ export default function MobileAccountDock() {
               ) : (
                 <span aria-hidden="true">{(user.name || user.email || '?').charAt(0).toUpperCase()}</span>
               )}
-            </button>
+            </a>
           </>
         ) : (
           <button

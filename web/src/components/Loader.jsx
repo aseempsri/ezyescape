@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { animateLogoToHero } from '../utils/mobileLogoFly';
 import assetUrl from '../utils/assetUrl';
+import { hasSeenSplash, markSplashDone } from '../utils/splash';
 
 let loaderFinishCalled = false;
 
@@ -9,11 +10,21 @@ function notifyPageReady() {
 }
 
 export default function Loader({ onHeroReady, onDone }) {
+  const skipSplash = hasSeenSplash();
   const [reveal, setReveal] = useState(false);
   const [done, setDone] = useState(false);
   const [pct, setPct] = useState(0);
 
   useEffect(() => {
+    if (!skipSplash) return;
+    onHeroReady?.();
+    onDone?.();
+    notifyPageReady();
+  }, [skipSplash, onHeroReady, onDone]);
+
+  useEffect(() => {
+    if (skipSplash) return undefined;
+
     const t1 = setTimeout(() => setReveal(true), 50);
     const iv = setInterval(() => {
       setPct((p) => Math.min(p + Math.random() * 18, 99));
@@ -30,6 +41,7 @@ export default function Loader({ onHeroReady, onDone }) {
         animateLogoToHero({
           onStart: onHeroReady,
           onComplete: () => {
+            markSplashDone();
             setDone(true);
             onDone?.();
             notifyPageReady();
@@ -47,7 +59,9 @@ export default function Loader({ onHeroReady, onDone }) {
       clearTimeout(fallback);
       window.removeEventListener('load', finish);
     };
-  }, [onHeroReady, onDone]);
+  }, [skipSplash, onHeroReady, onDone]);
+
+  if (skipSplash) return null;
 
   return (
     <div id="loader" className={`${reveal ? 'reveal' : ''}${done ? ' done' : ''}`}>

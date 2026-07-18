@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import Cursor from './Cursor';
-import useCustomCursor from '../hooks/useCustomCursor';
+import { useEffect, useMemo, useState } from 'react';
+import SiteChrome from './SiteChrome';
+import Typewriter from './Typewriter';
 import { fetchStays } from '../lib/api';
 import {
   FALLBACK_STAYS,
@@ -8,25 +8,63 @@ import {
   normalizeApiStay,
   stayMatchesFilter,
 } from '../utils/stays';
-import { appPath, goHome, goStay } from '../utils/paths';
+import { goStay, homeSectionPath, storiesPath } from '../utils/paths';
 import assetUrl from '../utils/assetUrl';
-import '../styles/index.css';
-import '../styles/hero-nav.css';
-import '../styles/mobile.css';
-import '../styles/stay-page.css';
 import '../styles/homestays-page.css';
+
+function StayTile({ stay, featured = false }) {
+  return (
+    <article
+      className={`hs-tile${featured ? ' hs-tile--feature' : ''}`}
+      role="link"
+      tabIndex={0}
+      onClick={() => goStay(stay.slug || stay.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goStay(stay.slug || stay.id);
+        }
+      }}
+    >
+      <div
+        className="hs-tile-visual"
+        style={{ backgroundImage: `url('${stay.image}')` }}
+      >
+        <div className="hs-tile-shade" />
+        <div className="hs-tile-chips">
+          <span>{stay.guest} adults</span>
+          <span>{stay.rooms} rooms</span>
+        </div>
+        {featured && (
+          <div className="hs-tile-feature-copy">
+            <p className="hs-tile-loc">{stay.location}</p>
+            <h2>{stay.title}</h2>
+          </div>
+        )}
+      </div>
+      <div className="hs-tile-body">
+        {!featured && (
+          <>
+            <p className="hs-tile-loc">{stay.location}</p>
+            <h2>{stay.title}</h2>
+          </>
+        )}
+        <p className="hs-tile-price">
+          {stay.disPrice ? <del>₹ {stay.disPrice}</del> : null}
+          <strong>₹ {stay.price}</strong>
+          <span>/ night</span>
+        </p>
+        {stay.best ? <p className="hs-tile-best">{stay.best}</p> : null}
+        <span className="hs-tile-cta">View stay →</span>
+      </div>
+    </article>
+  );
+}
 
 export default function HomestaysPage() {
   const [filter, setFilter] = useState('all');
   const [stays, setStays] = useState(FALLBACK_STAYS);
   const [loading, setLoading] = useState(true);
-
-  useCustomCursor();
-
-  useEffect(() => {
-    document.title = 'Homestays — Ezy Escape';
-    return () => { document.title = 'Ezy Escape — Curated Mountain Homestays'; };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -43,104 +81,104 @@ export default function HomestaysPage() {
     return () => { active = false; };
   }, []);
 
+  const visible = useMemo(
+    () => stays.filter((s) => stayMatchesFilter(s.cat, filter)),
+    [stays, filter],
+  );
+
+  const featured = filter === 'all' && visible.length > 0 ? visible[0] : null;
+  const rest = featured ? visible.slice(1) : visible;
+
   return (
-    <div className="homestays-page">
-      <Cursor />
-      <header className="stay-page-nav">
-        <a
-          href={appPath()}
-          className="stay-page-logo"
-          onClick={(e) => { e.preventDefault(); goHome(); }}
-        >
-          <img
-            src={assetUrl('images/logo.png')}
-            alt="Ezy Escape"
-            onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }}
-          />
-        </a>
-        <a href={appPath()} className="stay-page-back" onClick={(e) => { e.preventDefault(); goHome(); }}>
-          ← Home
-        </a>
-      </header>
+    <SiteChrome title="Homestays — Ezy Escape">
+      <section
+        className="sp-hero sp-hero--homestays"
+        style={{ backgroundImage: `url('${assetUrl('images/ju.png')}')` }}
+      >
+        <div className="sp-hero-veil" aria-hidden="true" />
+        <div className="container sp-hero-inner">
+          <p className="sp-eyebrow">Curated collection</p>
+          <h1 className="sp-title">
+            <span className="sp-title-line">Every home has a story.</span>
+            <br />
+            <span className="sp-title-script">
+              <Typewriter text="Find the one that fits you." className="typewriter-cursor" speed={90} />
+            </span>
+          </h1>
+          <p className="sp-lead">
+            Browse mountain homes matched by pace, place, and people — not by star ratings.
+          </p>
+          <div className="sp-hero-actions">
+            <a href={homeSectionPath('quiz')} className="btn btn-amber">
+              Match My Stay →
+            </a>
+          </div>
+        </div>
+      </section>
 
-      <div className="homestays-hero">
-        <p className="homestays-eyebrow">Curated Collection</p>
-        <h1>Homestays</h1>
-        <p className="homestays-sub">
-          Every home has a story. Browse the full collection and filter by the kind of escape you want.
-        </p>
-      </div>
+      <section className="sp-section hs-section">
+        <div className="container">
+          <div className="hs-toolbar">
+            <div className="sp-section-head hs-toolbar-copy">
+              <p className="sp-eyebrow">Homestays</p>
+              <h2>
+                {loading
+                  ? 'Loading stays…'
+                  : `${visible.length} home${visible.length === 1 ? '' : 's'}${filter === 'all' ? ' in the hills' : ` · ${STAY_FILTERS.find((f) => f.id === filter)?.label || ''}`}`}
+              </h2>
+            </div>
+            <div className="hs-filters" role="tablist" aria-label="Filter homestays">
+              {STAY_FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === f.id}
+                  className={`hs-filter${filter === f.id ? ' is-on' : ''}`}
+                  onClick={() => setFilter(f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      <div className="homestays-filters" role="tablist" aria-label="Filter homestays">
-        {STAY_FILTERS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            role="tab"
-            aria-selected={filter === f.id}
-            className={`s-filter${filter === f.id ? ' on' : ''}`}
-            onClick={() => setFilter(f.id)}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+          {!loading && visible.length === 0 && (
+            <p className="hs-empty">No homes match this filter yet. Try All, or take the quiz.</p>
+          )}
 
-      {loading && <p className="homestays-status">Loading stays…</p>}
+          {featured && (
+            <div className="hs-feature-wrap">
+              <StayTile stay={featured} featured />
+            </div>
+          )}
 
-      <div className="homestays-grid">
-        {stays.map((stay) => {
-          const active = stayMatchesFilter(stay.cat, filter);
-          return (
-            <article
-              key={stay.id}
-              className={`homestay-card${active ? '' : ' is-dimmed'}`}
-              role="link"
-              tabIndex={active ? 0 : -1}
-              aria-disabled={!active}
-              onClick={() => { if (active) goStay(stay.slug || stay.id); }}
-              onKeyDown={(e) => {
-                if (!active) return;
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  goStay(stay.slug || stay.id);
-                }
-              }}
-            >
-              <div
-                className="homestay-card-img"
-                style={{ backgroundImage: `url('${stay.image}')` }}
-              >
-                <div className="homestay-card-overlay" />
-                <div className="homestay-card-tags">
-                  <span className="s-tag">{stay.guest} Adults</span>
-                  <span className="s-tag">{stay.rooms} Rooms</span>
-                </div>
-              </div>
-              <div className="homestay-card-body">
-                <p className="homestay-card-loc">{stay.location}</p>
-                <h2>{stay.title}</h2>
-                <p className="homestay-card-price">
-                  {stay.disPrice ? <del>₹ {stay.disPrice}</del> : null}
-                  <strong>₹ {stay.price}</strong>
-                  <span>/ night</span>
-                </p>
-                {stay.best && <p className="homestay-card-best">{stay.best}</p>}
-                <span className="homestay-card-cta">View stay →</span>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+          <div className="hs-mosaic">
+            {rest.map((stay) => (
+              <StayTile key={stay.id} stay={stay} />
+            ))}
+          </div>
 
-      {!loading && stays.length === 0 && (
-        <p className="homestays-status">No homestays listed yet.</p>
-      )}
+          <div className="hs-footnote">
+            <p>
+              Not sure which pace fits you?{' '}
+              <a href={homeSectionPath('quiz')}>Take the match quiz</a>
+              {' '}— we’ll point you to the right home.
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <p className="homestays-footnote">
-        Looking for something specific?{' '}
-        <a href={appPath('#quiz')}>Take the match quiz</a>.
-      </p>
-    </div>
+      <section className="sp-cta-band">
+        <div className="container sp-cta-band-inner">
+          <h2>Still deciding?</h2>
+          <p>Tell us how you travel. We’ll match a mountain home to your vibe.</p>
+          <div className="sp-hero-actions">
+            <a href={homeSectionPath('quiz')} className="btn btn-amber">Match My Stay →</a>
+            <a href={storiesPath()} className="btn btn-ghost">Read guest stories</a>
+          </div>
+        </div>
+      </section>
+    </SiteChrome>
   );
 }

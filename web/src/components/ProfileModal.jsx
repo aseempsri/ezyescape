@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { profilePath } from '../utils/paths';
 
 export default function ProfileModal({ open, onClose }) {
   const { user, updateProfile, signOut } = useAuth();
@@ -79,6 +80,9 @@ export default function ProfileModal({ open, onClose }) {
               {needsMobile
                 ? 'Add your mobile number so we can reach you about your bookings.'
                 : 'Update your details any time.'}
+            </p>
+            <p className="auth-reason" style={{ marginTop: -8 }}>
+              <a href={profilePath()}>Open full profile →</a>
             </p>
 
             {error && <p className="auth-error">{error}</p>}

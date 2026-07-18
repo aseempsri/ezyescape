@@ -14,6 +14,31 @@ export function stayPath(slugOrId) {
   return appPath(`stays/${encodeURIComponent(slugOrId)}`);
 }
 
+export function partnerPath() {
+  return appPath('partner');
+}
+
+export function storiesPath() {
+  return appPath('stories');
+}
+
+export function shopPath() {
+  return appPath('shop');
+}
+
+export function contactPath() {
+  return appPath('contact');
+}
+
+export function profilePath() {
+  return appPath('profile');
+}
+
+/** Homepage section anchors that work from any route. */
+export function homeSectionPath(sectionId) {
+  return `${appPath()}#${sectionId}`;
+}
+
 export function goHome() {
   window.location.assign(appPath());
 }

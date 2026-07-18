@@ -413,6 +413,19 @@
   }
 }
 
+@media (max-width: 768px) {
+  .immersion-tile-emoji,
+  .immersion-hero-emoji,
+  .immersion-chip-emoji {
+    display: none;
+  }
+
+  /* Mosaic of all 6 experiences is desktop-only; mobile keeps hero + rail */
+  .immersion-gallery {
+    display: none !important;
+  }
+}
+
 @media (max-width: 560px) {
   .immersion-section {
     padding: 64px 0 80px;

@@ -1,7 +1,8 @@
 import { useAuth } from '../context/AuthContext';
+import { profilePath } from '../utils/paths';
 
-export default function AuthButton({ compact = false }) {
-  const { user, loading, openAuth, openProfile, signOut } = useAuth();
+export default function AuthButton({ compact = false, hideSignOut = false }) {
+  const { user, loading, openAuth, signOut } = useAuth();
 
   if (loading) {
     return <span className="auth-btn auth-btn--ghost" aria-busy="true">…</span>;
@@ -9,8 +10,8 @@ export default function AuthButton({ compact = false }) {
 
   if (user) {
     return (
-      <div className={`auth-user${compact ? ' auth-user--compact' : ''}`}>
-        <button type="button" className="auth-user-btn" onClick={openProfile} title="Edit profile">
+      <div className={`auth-user${compact ? ' auth-user--compact' : ''}${hideSignOut ? ' auth-user--avatar-only' : ''}`}>
+        <a href={profilePath()} className="auth-user-btn" title="Your profile">
           {user.avatar ? (
             <img src={user.avatar} alt="" className="auth-avatar" />
           ) : (
@@ -19,10 +20,12 @@ export default function AuthButton({ compact = false }) {
             </span>
           )}
           {!compact && <span className="auth-name">{user.name || user.email}</span>}
-        </button>
-        <button type="button" className="auth-btn auth-btn--ghost" onClick={signOut}>
-          Sign out
-        </button>
+        </a>
+        {!hideSignOut && (
+          <button type="button" className="auth-btn auth-btn--ghost" onClick={signOut}>
+            Sign out
+          </button>
+        )}
       </div>
     );
   }

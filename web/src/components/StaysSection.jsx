@@ -90,8 +90,8 @@ export default function StaysSection() {
             <div className="eyebrow" style={{ color: '#101e2c' }}>Curated Collection</div>
             <h2 className="why-big-text" data-reveal>
               Not Just Rooms <br />
-              <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(4.4vw,4.4vw,4.4vw)', color: '#111d2d' }}>
-                <em id="typewriter-2" className="typewriter-cursor" style={{ color: '#111d2d' }}>
+              <span className="why-script-line stays-script">
+                <em id="typewriter-2" className="typewriter-cursor">
                   <Typewriter text="Homes with stories" className="" style={{ fontStyle: 'normal' }} />
                 </em>
               </span>

@@ -1,142 +1,189 @@
-/* Homestays listing page */
-.homestays-page {
-  min-height: 100svh;
-  background:
-    radial-gradient(ellipse at top left, rgba(245, 166, 35, 0.1), transparent 40%),
-    linear-gradient(180deg, #0b1420 0%, #101e2c 45%, #0b1420 100%);
-  color: rgba(255, 255, 255, 0.92);
-  padding-bottom: 72px;
+/* Homestays — cinematic listing (aligned with Stories / Shop / Partner) */
+
+.hs-section {
+  padding-top: 48px;
 }
 
-.homestays-hero {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 36px clamp(16px, 4vw, 40px) 8px;
-}
-
-.homestays-eyebrow {
-  margin: 0 0 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--amber, #f5a623);
-}
-
-.homestays-hero h1 {
-  margin: 0 0 10px;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  line-height: 1.1;
-}
-
-.homestays-sub {
-  margin: 0;
-  max-width: 42rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.55;
-  font-size: 1rem;
-}
-
-.homestays-filters {
+.hs-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  max-width: 1100px;
-  margin: 22px auto 28px;
-  padding: 0 clamp(16px, 4vw, 40px);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px 24px;
+  margin-bottom: 28px;
 }
 
-.homestays-filters .s-filter {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.hs-toolbar-copy {
+  margin-bottom: 0;
 }
 
-.homestays-filters .s-filter:hover,
-.homestays-filters .s-filter.on {
+.hs-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hs-filter {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(237, 232, 225, 0.78);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.hs-filter:hover {
+  border-color: rgba(245, 166, 35, 0.45);
+  color: #fff;
+}
+
+.hs-filter.is-on {
   background: var(--amber, #f5a623);
-  color: #101e2c;
   border-color: var(--amber, #f5a623);
+  color: #101e2c;
 }
 
-.homestays-grid {
+.hs-feature-wrap {
+  margin-bottom: 18px;
+}
+
+.hs-mosaic {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 clamp(16px, 4vw, 40px);
+  gap: 18px;
 }
 
-.homestay-card {
+.hs-tile {
   display: flex;
   flex-direction: column;
-  border-radius: 20px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  transition: opacity 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+  text-align: left;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  transition: transform 0.35s ease;
 }
 
-.homestay-card:hover:not(.is-dimmed) {
-  transform: translateY(-6px);
-  border-color: rgba(245, 166, 35, 0.4);
+.hs-tile:focus-visible {
+  outline: 2px solid var(--amber, #f5a623);
+  outline-offset: 4px;
 }
 
-.homestay-card.is-dimmed {
-  opacity: 0.28;
-  filter: grayscale(0.35);
-  pointer-events: none;
-  cursor: default;
+.hs-tile:hover {
+  transform: translateY(-4px);
 }
 
-.homestay-card-img {
+.hs-tile-visual {
   position: relative;
   aspect-ratio: 4 / 3;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 18px;
 }
 
-.homestay-card-overlay {
+.hs-tile--feature .hs-tile-visual {
+  aspect-ratio: 21 / 9;
+  min-height: 280px;
+}
+
+.hs-tile-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 45%, rgba(6, 12, 21, 0.55) 100%);
-}
-
-.homestay-card-tags {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  display: flex;
-  gap: 6px;
+  background:
+    linear-gradient(180deg, transparent 35%, rgba(7, 13, 22, 0.72) 100%),
+    linear-gradient(90deg, rgba(7, 13, 22, 0.35), transparent 55%);
   z-index: 1;
 }
 
-.homestay-card-body {
+.hs-tile-chips {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hs-tile--feature .hs-tile-chips {
+  bottom: auto;
+  top: 16px;
+}
+
+.hs-tile-chips span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(7, 13, 22, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+
+.hs-tile-feature-copy {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2;
+  max-width: 36rem;
+}
+
+.hs-tile-feature-copy h2 {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.hs-tile-body {
+  padding: 14px 2px 4px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 16px 16px 18px;
 }
 
-.homestay-card-loc {
+.hs-tile--feature .hs-tile-body {
+  padding-top: 16px;
+  max-width: 40rem;
+}
+
+.hs-tile-loc {
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   font-size: 0.68rem;
   font-weight: 700;
   color: var(--amber, #f5a623);
 }
 
-.homestay-card-body h2 {
+.hs-tile-body h2 {
   margin: 0;
-  font-size: 1.15rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 1.2rem;
   line-height: 1.25;
   color: #fff;
 }
 
-.homestay-card-price {
+.hs-tile-price {
   margin: 2px 0 0;
   display: flex;
   align-items: baseline;
@@ -144,71 +191,96 @@
   flex-wrap: wrap;
 }
 
-.homestay-card-price del {
+.hs-tile-price del {
   color: rgba(255, 255, 255, 0.4);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
-.homestay-card-price strong {
+.hs-tile-price strong {
   font-size: 1.05rem;
   color: #fff;
 }
 
-.homestay-card-price span {
+.hs-tile-price span {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
-.homestay-card-best {
-  margin: 2px 0 0;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 0.82rem;
-  line-height: 1.4;
+.hs-tile-best {
+  margin: 0;
+  color: rgba(237, 232, 225, 0.58);
+  font-size: 0.84rem;
+  line-height: 1.45;
 }
 
-.homestay-card-cta {
-  margin-top: 8px;
+.hs-tile-cta {
+  margin-top: 4px;
   color: var(--amber, #f5a623);
   font-size: 0.85rem;
   font-weight: 700;
 }
 
-.homestays-status,
-.homestays-footnote {
-  max-width: 1100px;
-  margin: 28px auto 0;
-  padding: 0 clamp(16px, 4vw, 40px);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+.hs-tile:hover .hs-tile-cta {
+  text-shadow: 0 0 16px rgba(245, 166, 35, 0.45);
 }
 
-.homestays-footnote a {
+.hs-empty,
+.hs-footnote {
+  color: rgba(237, 232, 225, 0.62);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.hs-footnote {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hs-footnote a {
   color: var(--amber, #f5a623);
+  text-decoration: none;
+}
+
+.hs-footnote a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 960px) {
-  .homestays-grid {
+  .hs-mosaic {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hs-tile--feature .hs-tile-visual {
+    aspect-ratio: 16 / 10;
+    min-height: 220px;
   }
 }
 
 @media (max-width: 560px) {
-  .homestays-grid {
+  .hs-mosaic {
     grid-template-columns: 1fr;
   }
 
-  .homestays-filters {
+  .hs-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 6px;
+    max-width: 100%;
+    padding-bottom: 4px;
     scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 90%, transparent);
   }
 
-  .homestays-filters::-webkit-scrollbar {
+  .hs-filters::-webkit-scrollbar {
     display: none;
   }
 
-  .homestays-filters .s-filter {
+  .hs-filter {
     flex: 0 0 auto;
+  }
+
+  .hs-tile--feature .hs-tile-visual {
+    aspect-ratio: 5 / 4;
+    min-height: 200px;
   }
 }

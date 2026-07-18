@@ -11,13 +11,14 @@ import ImmersionSection from './components/ImmersionSection';
 import StaysSection from './components/StaysSection';
 import Footer from './components/Footer';
 import MobileBar from './components/MobileBar';
-import MobileAccountDock from './components/MobileAccountDock';
 import useCustomCursor from './hooks/useCustomCursor';
 import useScrollNav from './hooks/useScrollNav';
 import useReveal from './hooks/useReveal';
 import useCounterAnimation from './hooks/useCounterAnimation';
 import assetUrl from './utils/assetUrl';
 import { whatsappChatUrl } from './utils/whatsapp';
+import { storiesPath } from './utils/paths';
+import { hasSeenSplash } from './utils/splash';
 import './styles/index.css';
 import './styles/mobile.css';
 import './styles/hero-nav.css';
@@ -46,7 +47,7 @@ function CompareStack({ badLabel, goodLabel, badItems, goodItems, minHeight }) {
 }
 
 export default function App() {
-  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [heroLoaded, setHeroLoaded] = useState(() => hasSeenSplash());
   const handleHeroReady = useCallback(() => setHeroLoaded(true), []);
 
   useCustomCursor();
@@ -73,7 +74,6 @@ export default function App() {
       <Cursor />
       <Grain />
       <Loader onHeroReady={handleHeroReady} />
-      <MobileAccountDock />
       <Nav />
 
       <section className={`hero${heroLoaded ? ' loaded' : ''}`} id="heroSection">
@@ -87,7 +87,11 @@ export default function App() {
         <div className="hero-shade" />
         <div className="hero-fog" />
 
-        <a href="#" className="hero-mobile-logo" aria-label="Ezy Escape home">
+        <a
+          href="#"
+          className={`hero-mobile-logo${heroLoaded ? ' hero-mobile-logo--landed' : ''}`}
+          aria-label="Ezy Escape home"
+        >
           <img src={assetUrl('images/logo.png')} alt="Ezy Escape" />
         </a>
 
@@ -222,8 +226,8 @@ export default function App() {
               <h2 className="why-big-text" data-reveal>
                 <span className="why-big-line">We are not</span>
                 <br />
-                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)', color: '#fff' }}>
-                  <em id="typewriter-3" className="typewriter-cursor" style={{ color: '#fff' }}>
+                <span className="why-script-line honest-script">
+                  <em id="typewriter-3" className="typewriter-cursor">
                     <Typewriter text="for everyone." className="" style={{ fontStyle: 'normal', color: '#fff' }} />
                   </em>
                 </span>
@@ -232,8 +236,9 @@ export default function App() {
                 The right guest matters to us as much as the right stay matters to you. So we say this plainly.
               </p>
               <Magnetic>
-                <a href="#quiz" className="btn btn-amber" data-reveal style={{ fontSize: '1rem' }}>
-                  This sounds like me — Match My Stay <span className="btn-arrow">→</span>
+                <a href="#quiz" className="btn btn-amber honest-cta" data-reveal>
+                  <span className="honest-cta-text">This sounds like me — Match My Stay</span>
+                  <span className="btn-arrow" aria-hidden="true">→</span>
                 </a>
               </Magnetic>
             </div>
@@ -301,8 +306,8 @@ export default function App() {
               <div className="eyebrow" style={{ color: '#fff' }}>Guest Stories</div>
               <h2 className="why-big-text" data-reveal>
                 Guests come for the mountains. <br />
-                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)', color: '#fff' }}>
-                  <em id="typewriter-7" className="typewriter-cursor" style={{ color: '#fff' }}>
+                <span className="why-script-line stories-script">
+                  <em id="typewriter-7" className="typewriter-cursor">
                     <Typewriter text="They remember the people." className="" style={{ fontStyle: 'normal', color: '#fff' }} />
                   </em>
                 </span>
@@ -331,6 +336,11 @@ export default function App() {
             </div>
             <div className="testimonials-dots" aria-hidden="true">
               <span /><span /><span />
+            </div>
+            <div style={{ textAlign: 'center', marginTop: 28 }} data-reveal="up">
+              <a href={storiesPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
+                Read more stories <span className="btn-arrow">→</span>
+              </a>
             </div>
           </div>
         </div>
