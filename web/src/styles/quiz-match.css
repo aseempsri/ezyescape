@@ -67,7 +67,7 @@
 
 .match-intro-script {
   font-family: 'Tangerine', cursive;
-  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  font-size: clamp(2.6rem, 5.46vw, 4.16rem);
   color: #fff;
   display: inline-block;
   line-height: 1;
@@ -556,7 +556,7 @@
   }
 
   .match-intro-script {
-    font-size: 1.85rem;
+    font-size: 2.4rem;
   }
 
   .match-opt-text {
