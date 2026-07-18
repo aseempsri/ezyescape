@@ -27,7 +27,7 @@ export default function useCustomCursor() {
 
     const onOver = (e) => {
       const interactive = e.target.closest(
-        'a, button, .stay-card, .homestay-card, .match-opt, .persona-card, .p-card, .maker-card, .q-opt, .filter-tab, .s-filter, .b-cell, .immersion-chip, .immersion-tile, .t-card, .compare-col, .cm-card, .faq-item, .form-input, .pt-card, .ms-card, .type-card, .mag, .stay-hero-thumb, .stay-photo-tile'
+        'a, button, .stay-card, .homestay-card, .match-opt, .persona-card, .p-card, .maker-card, .q-opt, .filter-tab, .s-filter, .b-cell, .t-card, .compare-col, .cm-card, .faq-item, .form-input, .pt-card, .ms-card, .type-card, .mag, .stay-hero-thumb, .stay-photo-tile'
       );
       document.body.classList.toggle('hov', !!interactive);
       document.body.classList.toggle('hovering', !!interactive);
