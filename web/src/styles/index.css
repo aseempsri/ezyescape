@@ -900,51 +900,16 @@ nav.solid {
   pointer-events:none; user-select:none;
 }
 .honest-section .honest-left {
-  margin-top: 0;
-  padding-right: 12px;
-  align-self: center;
+  margin-top: 20px;
+  padding-right: 8px;
 }
 .honest-section .honest-layout {
-  align-items: center;
-  gap: 48px;
+  align-items: start;
+  gap: 56px;
 }
-.honest-section .honest-layout .why-right {
-  align-self: center;
-}
-/* Stack cards in a content-sized overlap so vertical centering matches the text. */
-.honest-section .compare-stack {
-  display: grid;
-  grid-template-columns: 1fr;
-  min-height: 0;
-  height: auto;
-  padding: 0;
-}
-.honest-section .compare-card {
-  position: relative;
-  grid-area: 1 / 1;
-  width: auto;
-  top: auto;
-  left: auto;
-}
-.honest-section .compare-card.bad {
-  z-index: 1;
-  transform: rotate(-2.5deg);
-  margin: 0 28px 48px 0;
-  align-self: start;
-  justify-self: start;
-  width: calc(100% - 28px);
-}
-.honest-section .compare-card.good {
-  z-index: 2;
-  transform: none;
-  margin: 52px 0 0 22px;
-  align-self: start;
-  justify-self: stretch;
-  width: calc(100% - 22px);
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.35);
-}
-.honest-section .compare-card:hover {
-  transform: translateY(-4px) !important;
+.honest-section .honest-layout .compare-stack {
+  min-height: 400px;
+  margin-top: 0;
 }
 .honest-section .honest-desc {
   color: rgba(237, 232, 225, 0.72);

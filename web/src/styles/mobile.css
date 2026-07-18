@@ -180,23 +180,8 @@
     gap: 36px !important;
   }
   .why-left { margin-top: 0 !important; }
-  .honest-section .honest-left { margin-top: 0 !important; align-self: stretch !important; }
-  .honest-section .honest-layout { gap: 28px !important; align-items: stretch !important; }
-  .honest-section .compare-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 14px !important;
-    min-height: auto !important;
-  }
-  .honest-section .compare-card {
-    position: relative !important;
-    grid-area: auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-    transform: none !important;
-  }
-  .honest-section .compare-card.bad { order: 1; }
-  .honest-section .compare-card.good { order: 2; }
+  .honest-section .honest-left { margin-top: 0 !important; }
+  .honest-section .honest-layout { gap: 36px !important; }
   .quiz-left-intro { padding-top: 0 !important; }
 
   /* ─── COMPARE CARDS — vertical stack ─── */
