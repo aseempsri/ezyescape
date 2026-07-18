@@ -78,11 +78,13 @@ export default function InlineQuiz() {
         </div>
         <div className="match-result-body">
           <p className="match-result-desc">{res.d}</p>
-          <div className="match-result-tags">
-            {res.tags.map((t) => (
-              <span key={t} className="match-result-tag">{t}</span>
-            ))}
-          </div>
+          {res.tags?.length > 0 && (
+            <div className="match-result-tags">
+              {res.tags.map((t) => (
+                <span key={t} className="match-result-tag">{t}</span>
+              ))}
+            </div>
+          )}
           <div className="match-result-actions">
             <Magnetic>
               <a href={staysIndexPath()} className="btn btn-amber">
