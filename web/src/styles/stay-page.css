@@ -296,11 +296,13 @@
   position: relative;
   z-index: 1;
   display: flex;
+  align-items: center;
   gap: 10px;
   overflow-x: auto;
+  overflow-y: visible;
   max-width: 1240px;
   margin: 18px auto 0;
-  padding-bottom: 6px;
+  padding: 8px 2px 10px;
   scrollbar-width: none;
 }
 
@@ -320,14 +322,13 @@
   background: #0a121c;
   box-sizing: border-box;
   opacity: 0.85;
-  transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease, border-color 0.25s ease;
 }
 
 .stay-film-frame.is-active,
 .stay-film-frame:hover {
   opacity: 1;
   border-color: var(--amber, #f5a623);
-  transform: translateY(-2px);
 }
 
 .stay-film-frame:focus,
