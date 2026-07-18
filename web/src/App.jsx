@@ -263,38 +263,6 @@ export default function App() {
         </div>
       </section>
 
-      <section className="how-section" style={{ paddingTop: 60, paddingBottom: 150 }}>
-        <div className="container">
-          <div className="w">
-            <div data-reveal="up" style={{ textAlign: 'center' }}>
-              <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="line" />How It Works<span className="line" /></div>
-              <h2 className="why-big-text" data-reveal>
-                From quiz to <br />
-                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(4.4vw,4.4vw,4.4vw)', color: '#fff' }}>
-                  <em id="typewriter-4" className="typewriter-cursor" style={{ color: '#111d2d' }}>
-                    <Typewriter text="mountain morning." className="" style={{ fontStyle: 'normal', color: '#111d2d' }} />
-                  </em>
-                </span>
-              </h2>
-            </div>
-            <div className="how-steps">
-              {[
-                { n: 1, t: 'Tell us how you travel', d: 'Answer a few honest questions about comfort, food, access and what kind of experience you\'re looking for.' },
-                { n: 2, t: 'Get matched with homes', d: 'We suggest homestays that fit your personality and expectations — not just your budget filter.' },
-                { n: 3, t: 'Talk to a trip curator', d: 'A human helps you understand the stay honestly before you commit to anything.' },
-                { n: 4, t: 'Arrive. Belong. Leave different.', d: 'Come as a guest. Leave with stories, a host family, and a relationship with the mountains that lasts.' },
-              ].map((s, i) => (
-                <div key={s.n} className="how-step" data-reveal="up" data-delay={String(i + 1)}>
-                  <div className="step-dot">{s.n}</div>
-                  <div className="step-title">{s.t}</div>
-                  <p className="step-desc">{s.d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section
         className="exp-section"
         id="experiences"
