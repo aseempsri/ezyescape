@@ -20,6 +20,7 @@ import { whatsappChatUrl } from './utils/whatsapp';
 import './styles/index.css';
 import './styles/mobile.css';
 import './styles/hero-nav.css';
+import './styles/quiz-match.css';
 
 const HERO_BG = assetUrl('images/ju.png');
 const EXP_BG = assetUrl('images/bg.png');
@@ -180,34 +181,30 @@ export default function App() {
         </div>
       </section>
 
-      <section className="quiz-section" id="quiz">
-        <div className="container">
-          <div className="why-grid">
-            <div className="why-left">
-              <div data-reveal="up" className="quiz-left-intro" style={{ textAlign: 'left' }}>
-                <div className="eyebrow" style={{ justifyContent: 'flex-start', color: '#fff' }}>
-                  <span className="line" />Mountain Matchmaker<span className="line" />
-                </div>
-                <h2 className="why-big-text" data-reveal>
-                  Know your vibe. <br />
-                  <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)', color: '#fff' }}>
-                    <em id="typewriter-1" className="typewriter-cursor" style={{ color: '#fff' }}>
-                      <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
-                    </em>
-                  </span>
-                </h2>
-                <p className="sec-sub" style={{ margin: '16px auto 0', textAlign: 'left', color: '#fff' }}>
-                  Five honest questions. We suggest homes that actually suit how you travel.
-                </p>
-              </div>
+      <section className="quiz-section match-section" id="quiz">
+        <div className="match-section-bg" aria-hidden="true" />
+        <div className="match-section-veil" aria-hidden="true" />
+        <div className="container match-section-inner">
+          <header className="match-intro" data-reveal="up">
+            <div className="eyebrow" style={{ justifyContent: 'center', color: '#fff' }}>
+              <span className="line" />Mountain Matchmaker<span className="line" />
             </div>
-            <div className="why-right">
-              <div className="quiz-wrap" data-reveal="up" data-delay="2">
-                <div className="quiz-card" id="quizCard">
-                  <InlineQuiz />
-                </div>
-              </div>
-            </div>
+            <h2 className="why-big-text match-intro-title" data-reveal>
+              <span className="why-big-line">Know your vibe.</span>
+              <br />
+              <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2.4rem,6vw,5.2rem)', color: '#fff' }}>
+                <em id="typewriter-1" className="typewriter-cursor" style={{ color: '#fff' }}>
+                  <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
+                </em>
+              </span>
+            </h2>
+            <p className="match-intro-sub">
+              Five honest questions. Atmosphere shifts with every answer — then we point you toward homes that fit how you actually travel.
+            </p>
+          </header>
+
+          <div className="match-wrap" data-reveal="up" data-delay="2">
+            <InlineQuiz />
           </div>
         </div>
       </section>

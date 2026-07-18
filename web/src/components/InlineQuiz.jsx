@@ -1,41 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QUESTIONS, RESULTS, tallyAnswers } from '../data/quiz';
 import Magnetic from './Magnetic';
+import { staysIndexPath } from '../utils/paths';
+import { whatsappChatUrl } from '../utils/whatsapp';
 
 export default function InlineQuiz() {
   const [cur, setCur] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [sel, setSel] = useState(null);
   const [done, setDone] = useState(false);
-  const [panelStyle, setPanelStyle] = useState({});
+  const [anim, setAnim] = useState('in');
 
-  const updatePips = () =>
-    QUESTIONS.map((_, i) => {
-      if (i < cur) return 'done';
-      if (i === cur) return 'active';
-      return '';
-    });
+  const q = QUESTIONS[cur];
+  const progress = ((cur + (sel ? 0.35 : 0)) / QUESTIONS.length) * 100;
 
-  const finish = () => {
+  useEffect(() => {
+    const section = document.getElementById('quiz');
+    if (!section || !q?.scene) return;
+    section.style.setProperty('--quiz-scene', `url('${q.scene}')`);
+  }, [q]);
+
+  const goNext = () => {
     if (!sel) return;
     const next = [...answers, sel];
-    if (cur >= QUESTIONS.length - 1) {
-      setAnswers(next);
-      setPanelStyle({ opacity: 0, transform: 'translateX(-30px)' });
-      setTimeout(() => setDone(true), 350);
-    } else {
-      setAnswers(next);
-      setPanelStyle({ opacity: 0, transform: 'translateX(-24px)' });
-      setTimeout(() => {
+    setAnim('out');
+    window.setTimeout(() => {
+      if (cur >= QUESTIONS.length - 1) {
+        setAnswers(next);
+        setDone(true);
+        setAnim('in');
+        const section = document.getElementById('quiz');
+        const vibe = RESULTS[tallyAnswers(next)] || RESULTS.mixed;
+        if (section && vibe.img) {
+          section.style.setProperty('--quiz-scene', `url('${vibe.img}')`);
+        }
+      } else {
+        setAnswers(next);
         setCur((c) => c + 1);
         setSel(null);
-        setPanelStyle({ transform: 'translateX(24px)' });
-        requestAnimationFrame(() => {
-          setPanelStyle({ opacity: 1, transform: 'none', transition: 'opacity .35s, transform .35s' });
-          setTimeout(() => setPanelStyle({}), 400);
-        });
-      }, 200);
-    }
+        setAnim('in');
+      }
+    }, 280);
+  };
+
+  const goBack = () => {
+    if (cur === 0) return;
+    setAnim('out');
+    window.setTimeout(() => {
+      setCur((c) => c - 1);
+      setAnswers((a) => a.slice(0, -1));
+      setSel(null);
+      setAnim('in');
+    }, 220);
   };
 
   const retake = () => {
@@ -43,72 +59,131 @@ export default function InlineQuiz() {
     setAnswers([]);
     setSel(null);
     setDone(false);
-    setPanelStyle({});
+    setAnim('in');
+    const section = document.getElementById('quiz');
+    if (section && QUESTIONS[0]?.scene) {
+      section.style.setProperty('--quiz-scene', `url('${QUESTIONS[0].scene}')`);
+    }
   };
 
   if (done) {
     const res = RESULTS[tallyAnswers(answers)] || RESULTS.mixed;
     return (
-      <div className="q-result show">
-        <span className="q-result-emoji">{res.e}</span>
-        <div className="q-result-type">{res.type}</div>
-        <div className="q-result-title">{res.t}</div>
-        <p className="q-result-desc">{res.d}</p>
-        <div className="q-result-tags">
-          {res.tags.map((t) => <span key={t} className="q-result-tag">{t}</span>)}
+      <div className={`match-result match-panel-${anim}`}>
+        <div className="match-result-visual" style={{ backgroundImage: `url('${res.img}')` }}>
+          <div className="match-result-visual-shade" />
+          <span className="match-result-emoji" aria-hidden="true">{res.e}</span>
+          <p className="match-result-kicker">{res.type}</p>
+          <h3 className="match-result-title">{res.t}</h3>
         </div>
-        <div className="q-result-btns">
-          <Magnetic>
-            <a href="#stays" className="btn btn-amber" style={{ fontSize: '.85rem', padding: '12px 24px' }}>
-              See Matched Stays <span className="btn-arrow">→</span>
+        <div className="match-result-body">
+          <p className="match-result-desc">{res.d}</p>
+          <div className="match-result-tags">
+            {res.tags.map((t) => (
+              <span key={t} className="match-result-tag">{t}</span>
+            ))}
+          </div>
+          <div className="match-result-actions">
+            <Magnetic>
+              <a href={staysIndexPath()} className="btn btn-amber">
+                See matched stays <span className="btn-arrow">→</span>
+              </a>
+            </Magnetic>
+            <a
+              href={whatsappChatUrl(`Hi! I just finished the Mountain Matchmaker and got "${res.t}". Can you help me pick a stay?`)}
+              className="btn btn-ghost match-result-wa"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Talk to a curator
             </a>
-          </Magnetic>
-          <button type="button" className="retake-btn" onClick={retake}>Retake Quiz</button>
+            <button type="button" className="retake-btn" onClick={retake}>
+              Retake quiz
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const q = QUESTIONS[cur];
-  const pips = updatePips();
-
   return (
-    <>
-      <div className="q-progress">
-        {pips.map((cls, i) => (
-          <div key={i} className={`q-pip${cls ? ` ${cls}` : ''}`} />
-        ))}
+    <div className={`match-console match-panel-${anim}`}>
+      <div className="match-trail" aria-hidden="true">
+        {QUESTIONS.map((step, i) => {
+          const state = i < cur ? 'is-done' : i === cur ? 'is-active' : '';
+          return (
+            <div key={step.id} className={`match-trail-step ${state}`}>
+              <span className="match-trail-node">{i + 1}</span>
+              <span className="match-trail-label">{step.sceneLabel}</span>
+            </div>
+          );
+        })}
       </div>
-      <div id="qPanel" style={panelStyle}>
-        <div className="q-eyebrow">Question {cur + 1} of {QUESTIONS.length}</div>
-        <div className="q-text">{q.q}</div>
-        <div className="q-hint">{q.hint}</div>
-        <div className="q-opts">
-          {q.opts.map((o) => (
+
+      <div className="match-progress-bar" aria-hidden="true">
+        <span style={{ width: `${Math.max(8, progress)}%` }} />
+      </div>
+
+      <div className="match-stage">
+        <aside className="match-scene">
+          <div
+            className="match-scene-photo"
+            style={{ backgroundImage: `url('${q.scene}')` }}
+            key={q.id}
+          />
+          <div className="match-scene-shade" />
+          <div className="match-scene-copy">
+            <span className="match-scene-step">Question {cur + 1} of {QUESTIONS.length}</span>
+            <p className="match-scene-label">{q.sceneLabel}</p>
+          </div>
+        </aside>
+
+        <div className="match-board">
+          <p className="match-eyebrow">Mountain Matchmaker</p>
+          <h3 className="match-question">{q.q}</h3>
+          <p className="match-hint">{q.hint}</p>
+
+          <div className={`match-opts match-opts--${q.opts.length}`}>
+            {q.opts.map((o) => (
+              <button
+                key={o.v + o.t}
+                type="button"
+                className={`match-opt${sel === o.v ? ' is-sel' : ''}`}
+                onClick={() => setSel(o.v)}
+              >
+                <span
+                  className="match-opt-img"
+                  style={{ backgroundImage: `url('${o.img}')` }}
+                  aria-hidden="true"
+                />
+                <span className="match-opt-shade" aria-hidden="true" />
+                <span className="match-opt-emoji" aria-hidden="true">{o.e}</span>
+                <span className="match-opt-text">{o.t}</span>
+                <span className="match-opt-check" aria-hidden="true">✓</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="match-nav">
             <button
-              key={o.v}
               type="button"
-              className={`q-opt${sel === o.v ? ' sel' : ''}`}
-              onClick={() => setSel(o.v)}
+              className="q-back-btn"
+              style={{ visibility: cur > 0 ? 'visible' : 'hidden' }}
+              onClick={goBack}
             >
-              <span className="q-opt-emoji">{o.e}</span>
-              <div className="q-opt-text">{o.t}</div>
+              ← Back
             </button>
-          ))}
-        </div>
-        <div className="q-nav">
-          <button
-            type="button"
-            className="q-back-btn"
-            style={{ visibility: cur > 0 ? 'visible' : 'hidden' }}
-            onClick={() => { setCur((c) => c - 1); setAnswers((a) => a.slice(0, -1)); setSel(null); }}
-          >
-            ← Back
-          </button>
-          <span className="q-counter">{cur + 1} / {QUESTIONS.length}</span>
-          <button type="button" className={`q-next-btn${sel ? ' active' : ''}`} onClick={finish}>Next →</button>
+            <span className="q-counter">{cur + 1} / {QUESTIONS.length}</span>
+            <button
+              type="button"
+              className={`q-next-btn${sel ? ' active' : ''}`}
+              onClick={goNext}
+            >
+              {cur >= QUESTIONS.length - 1 ? 'See my vibe →' : 'Next →'}
+            </button>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
