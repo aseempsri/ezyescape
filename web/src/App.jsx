@@ -143,7 +143,8 @@ export default function App() {
             <div className="why-left">
               <div className="eyebrow" data-reveal><span className="eyebrow-line" />Feel The Difference</div>
               <h2 className="why-big-text" data-reveal>
-                Most travel sites sell rooms. <br />
+                <span className="why-big-line">Most travel sites sell rooms.</span>
+                <br />
                 <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2rem,5vw,6rem)' }}>
                   <em id="typewriter-text" className="typewriter-cursor" style={{ fontWeight: 600 }}>
                     <Typewriter text="We match you with the right home" className="" style={{ fontStyle: 'normal' }} />

@@ -1017,6 +1017,10 @@ nav.solid {
   margin-bottom: 28px; letter-spacing: -0.02em;
 
 }
+.why-section .why-big-line {
+  display: inline-block;
+  white-space: nowrap;
+}
 .why-big-text em {
     color: #1a181c;
     font-style: normal;

@@ -150,8 +150,12 @@
 
   /* ─── TYPOGRAPHY BLOCKS ─── */
   .why-big-text {
-    font-size: clamp(1.65rem, 7vw, 2.4rem) !important;
+    font-size: clamp(1.45rem, 6.2vw, 2.2rem) !important;
     line-height: 1.12 !important;
+  }
+  .why-section .why-big-line {
+    white-space: nowrap;
+    font-size: inherit;
   }
   .why-big-text span[style*="Tangerine"] {
     font-size: clamp(3rem, 14vw, 4.8rem) !important;
