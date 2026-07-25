@@ -57,6 +57,40 @@
   text-overflow: ellipsis;
 }
 
+.immersion-hero-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.immersion-hero-meta .immersion-tag {
+  margin-bottom: 0;
+}
+
+.immersion-hero-count {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.immersion-hero-count span {
+  color: rgba(255, 255, 255, 0.42);
+  font-weight: 500;
+}
+
+.immersion-hero-swipe-hint {
+  display: none;
+  margin: 14px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .immersion-section--page .immersion-veil {
   background:
     radial-gradient(ellipse at 12% 8%, rgba(245, 166, 35, 0.08), transparent 42%),
@@ -556,8 +590,174 @@
 
   .immersion-gallery {
     grid-template-columns: 1fr;
-    grid-auto-rows: 200px;
+    /* Rows grow with the focused tile so siblings slide down (no overlap) */
+    grid-auto-rows: minmax(200px, auto);
+    align-items: stretch;
   }
+
+  .immersion-tile {
+    height: 200px !important;
+    min-height: 200px;
+    z-index: 1 !important;
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      min-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      padding 0.35s ease;
+  }
+
+  .immersion-gallery[data-focus] .immersion-tile.is-focus {
+    grid-column: 1 / -1;
+    height: auto !important;
+    min-height: 340px;
+    z-index: 1 !important;
+  }
+
+  .immersion-gallery[data-focus] .immersion-tile.is-side {
+    height: 200px !important;
+    min-height: 200px;
+    z-index: 1 !important;
+  }
+
+  /* ─── Experiences page — mobile story deck ─── */
+  .immersion-section--page {
+    padding: 28px 0 64px;
+  }
+
+  .immersion-section--page .immersion-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 0;
+    grid-template-columns: none;
+  }
+
+  .immersion-section--page .immersion-hero {
+    order: 1;
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 3 / 4;
+    max-height: min(72vh, 540px);
+    border-radius: 22px;
+  }
+
+  .immersion-section--page .immersion-hero-copy {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .immersion-section--page .immersion-hero-title {
+    font-size: clamp(1.45rem, 6.5vw, 1.85rem);
+  }
+
+  .immersion-section--page .immersion-hero-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .immersion-section--page .immersion-hero-swipe-hint {
+    display: block;
+  }
+
+  .immersion-section--page .immersion-rail {
+    order: 2;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 12px;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 4px 14px;
+    margin: 0 -4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .immersion-section--page .immersion-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .immersion-section--page .immersion-chip,
+  .immersion-section--page .immersion-chip--text,
+  .immersion-section--page .immersion-chip--card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 148px;
+    width: 148px;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    grid-template-columns: none;
+    padding: 0;
+    overflow: hidden;
+    scroll-snap-align: start;
+    border-radius: 16px;
+    text-align: left;
+  }
+
+  .immersion-section--page .immersion-chip-img {
+    display: block;
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .immersion-section--page .immersion-chip-num {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    width: auto;
+    min-width: 0;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(7, 13, 22, 0.55);
+    color: #fff;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+  }
+
+  .immersion-section--page .immersion-chip.is-active .immersion-chip-num {
+    background: rgba(245, 166, 35, 0.92);
+    color: #101e2c;
+  }
+
+  .immersion-section--page .immersion-chip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 11px 12px;
+  }
+
+  .immersion-section--page .immersion-chip-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .immersion-section--page .immersion-chip-tag {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
 }
 
 @media (max-width: 560px) {
@@ -573,7 +773,21 @@
     font-size: 0.78rem;
   }
 
+  .immersion-gallery {
+    grid-auto-rows: minmax(180px, auto);
+  }
+
+  .immersion-tile {
+    height: 180px !important;
+    min-height: 180px;
+  }
+
   .immersion-gallery[data-focus] .immersion-tile.is-focus {
-    min-height: 240px;
+    min-height: 300px;
+  }
+
+  .immersion-gallery[data-focus] .immersion-tile.is-side {
+    height: 180px !important;
+    min-height: 180px;
   }
 }

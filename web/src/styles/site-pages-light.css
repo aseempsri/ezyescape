@@ -266,6 +266,16 @@
   box-shadow: 0 10px 28px rgba(245, 166, 35, 0.18);
 }
 
+@media (max-width: 768px) {
+  .site-page .immersion-section--page .immersion-chip--card {
+    background: #fff;
+  }
+
+  .site-page .immersion-section--page .immersion-chip-img {
+    display: block;
+  }
+}
+
 /* Profile cards on light pages — readable ink on white */
 .site-page .pf-card,
 .site-page .pf-booking-card,
@@ -418,6 +428,30 @@
   background-repeat: no-repeat !important;
   border-top: none !important;
   color: #1c2a3a;
+}
+
+@media (max-width: 768px) {
+  .site-page footer {
+    background-image:
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        rgba(255, 255, 255, 0.94) 36px,
+        rgba(247, 243, 237, 0.45) 100px,
+        rgba(247, 243, 237, 0) 170px
+      ),
+      var(--footer-story-image-mobile, var(--footer-story-image)) !important;
+    background-size: 100% 100%, cover !important;
+    background-position: center top, center bottom !important;
+  }
+
+  .site-page footer .footer-veil {
+    opacity: 0.64;
+  }
+
+  .site-page footer .footer-bottom .wa-btn {
+    display: none;
+  }
 }
 
 .site-page footer .footer-content {

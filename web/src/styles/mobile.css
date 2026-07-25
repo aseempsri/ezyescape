@@ -368,7 +368,19 @@
   .stays-track-wrap {
     margin: 0 -20px;
     padding: 12px 20px 32px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scrollbar-width: none;
+  }
+  .stays-track-wrap::-webkit-scrollbar { display: none; }
+  /* Touch owns the scroll; CSS marquee is desktop-only */
+  .stays-track--marquee {
+    animation: none !important;
+    transform: none !important;
+    will-change: auto;
   }
   .stays-track { gap: 16px; padding-right: 0; }
   .stay-card {
@@ -654,7 +666,38 @@
   .cta-sub { font-size: 0.92rem; padding: 0 8px; }
 
   /* ─── FOOTER ─── */
-  footer { padding: 40px 0 100px; }
+  footer {
+    padding: 40px 0 100px;
+    background-image:
+      linear-gradient(
+        180deg,
+        #f7f3ed 0%,
+        rgba(247, 243, 237, 0.92) 36px,
+        rgba(247, 243, 237, 0.4) 100px,
+        rgba(247, 243, 237, 0) 170px
+      ),
+      var(--footer-story-image-mobile, var(--footer-story-image));
+    background-size: 100% 100%, cover;
+    background-position: center top, center bottom;
+    background-repeat: no-repeat;
+  }
+  .site-page footer {
+    background-image:
+      linear-gradient(
+        180deg,
+        #ffffff 0%,
+        rgba(255, 255, 255, 0.94) 36px,
+        rgba(247, 243, 237, 0.45) 100px,
+        rgba(247, 243, 237, 0) 170px
+      ),
+      var(--footer-story-image-mobile, var(--footer-story-image)) !important;
+    background-size: 100% 100%, cover !important;
+    background-position: center top, center bottom !important;
+  }
+  /* +40% background image visibility vs desktop veil (two +20% steps) */
+  footer .footer-veil {
+    opacity: 0.64;
+  }
   .footer-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -704,7 +747,9 @@
     grid-column: auto;
     justify-self: auto;
   }
-  .wa-btn { width: 100%; justify-content: center; }
+  .footer-bottom .wa-btn {
+    display: none;
+  }
 
   /* ─── BUTTONS ─── */
   .btn { cursor: pointer; }

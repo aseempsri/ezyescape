@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import SiteChrome from './SiteChrome';
 import Typewriter from './Typewriter';
 import { PROPERTY_EXPERIENCES } from '../data/propertyExperiences';
@@ -11,7 +11,41 @@ const EXP_BG = assetUrl('images/bg.png');
 
 export default function ExperiencesPage() {
   const [activeId, setActiveId] = useState(PROPERTY_EXPERIENCES[0].id);
-  const active = PROPERTY_EXPERIENCES.find((e) => e.id === activeId) || PROPERTY_EXPERIENCES[0];
+  const activeIndex = Math.max(
+    0,
+    PROPERTY_EXPERIENCES.findIndex((e) => e.id === activeId),
+  );
+  const active = PROPERTY_EXPERIENCES[activeIndex] || PROPERTY_EXPERIENCES[0];
+  const touchRef = useRef({ x: 0, y: 0 });
+  const railRef = useRef(null);
+
+  const selectByOffset = useCallback((delta) => {
+    const next = (activeIndex + delta + PROPERTY_EXPERIENCES.length) % PROPERTY_EXPERIENCES.length;
+    setActiveId(PROPERTY_EXPERIENCES[next].id);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const chip = rail.querySelector('.immersion-chip.is-active');
+    if (chip && typeof chip.scrollIntoView === 'function') {
+      chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, [activeId]);
+
+  const onHeroTouchStart = (e) => {
+    const t = e.touches[0];
+    touchRef.current = { x: t.clientX, y: t.clientY };
+  };
+
+  const onHeroTouchEnd = (e) => {
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - touchRef.current.x;
+    const dy = t.clientY - touchRef.current.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+    selectByOffset(dx < 0 ? 1 : -1);
+  };
 
   return (
     <SiteChrome
@@ -44,26 +78,40 @@ export default function ExperiencesPage() {
         <div className="immersion-veil" aria-hidden="true" />
         <div className="container immersion-inner">
           <div className="immersion-stage" data-reveal="up">
-            <article className="immersion-hero" key={active.id}>
+            <article
+              className="immersion-hero"
+              key={active.id}
+              onTouchStart={onHeroTouchStart}
+              onTouchEnd={onHeroTouchEnd}
+            >
               <img className="immersion-hero-photo" src={active.img} alt={active.title} />
               <div className="immersion-hero-shade" />
               <div className="immersion-hero-copy">
-                <span className="immersion-tag">{active.tag}</span>
+                <div className="immersion-hero-meta">
+                  <span className="immersion-tag">{active.tag}</span>
+                  <span className="immersion-hero-count" aria-hidden="true">
+                    {String(activeIndex + 1).padStart(2, '0')}
+                    <span> / {String(PROPERTY_EXPERIENCES.length).padStart(2, '0')}</span>
+                  </span>
+                </div>
                 <span className="immersion-hero-emoji" aria-hidden="true">{active.emoji}</span>
                 <h3 className="immersion-hero-title">{active.title}</h3>
                 <p className="immersion-hero-desc">{active.desc}</p>
+                <p className="immersion-hero-swipe-hint">Swipe photo · tap a card below</p>
               </div>
             </article>
 
-            <div className="immersion-rail" role="list">
+            <div className="immersion-rail" role="list" aria-label="Browse experiences" ref={railRef}>
               {PROPERTY_EXPERIENCES.map((exp, i) => (
                 <button
                   key={exp.id}
                   type="button"
                   role="listitem"
-                  className={`immersion-chip immersion-chip--text${activeId === exp.id ? ' is-active' : ''}`}
+                  className={`immersion-chip immersion-chip--text immersion-chip--card${activeId === exp.id ? ' is-active' : ''}`}
                   onClick={() => setActiveId(exp.id)}
+                  aria-pressed={activeId === exp.id}
                 >
+                  <img className="immersion-chip-img" src={exp.img} alt="" />
                   <span className="immersion-chip-num">{String(i + 1).padStart(2, '0')}</span>
                   <span className="immersion-chip-body">
                     <span className="immersion-chip-emoji" aria-hidden="true">{exp.emoji}</span>

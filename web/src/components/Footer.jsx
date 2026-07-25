@@ -15,11 +15,13 @@ import {
 export default function Footer() {
   const waUrl = whatsappChatUrl();
   const storyBg = assetUrl('images/footer-story.png');
+  const storyBgMobile = assetUrl('images/footer-story-mobile.png');
 
   return (
     <footer
       style={{
         '--footer-story-image': `url('${storyBg}')`,
+        '--footer-story-image-mobile': `url('${storyBgMobile}')`,
       }}
     >
       <div className="footer-veil" aria-hidden="true" />

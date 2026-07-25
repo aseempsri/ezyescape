@@ -8,9 +8,9 @@ import useCustomCursor from '../hooks/useCustomCursor';
 import useScrollNav from '../hooks/useScrollNav';
 import '../styles/index.css';
 import '../styles/hero-nav.css';
-import '../styles/mobile.css';
 import '../styles/site-pages.css';
 import '../styles/site-pages-light.css'; // light happy theme — remove this import to reverse
+import '../styles/mobile.css'; // last so mobile footer/layout wins on all site pages
 
 /** Shared chrome for marketing pages (Partner, Stories, Shop, Contact). */
 export default function SiteChrome({

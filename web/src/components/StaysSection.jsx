@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Typewriter from './Typewriter';
 import { fetchStays } from '../lib/api';
 import { goStay, staysIndexPath } from '../utils/paths';
@@ -9,6 +9,9 @@ import {
   stayMatchesFilter,
 } from '../utils/stays';
 
+const MOBILE_MQ = '(max-width: 768px)';
+const TOUCH_RESUME_MS = 3000;
+
 function buildLoop(items) {
   if (!items.length) return [];
   let base = [...items];
@@ -18,13 +21,35 @@ function buildLoop(items) {
 
 function StayCard({ stay, onOpen }) {
   const guests = stay.guest || stay.guests;
+  const touchRef = useRef({ x: 0, y: 0, dragged: false });
+
   return (
     <div
       className="stay-card"
       data-cat={stay.cat}
       role="link"
       tabIndex={0}
-      onClick={() => onOpen(stay)}
+      onTouchStart={(e) => {
+        const t = e.touches[0];
+        touchRef.current = { x: t.clientX, y: t.clientY, dragged: false };
+      }}
+      onTouchMove={(e) => {
+        const t = e.touches[0];
+        if (!t) return;
+        if (
+          Math.abs(t.clientX - touchRef.current.x) > 10
+          || Math.abs(t.clientY - touchRef.current.y) > 10
+        ) {
+          touchRef.current.dragged = true;
+        }
+      }}
+      onClick={() => {
+        if (touchRef.current.dragged) {
+          touchRef.current.dragged = false;
+          return;
+        }
+        onOpen(stay);
+      }}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -55,6 +80,8 @@ function StayCard({ stay, onOpen }) {
 export default function StaysSection() {
   const [filter, setFilter] = useState('all');
   const [stays, setStays] = useState(FALLBACK_STAYS);
+  const wrapRef = useRef(null);
+  const trackRef = useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -97,6 +124,62 @@ export default function StaysSection() {
     return () => cleanups.forEach((fn) => fn());
   }, [loop]);
 
+  // Mobile only: touch-scroll the strip; auto-scroll resumes after 3s idle.
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const track = trackRef.current;
+    if (!wrap || !track || !loop.length) return undefined;
+
+    const mq = window.matchMedia(MOBILE_MQ);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let paused = false;
+    let resumeTimer = null;
+    let rafId = 0;
+    let lastTs = 0;
+
+    const pauseForTouch = () => {
+      if (!mq.matches) return;
+      paused = true;
+      lastTs = 0;
+      window.clearTimeout(resumeTimer);
+      resumeTimer = window.setTimeout(() => {
+        paused = false;
+        lastTs = 0;
+      }, TOUCH_RESUME_MS);
+    };
+
+    const tick = (ts) => {
+      rafId = window.requestAnimationFrame(tick);
+      if (!mq.matches || reduceMotion.matches || paused) {
+        lastTs = 0;
+        return;
+      }
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(48, ts - lastTs);
+      lastTs = ts;
+      const half = track.scrollWidth / 2;
+      if (half <= 0) return;
+      const pps = half / durationSec;
+      wrap.scrollLeft += (dt / 1000) * pps;
+      if (wrap.scrollLeft >= half) wrap.scrollLeft -= half;
+    };
+
+    wrap.addEventListener('touchstart', pauseForTouch, { passive: true });
+    wrap.addEventListener('touchmove', pauseForTouch, { passive: true });
+    wrap.addEventListener('touchend', pauseForTouch, { passive: true });
+    wrap.addEventListener('pointerdown', pauseForTouch, { passive: true });
+    rafId = window.requestAnimationFrame(tick);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(resumeTimer);
+      wrap.removeEventListener('touchstart', pauseForTouch);
+      wrap.removeEventListener('touchmove', pauseForTouch);
+      wrap.removeEventListener('touchend', pauseForTouch);
+      wrap.removeEventListener('pointerdown', pauseForTouch);
+    };
+  }, [loop, durationSec, filter]);
+
   const openStay = (stay) => {
     goStay(stay.slug || stay.id);
   };
@@ -130,11 +213,12 @@ export default function StaysSection() {
           </div>
         </div>
 
-        <div className="stays-track-wrap" id="staysWrap">
+        <div className="stays-track-wrap" id="staysWrap" ref={wrapRef}>
           {loop.length > 0 ? (
             <div
               className="stays-track stays-track--marquee"
               id="staysTrack"
+              ref={trackRef}
               key={filter}
               style={{ animationDuration: `${durationSec}s` }}
             >
