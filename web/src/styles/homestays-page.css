@@ -134,6 +134,19 @@
   backdrop-filter: blur(8px);
 }
 
+.hs-tile-chips .s-tag--host {
+  padding: 5px 6px 5px 12px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--amber, #f5a623);
+  border-color: rgba(245, 166, 35, 0.2);
+  background: rgba(6, 12, 21, 0.6);
+}
+
+.hs-tile-body-mobile {
+  display: none;
+}
+
 .hs-tile-feature-copy {
   position: absolute;
   left: 20px;
@@ -257,6 +270,54 @@
   }
 }
 
+@media (max-width: 768px) {
+  /* Every listing card matches — no special featured layout */
+  .hs-feature-wrap {
+    margin-bottom: 18px;
+  }
+
+  .hs-mosaic,
+  .hs-feature-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .hs-tile,
+  .hs-tile--feature {
+    transform: none;
+  }
+
+  .hs-tile-visual,
+  .hs-tile--feature .hs-tile-visual {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+    border-radius: 20px;
+  }
+
+  .hs-tile--feature .hs-tile-feature-copy {
+    display: none;
+  }
+
+  .hs-tile--feature .hs-tile-chips {
+    top: auto;
+    bottom: 14px;
+  }
+
+  .hs-tile-body-mobile {
+    display: contents;
+  }
+
+  .hs-tile--feature .hs-tile-body {
+    padding-top: 14px;
+    max-width: none;
+  }
+
+  .hs-tile-chips .s-tag--host {
+    font-size: 0.65rem;
+  }
+}
+
 @media (max-width: 560px) {
   .hs-mosaic {
     grid-template-columns: 1fr;
@@ -277,10 +338,5 @@
 
   .hs-filter {
     flex: 0 0 auto;
-  }
-
-  .hs-tile--feature .hs-tile-visual {
-    aspect-ratio: 5 / 4;
-    min-height: 200px;
   }
 }

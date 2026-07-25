@@ -13,6 +13,8 @@ import AdSlot from './AdSlot';
 import '../styles/homestays-page.css';
 
 function StayTile({ stay, featured = false }) {
+  const guests = stay.guest || stay.guests;
+
   return (
     <article
       className={`hs-tile${featured ? ' hs-tile--feature' : ''}`}
@@ -32,8 +34,9 @@ function StayTile({ stay, featured = false }) {
       >
         <div className="hs-tile-shade" />
         <div className="hs-tile-chips">
-          <span>{stay.guest} adults</span>
-          <span>{stay.rooms} rooms</span>
+          <span className="s-tag s-tag--host">
+            Hosts up to <em>{guests}</em>
+          </span>
         </div>
         {featured && (
           <div className="hs-tile-feature-copy">
@@ -48,6 +51,13 @@ function StayTile({ stay, featured = false }) {
             <p className="hs-tile-loc">{stay.location}</p>
             <h2>{stay.title}</h2>
           </>
+        )}
+        {/* Mobile: always show title block so every card matches */}
+        {featured && (
+          <div className="hs-tile-body-mobile">
+            <p className="hs-tile-loc">{stay.location}</p>
+            <h2>{stay.title}</h2>
+          </div>
         )}
         <p className="hs-tile-price">
           {stay.disPrice ? <del>₹ {stay.disPrice}</del> : null}
