@@ -8,8 +8,8 @@ import {
   normalizeApiStay,
   stayMatchesFilter,
 } from '../utils/stays';
-import { goStay, homeSectionPath, storiesPath } from '../utils/paths';
-import assetUrl from '../utils/assetUrl';
+import { goStay, homeSectionPath, postcardsPath } from '../utils/paths';
+import AdSlot from './AdSlot';
 import '../styles/homestays-page.css';
 
 function StayTile({ stay, featured = false }) {
@@ -90,11 +90,12 @@ export default function HomestaysPage() {
   const rest = featured ? visible.slice(1) : visible;
 
   return (
-    <SiteChrome title="Homestays — Ezy Escape">
-      <section
-        className="sp-hero sp-hero--homestays"
-        style={{ backgroundImage: `url('${assetUrl('images/ju.jpg')}')` }}
-      >
+    <SiteChrome
+      title="Homestays in Kumaon & Uttarakhand — Ezy Escape"
+      description="Browse curated Kumaon homestays — quiet forest cottages, family valley homes, and Almora stays with hosts who know the hills."
+      path="/stays"
+    >
+      <section className="sp-hero sp-hero--homestays">
         <div className="sp-hero-veil" aria-hidden="true" />
         <div className="container sp-hero-inner">
           <p className="sp-eyebrow">Curated collection</p>
@@ -169,16 +170,20 @@ export default function HomestaysPage() {
         </div>
       </section>
 
+      <AdSlot adId="homestays-ad1" />
+
       <section className="sp-cta-band">
         <div className="container sp-cta-band-inner">
           <h2>Still deciding?</h2>
           <p>Tell us how you travel. We’ll match a mountain home to your vibe.</p>
           <div className="sp-hero-actions">
             <a href={homeSectionPath('quiz')} className="btn btn-amber">Match My Stay →</a>
-            <a href={storiesPath()} className="btn btn-ghost">Read guest stories</a>
+            <a href={postcardsPath()} className="btn btn-ghost">Read postcards</a>
           </div>
         </div>
       </section>
+
+      <AdSlot adId="homestays-ad2" />
     </SiteChrome>
   );
 }

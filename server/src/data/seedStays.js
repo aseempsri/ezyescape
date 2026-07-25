@@ -10,6 +10,40 @@ export function slugify(text) {
     .slice(0, 80);
 }
 
+/** Split a combined story blob into story + hosts when possible. */
+export function splitStoryHosts(text) {
+  const paras = String(text || '')
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  if (!paras.length) return { story: '', hosts: '' };
+
+  // Avoid matching verbs like "still hosts village festivals".
+  const hostIdx = paras.findIndex((p) =>
+    /\b(your|the|our)\s+hosts?\b|\bhost family\b|welcomed by/i.test(p)
+  );
+
+  if (hostIdx > 0) {
+    return {
+      story: paras.slice(0, hostIdx).join('\n\n'),
+      hosts: paras.slice(hostIdx).join('\n\n'),
+    };
+  }
+  if (hostIdx === 0 && paras.length > 1) {
+    return {
+      story: paras.slice(1).join('\n\n'),
+      hosts: paras[0],
+    };
+  }
+  if (paras.length >= 2) {
+    return {
+      story: paras.slice(0, -1).join('\n\n'),
+      hosts: paras.slice(-1).join('\n\n'),
+    };
+  }
+  return { story: paras[0], hosts: '' };
+}
+
 const SEED = [
   {
     title: 'The Kumaoni Family Home',
@@ -25,7 +59,9 @@ const SEED = [
     description:
       'A lived-in Kumaoni home perched above Almora, where mornings begin with mountain light and evenings settle into slow conversation around the hearth.',
     story:
-      'This house has belonged to the same family for three generations. The wooden floors remember wedding songs; the courtyard still hosts village festivals. When you stay here, you are not checking into a room — you are welcomed into a way of living that measures days by sunrise tea, forest walks, and home-cooked thalis shared at one long table.\n\nYour hosts, Meera and Harish, know every trail above town and every story behind the temples in the valley. Ask them about the rhododendron season, or simply sit on the balcony and watch the clouds pour over the ridges.',
+      'This house has belonged to the same family for three generations. The wooden floors remember wedding songs; the courtyard still hosts village festivals. When you stay here, you are not checking into a room — you are welcomed into a way of living that measures days by sunrise tea, forest walks, and home-cooked thalis shared at one long table.',
+    hosts:
+      'Your hosts, Meera and Harish, know every trail above town and every story behind the temples in the valley. Ask them about the rhododendron season, or simply sit on the balcony and watch the clouds pour over the ridges.',
     directions:
       'Fly or train into Kathgodam, then drive ~3.5 hours via Bhowali–Almora. The last 4 km is a quiet hill road; a private transfer can be arranged from Kathgodam or Almora bus stand. Parking is available at the house.',
     highlights: [
@@ -39,6 +75,8 @@ const SEED = [
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80',
       'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80',
     ],
+    storyImage: '/images/experiences/village-kitchen.jpg',
+    hostImage: '/images/experiences/local-culture.jpg',
     videos: [],
   },
   {
@@ -55,7 +93,9 @@ const SEED = [
     description:
       'A secluded pine-forest cottage for travellers who want silence, soft light through the trees, and nights that belong to the stars.',
     story:
-      'Built for two, this retreat sits deep enough in the pines that the only soundtrack is wind and birds. It was designed as a place to disconnect — no lobby chatter, no schedule, just a wood stove, a reading nook, and trails that start at the gate.\n\nIdeal if you are travelling solo or as a couple who wants the forest more than the town. Your host lives a short walk away and checks in gently: fresh bread in the morning, a thermos of chai for your hike, and advice on which ridge catches the best sunset.',
+      'Built for two, this retreat sits deep enough in the pines that the only soundtrack is wind and birds. It was designed as a place to disconnect — no lobby chatter, no schedule, just a wood stove, a reading nook, and trails that start at the gate.',
+    hosts:
+      'Ideal if you are travelling solo or as a couple who wants the forest more than the town. Your host lives a short walk away and checks in gently: fresh bread in the morning, a thermos of chai for your hike, and advice on which ridge catches the best sunset.',
     directions:
       'Reach Ranikhet by road from Kathgodam (~3 hours) or Almora (~1.5 hours). From Ranikhet bazaar, follow signs toward Chaubatia; the cottage is 20 minutes up a forest lane. Shared taxis run to the junction; last-mile pickup can be arranged.',
     highlights: [
@@ -69,6 +109,8 @@ const SEED = [
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
       'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80',
     ],
+    storyImage: '/images/experiences/forest-walk.jpg',
+    hostImage: '/images/experiences/sunrise-tea.jpg',
     videos: [],
   },
   {
@@ -85,7 +127,9 @@ const SEED = [
     description:
       'A spacious valley home with easy road access — built for families who want mountain air without a difficult last mile.',
     story:
-      'Wide rooms, a lawn for kids to run, and a kitchen that never seems empty — this is the stay parents recommend to each other. The hosts have raised their own children here and know how to pace a family holiday: a gentle morning hike, lunch at home, an afternoon at the lake, and early nights under warm blankets.\n\nYou are close enough to Nainital for day trips, far enough that evenings feel like the hills again. Grandparents settle into the veranda chairs; teenagers claim the attic room with the best view.',
+      'Wide rooms, a lawn for kids to run, and a kitchen that never seems empty — this is the stay parents recommend to each other. You are close enough to Nainital for day trips, far enough that evenings feel like the hills again. Grandparents settle into the veranda chairs; teenagers claim the attic room with the best view.',
+    hosts:
+      'The hosts have raised their own children here and know how to pace a family holiday: a gentle morning hike, lunch at home, an afternoon at the lake, and early nights under warm blankets.',
     directions:
       'From Kathgodam, drive ~1.5 hours toward Nainital; the home is 25 minutes before the main lake road, on a paved village approach. Suitable for sedan and SUV. Private transfers available from the railway station.',
     highlights: [
@@ -99,6 +143,8 @@ const SEED = [
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
       'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80',
     ],
+    storyImage: '/images/experiences/farm-to-table.jpg',
+    hostImage: '/images/experiences/local-culture.jpg',
     videos: [],
   },
   {
@@ -115,7 +161,9 @@ const SEED = [
     description:
       'A bright cottage overlooking long Kausani valleys — quiet enough to work, beautiful enough to forget the laptop.',
     story:
-      'Kausani is famous for its horizon of snow peaks, and this cottage faces that stretch of sky. Mornings are for coffee and email if you must; afternoons for the ridge walk; evenings for watching the mountains turn pink.\n\nReliable enough connectivity for focused remote work, soft enough evenings that you will still feel like you escaped. The hosts keep the cottage stocked simply — fresh eggs, local honey, and a bookshelf that rewards slow reading.',
+      'Kausani is famous for its horizon of snow peaks, and this cottage faces that stretch of sky. Mornings are for coffee and email if you must; afternoons for the ridge walk; evenings for watching the mountains turn pink.',
+    hosts:
+      'Reliable enough connectivity for focused remote work, soft enough evenings that you will still feel like you escaped. The hosts keep the cottage stocked simply — fresh eggs, local honey, and a bookshelf that rewards slow reading.',
     directions:
       'From Kathgodam, drive ~5–6 hours via Almora–Kausani. The cottage is 10 minutes from Kausani bazaar on a motorable road. Bus services reach Kausani; ask hosts for a pickup from the stand.',
     highlights: [
@@ -129,6 +177,8 @@ const SEED = [
       'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80',
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
     ],
+    storyImage: '/images/experiences/sunrise-tea.jpg',
+    hostImage: '/images/experiences/farm-to-table.jpg',
     videos: [],
   },
 ];
@@ -142,7 +192,7 @@ export async function seedStaysIfEmpty() {
   await backfillStayDetails();
 }
 
-/** Fill slug / story / directions on existing listings that are missing them. */
+/** Fill slug / story / hosts / directions on existing listings that are missing them. */
 export async function backfillStayDetails() {
   for (const seed of SEED) {
     const stay = await Stay.findOne({ title: seed.title });
@@ -157,10 +207,39 @@ export async function backfillStayDetails() {
       stay.description = seed.description;
       changed = true;
     }
-    if (!stay.story) {
-      stay.story = seed.story;
-      changed = true;
+
+    // Always align seeded listings to separate story + hosts when seed has both.
+    if (seed.story && seed.hosts) {
+      const storyLooksLikeHosts =
+        /\b(your|the|our)\s+hosts?\b/i.test(stay.story || '')
+        && !(stay.story || '').includes(seed.story.slice(0, 48));
+      const hostsLooksLikeStory =
+        stay.hosts
+        && seed.story
+        && (stay.hosts || '').includes(seed.story.slice(0, 48));
+      const missingHosts = !stay.hosts;
+      const combinedInStory =
+        stay.story
+        && seed.hosts
+        && stay.story.includes(seed.hosts.slice(0, 40))
+        && stay.story.includes(seed.story.slice(0, 40));
+
+      if (missingHosts || storyLooksLikeHosts || hostsLooksLikeStory || combinedInStory) {
+        stay.story = seed.story;
+        stay.hosts = seed.hosts;
+        changed = true;
+      }
+    } else {
+      if (!stay.story && seed.story) {
+        stay.story = seed.story;
+        changed = true;
+      }
+      if (!stay.hosts && seed.hosts) {
+        stay.hosts = seed.hosts;
+        changed = true;
+      }
     }
+
     if (!stay.directions) {
       stay.directions = seed.directions;
       changed = true;
@@ -173,6 +252,14 @@ export async function backfillStayDetails() {
       stay.images = seed.images;
       changed = true;
     }
+    if (!stay.storyImage && seed.storyImage) {
+      stay.storyImage = seed.storyImage;
+      changed = true;
+    }
+    if (!stay.hostImage && seed.hostImage) {
+      stay.hostImage = seed.hostImage;
+      changed = true;
+    }
     if (changed) await stay.save();
   }
 
@@ -180,6 +267,19 @@ export async function backfillStayDetails() {
   const missingSlug = await Stay.find({ $or: [{ slug: { $exists: false } }, { slug: '' }] });
   for (const stay of missingSlug) {
     stay.slug = slugify(stay.title) || String(stay._id);
+    await stay.save();
+  }
+
+  // Generic migration for non-seed stays with story but no hosts.
+  const needsHosts = await Stay.find({
+    $or: [{ hosts: { $exists: false } }, { hosts: '' }],
+    story: { $ne: '' },
+  });
+  for (const stay of needsHosts) {
+    const split = splitStoryHosts(stay.story);
+    if (!split.hosts) continue;
+    stay.story = split.story;
+    stay.hosts = split.hosts;
     await stay.save();
   }
 }

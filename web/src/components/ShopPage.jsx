@@ -3,6 +3,7 @@ import Typewriter from './Typewriter';
 import { NGO_STORIES, SHOP_PRODUCTS } from '../data/sitePages';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import { contactPath } from '../utils/paths';
+import AdSlot from './AdSlot';
 
 function productWa(name) {
   return whatsappChatUrl(
@@ -12,7 +13,11 @@ function productWa(name) {
 
 export default function ShopPage() {
   return (
-    <SiteChrome title="Shop With Us — Ezy Escape">
+    <SiteChrome
+      title="Shop Local Crafts & Support Hill Communities — Ezy Escape"
+      description="Shop with us — handloom, nature classrooms and heritage grains that fund livelihoods across Kumaon."
+      path="/shop"
+    >
       <section className="sp-hero sp-hero--shop">
         <div className="sp-hero-veil" aria-hidden="true" />
         <div className="container sp-hero-inner">
@@ -60,6 +65,8 @@ export default function ShopPage() {
         </div>
       </section>
 
+      <AdSlot adId="shop-ad1" />
+
       <section className="sp-section sp-section--alt">
         <div className="container">
           <div className="sp-section-head">
@@ -85,6 +92,8 @@ export default function ShopPage() {
           </p>
         </div>
       </section>
+
+      <AdSlot adId="shop-ad2" />
     </SiteChrome>
   );
 }

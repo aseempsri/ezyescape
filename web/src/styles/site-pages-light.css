@@ -1,0 +1,444 @@
+/* ═══════════════════════════════════════════════════════════
+   INTERNAL PAGES — LIGHT / HAPPY THEME
+   Revert: remove this import from SiteChrome.jsx
+═══════════════════════════════════════════════════════════ */
+
+.site-page {
+  --sp-ink: #1c2a3a;
+  --sp-muted: #5a6b7d;
+  --sp-line: rgba(28, 42, 58, 0.1);
+  --sp-card: #ffffff;
+  --sp-sky: #e8f4fc;
+  --sp-sun: #fff6e8;
+  --sp-mint: #e8f7ef;
+  --sp-amber: #f5a623;
+
+  background:
+    radial-gradient(ellipse at 90% -5%, rgba(245, 166, 35, 0.16), transparent 42%),
+    radial-gradient(ellipse at 0% 30%, rgba(77, 163, 224, 0.1), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, var(--sp-sun) 28%, #ffffff 58%, #ffffff 100%);
+  color: var(--sp-ink);
+}
+
+.site-page-main {
+  color: var(--sp-ink);
+}
+
+/* Hero — brighter frosted veil, dark type */
+.site-page .sp-hero-veil {
+  background:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 246, 232, 0.72) 42%, rgba(232, 244, 252, 0.7) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.82));
+}
+
+.site-page .sp-eyebrow {
+  color: #d4890f;
+}
+
+.site-page .sp-title,
+.site-page .sp-title-line,
+.site-page .sp-title-script,
+.site-page .sp-title-script em,
+.site-page .sp-title-script .typewriter-cursor {
+  color: var(--sp-ink) !important;
+  text-shadow: none;
+}
+
+.site-page .sp-title-script {
+  animation: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.site-page .sp-title-script .typewriter-cursor::after {
+  color: var(--sp-amber);
+  text-shadow: none;
+}
+
+.site-page .sp-lead,
+.site-page .sp-muted {
+  color: var(--sp-muted);
+}
+
+/* Sections & cards — white surfaces */
+.site-page .sp-section--alt {
+  background: rgba(255, 255, 255, 0.65);
+  border-top: 1px solid var(--sp-line);
+  border-bottom: 1px solid var(--sp-line);
+}
+
+.site-page .sp-section-head h2,
+.site-page .sp-card h3,
+.site-page .sp-steps h3,
+.site-page .sp-story-card-body h3,
+.site-page .sp-product-body h3,
+.site-page .sp-ngo-body h3,
+.site-page .sp-channel h3,
+.site-page .sp-contact-form h2,
+.site-page .sp-cta-band-inner h2 {
+  color: var(--sp-ink);
+}
+
+.site-page .sp-card,
+.site-page .sp-steps li,
+.site-page .sp-story-card,
+.site-page .sp-product,
+.site-page .sp-ngo-card,
+.site-page .sp-channel,
+.site-page .sp-contact-form,
+.site-page .sp-story-feature {
+  background: var(--sp-card);
+  border-color: var(--sp-line);
+  box-shadow: 0 10px 30px rgba(28, 42, 58, 0.06);
+  color: var(--sp-ink);
+}
+
+.site-page .sp-card p,
+.site-page .sp-steps p,
+.site-page .sp-story-card-body p,
+.site-page .sp-product-body p,
+.site-page .sp-ngo-body p,
+.site-page .sp-channel p,
+.site-page .sp-cta-band-inner p,
+.site-page .sp-product-ngo,
+.site-page .sp-shop-note,
+.site-page .sp-form-note,
+.site-page .sp-story-meta,
+.site-page .sp-story-feature-body .sp-lead {
+  color: var(--sp-muted);
+}
+
+.site-page .sp-card-emoji,
+.site-page .sp-channel-emoji {
+  background: rgba(245, 166, 35, 0.14);
+  border-color: rgba(245, 166, 35, 0.28);
+}
+
+.site-page .sp-story-feature-body {
+  background: #fff;
+}
+
+.site-page .sp-story-feature-shade {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(28, 42, 58, 0.55));
+}
+
+.site-page .sp-cta-band-inner {
+  background:
+    linear-gradient(135deg, rgba(245, 166, 35, 0.14), transparent 55%),
+    #ffffff;
+  border-color: rgba(245, 166, 35, 0.35);
+  box-shadow: 0 14px 40px rgba(28, 42, 58, 0.08);
+}
+
+.site-page .sp-tag {
+  background: rgba(245, 166, 35, 0.12);
+  border-color: rgba(245, 166, 35, 0.28);
+  color: #c47d0a;
+}
+
+.site-page .sp-product-tag {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--sp-ink);
+  border-color: var(--sp-line);
+}
+
+.site-page .sp-product-buy {
+  color: var(--sp-ink);
+}
+
+.site-page .sp-contact-form {
+  background:
+    linear-gradient(165deg, rgba(245, 166, 35, 0.1), transparent 45%),
+    #ffffff;
+}
+
+.site-page .sp-field {
+  color: var(--sp-muted);
+}
+
+.site-page .sp-field input,
+.site-page .sp-field select,
+.site-page .sp-field textarea {
+  background: #fff;
+  border: 1px solid rgba(28, 42, 58, 0.14);
+  color: var(--sp-ink);
+}
+
+.site-page .sp-channel:hover,
+.site-page .sp-card--link:hover {
+  border-color: rgba(245, 166, 35, 0.45);
+}
+
+/* CTAs on light pages — beat global dark .btn !important */
+.site-page .btn-amber,
+.site-page .pc-add-btn {
+  background: var(--amber, #f5a623) !important;
+  color: #0b1520 !important;
+}
+
+.site-page .btn-ghost {
+  background: #ffffff !important;
+  color: var(--sp-ink) !important;
+  border: 1px solid rgba(28, 42, 58, 0.14) !important;
+  box-shadow: 0 6px 18px rgba(28, 42, 58, 0.06);
+}
+
+.site-page .btn-ghost:hover {
+  border-color: rgba(245, 166, 35, 0.55) !important;
+  color: #c47d0a !important;
+}
+
+/* Postcards wall — brighter white paper ground */
+.site-page .pc-wall {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(245, 166, 35, 0.08), transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 50%, #fff9f0 100%);
+}
+
+/* Homestays filters on light pages */
+.site-page .hs-filter {
+  background: #fff;
+  border-color: rgba(28, 42, 58, 0.12);
+  color: var(--sp-muted);
+  box-shadow: 0 4px 14px rgba(28, 42, 58, 0.04);
+}
+
+.site-page .hs-filter:hover {
+  color: var(--sp-ink);
+  border-color: rgba(245, 166, 35, 0.45);
+}
+
+.site-page .hs-filter.is-on {
+  background: var(--amber, #f5a623);
+  border-color: var(--amber, #f5a623);
+  color: #101e2c;
+}
+
+.site-page .hs-tile-body h2,
+.site-page .hs-tile-body h3,
+.site-page .hs-feature-title,
+.site-page .hs-tile-price strong {
+  color: var(--sp-ink);
+}
+
+.site-page .hs-tile-meta,
+.site-page .hs-tile-desc,
+.site-page .hs-empty,
+.site-page .hs-footnote,
+.site-page .hs-tile-best,
+.site-page .hs-tile-price span,
+.site-page .hs-tile-price del {
+  color: var(--sp-muted);
+}
+
+.site-page .hs-tile-cta {
+  color: #d4890f;
+}
+
+/* Experiences stage — softer page wash; keep photo stage readable */
+.site-page .immersion-section--page {
+  background-color: #f7fbff;
+}
+
+.site-page .immersion-section--page .immersion-veil {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(232, 244, 252, 0.45));
+}
+
+.site-page .immersion-section--page .immersion-chip--text,
+.site-page .immersion-section--page .immersion-chip {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(28, 42, 58, 0.1);
+  color: var(--sp-ink);
+  box-shadow: 0 8px 22px rgba(28, 42, 58, 0.08);
+}
+
+.site-page .immersion-section--page .immersion-chip-title,
+.site-page .immersion-section--page .immersion-chip-num {
+  color: var(--sp-ink);
+}
+
+.site-page .immersion-section--page .immersion-chip-tag {
+  color: var(--sp-muted);
+}
+
+.site-page .immersion-section--page .immersion-chip.is-active {
+  border-color: rgba(245, 166, 35, 0.55);
+  box-shadow: 0 10px 28px rgba(245, 166, 35, 0.18);
+}
+
+/* Profile cards on light pages — readable ink on white */
+.site-page .pf-card,
+.site-page .pf-booking-card,
+.site-page .pf-booking {
+  background: #fff;
+  border-color: var(--sp-line);
+  box-shadow: 0 10px 28px rgba(28, 42, 58, 0.06);
+  color: var(--sp-ink);
+}
+
+.site-page .pf-muted,
+.site-page .pf-status,
+.site-page .pf-signin p,
+.site-page .pf-email,
+.site-page .pf-identity-head p,
+.site-page .pf-meta-line,
+.site-page .pf-form label,
+.site-page .pf-balance span,
+.site-page .pf-rules div,
+.site-page .pf-tx-row span,
+.site-page .pf-booking-meta,
+.site-page .pf-booking-meta span,
+.site-page .sp-lead {
+  color: #4a5d72 !important;
+}
+
+.site-page .pf-signin h2,
+.site-page .pf-card h2,
+.site-page .pf-card h3,
+.site-page .pf-identity-head h2,
+.site-page .pf-section-head h2,
+.site-page .pf-tx-row strong,
+.site-page .pf-booking h3,
+.site-page .pf-booking-link {
+  color: var(--sp-ink) !important;
+}
+
+.site-page .pf-booking-link:hover {
+  color: #c47d0a !important;
+}
+
+.site-page .pf-meta-line {
+  color: #5a6b7d !important;
+}
+
+.site-page .pf-form input {
+  background: #f4f7fb;
+  border-color: rgba(28, 42, 58, 0.16);
+  color: var(--sp-ink);
+}
+
+.site-page .pf-form input::placeholder {
+  color: #7a8b9c;
+}
+
+.site-page .pf-expiry {
+  background: #fff3df;
+  border-color: rgba(196, 125, 10, 0.35);
+  color: #6b4a12;
+}
+
+.site-page .pf-expiry strong {
+  color: #8a5a0a;
+}
+
+.site-page .pf-rules div {
+  background: #f6f8fb;
+  border-color: rgba(28, 42, 58, 0.1);
+  color: #3d4f63 !important;
+}
+
+.site-page .pf-rules div strong {
+  color: var(--sp-ink);
+}
+
+.site-page .pf-tx-row {
+  border-top-color: rgba(28, 42, 58, 0.1);
+}
+
+.site-page .pf-tx-row em.is-credit {
+  color: #1f8a4c;
+}
+
+.site-page .pf-tx-row em.is-debit {
+  color: #c45c3a;
+}
+
+.site-page .pf-avatar {
+  border-color: rgba(28, 42, 58, 0.15);
+}
+
+.site-page .pf-avatar--fallback {
+  background: #eef2f6;
+  color: var(--sp-ink);
+}
+
+.site-page .pf-ok {
+  color: #1f8a4c;
+}
+
+.site-page .btn-ghost {
+  color: var(--sp-ink) !important;
+  border-color: rgba(28, 42, 58, 0.22) !important;
+}
+
+/* Navbar stays dark on every page (same as homepage) */
+.site-page nav,
+.site-page nav#mainNav,
+.site-page nav.solid,
+.site-page nav#mainNav.solid {
+  background: rgba(6, 12, 21, 0.94) !important;
+  background-color: rgba(6, 12, 21, 0.94) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+}
+
+.site-page .nav-links a,
+.site-page .logo,
+.site-page .nav-e-mark,
+.site-page .nav-e-menu,
+.site-page .nav-e-home {
+  color: #fff !important;
+  text-shadow: none;
+}
+
+.site-page .nav-e-bars span {
+  background: #fff !important;
+}
+
+.site-page .nav-e-logo {
+  mix-blend-mode: screen;
+}
+
+/* Footer blends from page white into cream story background */
+.site-page footer {
+  background-color: #ffffff !important;
+  background-image:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      rgba(255, 255, 255, 0.95) 48px,
+      rgba(247, 243, 237, 0.5) 110px,
+      rgba(247, 243, 237, 0) 180px
+    ),
+    var(--footer-story-image) !important;
+  background-size: 100% 100%, cover !important;
+  background-position: center top, center bottom !important;
+  background-repeat: no-repeat !important;
+  border-top: none !important;
+  color: #1c2a3a;
+}
+
+.site-page footer .footer-content {
+  background: transparent !important;
+}
+
+.site-page footer .footer-tag,
+.site-page footer .f-links a,
+.site-page footer .footer-copy,
+.site-page footer .f-copy {
+  color: rgba(28, 42, 58, 0.72);
+}
+
+.site-page footer .f-col-title {
+  color: #c47d0a;
+}
+
+.site-page footer .logo {
+  color: #1c2a3a;
+}
+
+.site-page footer .f-links a:hover {
+  color: #c47d0a;
+}

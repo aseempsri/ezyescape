@@ -1,30 +1,40 @@
-import { useEffect } from 'react';
 import Cursor from './Cursor';
 import Grain from './Grain';
 import Nav from './Nav';
 import Footer from './Footer';
 import MobileBar from './MobileBar';
+import SeoHead from './SeoHead';
 import useCustomCursor from '../hooks/useCustomCursor';
 import useScrollNav from '../hooks/useScrollNav';
 import '../styles/index.css';
 import '../styles/hero-nav.css';
 import '../styles/mobile.css';
 import '../styles/site-pages.css';
+import '../styles/site-pages-light.css'; // light happy theme — remove this import to reverse
 
 /** Shared chrome for marketing pages (Partner, Stories, Shop, Contact). */
-export default function SiteChrome({ children, title }) {
+export default function SiteChrome({
+  children,
+  title,
+  description,
+  path,
+  image,
+  noindex = false,
+  jsonLd,
+}) {
   useCustomCursor();
   useScrollNav(40);
 
-  useEffect(() => {
-    if (!title) return undefined;
-    const prev = document.title;
-    document.title = title;
-    return () => { document.title = prev; };
-  }, [title]);
-
   return (
     <div className="site-page">
+      <SeoHead
+        title={title}
+        description={description}
+        path={path}
+        image={image}
+        noindex={noindex}
+        jsonLd={jsonLd}
+      />
       <Cursor />
       <Grain />
       <Nav />

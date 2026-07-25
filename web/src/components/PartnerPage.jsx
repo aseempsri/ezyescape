@@ -2,6 +2,7 @@ import SiteChrome from './SiteChrome';
 import Typewriter from './Typewriter';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import { contactPath, homeSectionPath } from '../utils/paths';
+import AdSlot from './AdSlot';
 
 const BENEFITS = [
   { e: '🎯', t: 'Matched guests', d: 'We send travellers who already fit your home’s pace — quiet, family, trek, or workation.' },
@@ -22,7 +23,11 @@ const partnerWa = whatsappChatUrl(
 
 export default function PartnerPage() {
   return (
-    <SiteChrome title="Partner With Us — Ezy Escape">
+    <SiteChrome
+      title="List Your Mountain Homestay — Partner With Ezy Escape"
+      description="Host families: list your Kumaon home on Ezy Escape — story-led property pages, booking flow, and travellers matched to your place."
+      path="/partner"
+    >
       <section className="sp-hero sp-hero--partner">
         <div className="sp-hero-veil" aria-hidden="true" />
         <div className="container sp-hero-inner">
@@ -88,6 +93,8 @@ export default function PartnerPage() {
         </div>
       </section>
 
+      <AdSlot adId="partner-ad1" />
+
       <section className="sp-cta-band">
         <div className="container sp-cta-band-inner">
           <h2>Ready to host with intention?</h2>
@@ -100,6 +107,8 @@ export default function PartnerPage() {
           </div>
         </div>
       </section>
+
+      <AdSlot adId="partner-ad2" />
     </SiteChrome>
   );
 }

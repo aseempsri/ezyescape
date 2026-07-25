@@ -105,17 +105,16 @@
   background-position: center;
 }
 
-.sp-hero--partner {
+/* Shared hero backdrop for all marketing subpages (same as Experiences) */
+.sp-hero--partner,
+.sp-hero--stories,
+.sp-hero--shop,
+.sp-hero--contact,
+.sp-hero--experiences,
+.sp-hero--homestays {
   background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1800&q=80');
-}
-.sp-hero--stories {
-  background-image: url('https://images.unsplash.com/photo-1478131143081-80f7f84ac26e?auto=format&fit=crop&w=1800&q=80');
-}
-.sp-hero--shop {
-  background-image: url('https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=1800&q=80');
-}
-.sp-hero--contact {
-  background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1800&q=80');
+  background-size: cover;
+  background-position: center;
 }
 
 .sp-hero-veil {

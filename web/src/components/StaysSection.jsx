@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Typewriter from './Typewriter';
 import { fetchStays } from '../lib/api';
 import { goStay, staysIndexPath } from '../utils/paths';
@@ -9,11 +9,52 @@ import {
   stayMatchesFilter,
 } from '../utils/stays';
 
+function buildLoop(items) {
+  if (!items.length) return [];
+  let base = [...items];
+  while (base.length < 4) base = [...base, ...items];
+  return [...base, ...base];
+}
+
+function StayCard({ stay, onOpen }) {
+  const guests = stay.guest || stay.guests;
+  return (
+    <div
+      className="stay-card"
+      data-cat={stay.cat}
+      role="link"
+      tabIndex={0}
+      onClick={() => onOpen(stay)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(stay);
+        }
+      }}
+    >
+      <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
+        <div className="stay-img-overlay" />
+        <div className="stay-img-tags">
+          <span className="s-tag s-tag--host">
+            Hosts up to <em>{guests}</em>
+          </span>
+        </div>
+      </div>
+      <div className="stay-body">
+        <div className="stay-host">{stay.location}</div>
+        <div className="stay-name" title={stay.title}>{stay.title}</div>
+        <div className="stay-footer">
+          <span className="stay-best">{stay.best}</span>
+          <span className="stay-link stay-book-btn">View stay →</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function StaysSection() {
   const [filter, setFilter] = useState('all');
   const [stays, setStays] = useState(FALLBACK_STAYS);
-  const wrapRef = useRef(null);
-  const draggedRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -27,43 +68,18 @@ export default function StaysSection() {
     return () => { active = false; };
   }, []);
 
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
+  const filtered = useMemo(
+    () => stays.filter((s) => stayMatchesFilter(s.cat, filter)),
+    [stays, filter],
+  );
 
-    const onDown = (e) => {
-      isDown = true;
-      draggedRef.current = false;
-      wrap.classList.add('dragging');
-      startX = e.pageX - wrap.offsetLeft;
-      scrollLeft = wrap.scrollLeft;
-    };
-    const onUp = () => { isDown = false; wrap.classList.remove('dragging'); };
-    const onMove = (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - wrap.offsetLeft;
-      if (Math.abs(x - startX) > 5) draggedRef.current = true;
-      wrap.scrollLeft = scrollLeft - (x - startX) * 1.8;
-    };
-
-    wrap.addEventListener('mousedown', onDown);
-    wrap.addEventListener('mouseleave', onUp);
-    wrap.addEventListener('mouseup', onUp);
-    wrap.addEventListener('mousemove', onMove);
-    return () => {
-      wrap.removeEventListener('mousedown', onDown);
-      wrap.removeEventListener('mouseleave', onUp);
-      wrap.removeEventListener('mouseup', onUp);
-      wrap.removeEventListener('mousemove', onMove);
-    };
-  }, []);
+  const loop = useMemo(() => buildLoop(filtered), [filtered]);
+  const durationSec = Math.max(28, Math.round(loop.length / 2) * 7);
 
   useEffect(() => {
-    document.querySelectorAll('.stay-card').forEach((card) => {
+    const cards = document.querySelectorAll('.stays-section .stay-card');
+    const cleanups = [];
+    cards.forEach((card) => {
       const onMove = (e) => {
         const r = card.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5;
@@ -73,12 +89,15 @@ export default function StaysSection() {
       const onLeave = () => { card.style.transform = ''; };
       card.addEventListener('mousemove', onMove);
       card.addEventListener('mouseleave', onLeave);
+      cleanups.push(() => {
+        card.removeEventListener('mousemove', onMove);
+        card.removeEventListener('mouseleave', onLeave);
+      });
     });
-  }, [filter, stays]);
+    return () => cleanups.forEach((fn) => fn());
+  }, [loop]);
 
   const openStay = (stay) => {
-    if (draggedRef.current) return;
-    if (!stayMatchesFilter(stay.cat, filter)) return;
     goStay(stay.slug || stay.id);
   };
 
@@ -110,59 +129,24 @@ export default function StaysSection() {
             ))}
           </div>
         </div>
-        <div className="stays-track-wrap" id="staysWrap" ref={wrapRef}>
-          <div className="stays-track" id="staysTrack">
-            {stays.map((stay) => {
-              const active = stayMatchesFilter(stay.cat, filter);
-              return (
-                <div
-                  key={stay.id}
-                  className="stay-card"
-                  data-cat={stay.cat}
-                  role="link"
-                  tabIndex={active ? 0 : -1}
-                  onClick={() => openStay(stay)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      openStay(stay);
-                    }
-                  }}
-                  style={{
-                    opacity: active ? 1 : 0.25,
-                    transform: active ? '' : 'scale(0.97)',
-                    pointerEvents: active ? 'auto' : 'none',
-                    cursor: active ? 'pointer' : 'default',
-                  }}
-                >
-                  <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
-                    <div className="stay-img-overlay" />
-                    <div className="stay-img-tags">
-                      <span className="s-tag">{stay.guest} Adults</span>
-                      <span className="s-tag">{stay.rooms} Rooms</span>
-                    </div>
-                  </div>
-                  <div className="stay-body">
-                    <div className="stay-host">{stay.location}</div>
-                    <div className="stay-name">{stay.title}</div>
-                    {stay.disPrice ? (
-                      <del style={{ fontSize: 18 }}> ₹ {stay.disPrice} </del>
-                    ) : null}
-                    {stay.disPrice ? ' ' : null}/per Night &nbsp;&nbsp;
-                    <span className="price"><span>₹ {stay.price}</span></span>
-                    <div className="stay-footer">
-                      <span className="stay-best">{stay.best}</span>
-                      <span className="stay-link stay-book-btn">View stay →</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+
+        <div className="stays-track-wrap" id="staysWrap">
+          {loop.length > 0 ? (
+            <div
+              className="stays-track stays-track--marquee"
+              id="staysTrack"
+              key={filter}
+              style={{ animationDuration: `${durationSec}s` }}
+            >
+              {loop.map((stay, i) => (
+                <StayCard key={`${stay.id}-${i}`} stay={stay} onOpen={openStay} />
+              ))}
+            </div>
+          ) : (
+            <p className="stays-empty">No stays match this filter yet.</p>
+          )}
         </div>
-        <div className="stays-scroll-hint">
-          Swipe to explore <span>→</span>
-        </div>
+
         <div className="w" style={{ textAlign: 'center', marginTop: 8 }} data-reveal="up">
           <a href={staysIndexPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
             View All Homestays <span className="btn-arrow">→</span>

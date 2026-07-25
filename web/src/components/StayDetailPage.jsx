@@ -1,17 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import Cursor from './Cursor';
+import SiteChrome from './SiteChrome';
 import BookingForm from './BookingForm';
 import { BookingSuccessToast } from './BookingFlow';
-import useCustomCursor from '../hooks/useCustomCursor';
 import { fetchStay } from '../lib/api';
 import { STAYS } from '../data/stays';
-import { appPath, goHome, staysIndexPath } from '../utils/paths';
+import { appPath, staysIndexPath } from '../utils/paths';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import assetUrl from '../utils/assetUrl';
-import '../styles/index.css';
-import '../styles/hero-nav.css';
-import '../styles/mobile.css';
+import { lodgingJsonLd } from './SeoHead';
 import '../styles/stay-page.css';
+
+const STORY_FALLBACK = assetUrl('images/experiences/village-kitchen.jpg');
+const HOST_FALLBACK = assetUrl('images/experiences/local-culture.jpg');
+
+function resolveStayAsset(url) {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+  return assetUrl(url.replace(/^\//, ''));
+}
+
 
 function buildMedia(stay) {
   if (!stay) return [];
@@ -39,7 +46,11 @@ function normalizeApiStay(s) {
     best: s.best || '',
     description: s.description || '',
     story: s.story || '',
+    hosts: s.hosts || '',
+    storyImage: s.storyImage || '',
+    hostImage: s.hostImage || '',
     directions: s.directions || '',
+    mapQuery: s.mapQuery || '',
     highlights: s.highlights || [],
   };
 }
@@ -76,8 +87,6 @@ export default function StayDetailPage({ idOrSlug }) {
   const [index, setIndex] = useState(0);
   const [bookingResult, setBookingResult] = useState(null);
 
-  useCustomCursor();
-
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -108,11 +117,6 @@ export default function StayDetailPage({ idOrSlug }) {
     return () => { active = false; };
   }, [idOrSlug]);
 
-  useEffect(() => {
-    if (stay?.title) document.title = `${stay.title} — Ezy Escape`;
-    return () => { document.title = 'Ezy Escape — Curated Mountain Homestays'; };
-  }, [stay]);
-
   const media = useMemo(() => buildMedia(stay), [stay]);
   const photos = useMemo(() => {
     if (!stay) return [];
@@ -131,231 +135,268 @@ export default function StayDetailPage({ idOrSlug }) {
 
   if (loading) {
     return (
-      <div className="stay-page stay-page--loading">
-        <Cursor />
-        <p>Loading stay…</p>
-      </div>
+      <SiteChrome title="Loading stay — Ezy Escape" path="/stays" noindex>
+        <div className="stay-page">
+          <div className="stay-page-status">
+            <p>Loading stay…</p>
+          </div>
+        </div>
+      </SiteChrome>
     );
   }
 
   if (notFound || !stay) {
     return (
-      <div className="stay-page stay-page--missing">
-        <Cursor />
-        <h1>Stay not found</h1>
-        <p>This homestay may have been removed or the link is incorrect.</p>
-        <a className="btn btn-amber" href={appPath()}>Back to home</a>
-      </div>
+      <SiteChrome title="Stay not found — Ezy Escape" path="/stays" noindex>
+        <div className="stay-page">
+          <div className="stay-page-status">
+            <h1>Stay not found</h1>
+            <p>This homestay may have been removed or the link is incorrect.</p>
+            <a className="btn btn-amber" href={appPath()}>Back to home</a>
+          </div>
+        </div>
+      </SiteChrome>
     );
   }
 
   const tags = (stay.cat || '').split(/\s+/).filter(Boolean);
   const current = media[index];
   const go = (dir) => setIndex((i) => (i + dir + media.length) % media.length);
-  const storyParas = paragraphs(stay.story || stay.description);
+  const storyParas = paragraphs(stay.story || (!stay.hosts ? stay.description : ''));
+  const hostParas = paragraphs(stay.hosts);
+  const locationParas = paragraphs(stay.directions);
   const waMessage = `Hi! I'm interested in "${stay.title}" (${stay.location}). Could you share availability and help me plan my stay?`;
   const heroBg = current?.type === 'image' ? current.url : photos[0] || stay.image;
-
-  const openPhoto = (url) => {
-    const i = media.findIndex((m) => m.url === url);
-    if (i >= 0) {
-      setIndex(i);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
+  const storyVisual = resolveStayAsset(stay.storyImage) || STORY_FALLBACK;
+  const hostVisual = resolveStayAsset(stay.hostImage) || resolveStayAsset(photos[2] || photos[0] || stay.image) || HOST_FALLBACK;
+  const stayPathSeo = `/stays/${encodeURIComponent(stay.slug || stay.id)}`;
+  const stayDescription = String(stay.description || stay.story || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
 
   return (
-    <div className="stay-page">
-      <Cursor />
-
-      <header className="stay-page-nav">
-        <a href={appPath()} className="stay-page-logo" onClick={(e) => { e.preventDefault(); goHome(); }}>
-          <img
-            src={assetUrl('images/logo.png')}
-            alt="Ezy Escape"
-            onError={(e) => { e.target.outerHTML = 'Ezy<em>Escape</em>'; }}
-          />
-        </a>
-        <div className="stay-page-nav-actions">
-          <a href={staysIndexPath()} className="stay-page-back">← All stays</a>
-          <a href="#book" className="stay-page-book-chip">Book</a>
-        </div>
-      </header>
-
-      <section className="stay-cinematic" style={heroBg ? { '--stay-hero': `url('${heroBg}')` } : undefined}>
-        <div className="stay-cinematic-bg" aria-hidden="true" />
-        <div className="stay-cinematic-veil" aria-hidden="true" />
-
-        <div className="stay-cinematic-stage">
-          <div className="stay-cinematic-frame">
-            {media.length === 0 ? (
-              <div className="stay-hero-empty">No photos yet</div>
-            ) : current.type === 'video' ? (
-              <video src={current.url} controls playsInline className="stay-cinematic-media" />
-            ) : (
-              <img src={current.url} alt={stay.title} className="stay-cinematic-media" key={current.url} />
-            )}
-
-            {media.length > 1 && (
-              <>
-                <button type="button" className="stay-hero-nav stay-hero-nav--prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
-                <button type="button" className="stay-hero-nav stay-hero-nav--next" onClick={() => go(1)} aria-label="Next">›</button>
-                <div className="stay-hero-counter">{index + 1} / {media.length}</div>
-              </>
-            )}
-          </div>
-
-          <div className="stay-cinematic-copy">
+    <SiteChrome
+      title={`${stay.title} | ${stay.location || 'Kumaon'} Homestay — Ezy Escape`}
+      description={stayDescription || `${stay.title} — mountain homestay in ${stay.location || 'Kumaon'}.`}
+      path={stayPathSeo}
+      image={stay.image || stay.images?.[0]}
+      jsonLd={lodgingJsonLd(stay)}
+    >
+      <div className="stay-page">
+        <div className="stay-narrative">
+          <header className="stay-page-intro">
+            <a href={staysIndexPath()} className="stay-back-link">← All stays</a>
             <p className="stay-hero-location">{stay.location}</p>
             <h1>{stay.title}</h1>
-            <div className="stay-stat-row">
-              <span className="stay-stat"><em>{stay.guest}</em> guests</span>
-              <span className="stay-stat"><em>{stay.rooms}</em> rooms</span>
-              {stay.best && <span className="stay-stat stay-stat--best">{stay.best}</span>}
-            </div>
-            {tags.length > 0 && (
-              <div className="stay-hero-tags">
-                {tags.map((t) => <span key={t} className="stay-hero-tag">{t}</span>)}
-              </div>
-            )}
-            {stay.description && <p className="stay-hero-desc">{stay.description}</p>}
-            <div className="stay-cinematic-foot">
-              <div className="stay-hero-price">
-                {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-                <strong>₹{stay.price}</strong>
-                <span>/ night</span>
-              </div>
-              <div className="stay-hero-actions">
-                <a href="#book" className="btn btn-amber">Book this stay →</a>
-                <a
-                  href={whatsappChatUrl(waMessage)}
-                  className="btn btn-ghost"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Ask on WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+            {stay.description ? <p className="stay-page-intro-lead">{stay.description}</p> : null}
+          </header>
 
-        {media.length > 1 && (
-          <div className="stay-filmstrip" aria-label="Stay gallery">
-            {media.map((m, i) => (
-              <button
-                type="button"
-                key={`${m.url}-${i}`}
-                className={`stay-film-frame${i === index ? ' is-active' : ''}`}
-                onClick={() => setIndex(i)}
-                aria-label={`View ${m.type} ${i + 1}`}
-              >
-                {m.type === 'video' ? (
-                  <video src={m.url} muted className="stay-film-media" />
-                ) : (
-                  <img src={m.url} alt="" className="stay-film-media" />
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {stay.highlights?.length > 0 && (
-        <section className="stay-moments">
-          <div className="stay-section-head">
-            <p className="stay-eyebrow">At a glance</p>
-            <h2>Moments that shape this stay</h2>
-          </div>
-          <div className="stay-moment-grid">
-            {stay.highlights.map((h) => (
-              <article key={h} className="stay-moment-card">
-                <span className="stay-moment-icon" aria-hidden="true">{highlightIcon(h)}</span>
-                <p>{h}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <div className="stay-page-body">
-        <div className="stay-page-main">
           {storyParas.length > 0 && (
             <section className="stay-story">
-              <div className="stay-story-visual" style={photos[0] ? { backgroundImage: `url('${photos[0]}')` } : undefined}>
+              <div className="stay-story-visual" style={storyVisual ? { backgroundImage: `url('${storyVisual}')` } : undefined}>
                 <div className="stay-story-visual-shade" />
                 <p className="stay-story-kicker">The story</p>
-                <h2>{stay.title}</h2>
+                <h2>Life inside this home</h2>
               </div>
               <div className="stay-story-copy">
-                {storyParas.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+                {storyParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
               </div>
             </section>
           )}
 
-          {stay.directions && (
-            <section className="stay-journey">
-              <div className="stay-section-head">
-                <p className="stay-eyebrow">Getting there</p>
-                <h2>How to reach the home</h2>
-              </div>
-              <div className="stay-journey-card">
-                <span className="stay-journey-icon" aria-hidden="true">🗺</span>
-                <div>
-                  {paragraphs(stay.directions).map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
+          {hostParas.length > 0 && (
+            <section className="stay-hosts">
+              <div className="stay-hosts-copy">
+                <div className="stay-section-head">
+                  <p className="stay-eyebrow">The hosts</p>
+                  <h2>Who welcomes you in</h2>
                 </div>
+                {hostParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
+              </div>
+              <div
+                className="stay-hosts-visual"
+                style={hostVisual ? { backgroundImage: `url('${hostVisual}')` } : undefined}
+                aria-hidden="true"
+              />
+            </section>
+          )}
+
+          {(stay.location || locationParas.length > 0) && (
+            <section className="stay-location">
+              <div className="stay-section-head">
+                <p className="stay-eyebrow">About the location</p>
+                <h2>{stay.location || 'The hills around you'}</h2>
+              </div>
+              <div className="stay-location-split">
+                <div className="stay-location-card stay-location-card--text">
+                  <span className="stay-journey-icon" aria-hidden="true">🗺</span>
+                  <div>
+                    {locationParas.length > 0 ? (
+                      locationParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)
+                    ) : (
+                      <p>
+                        This stay sits in {stay.location} — a place shaped by mountain light, local rhythms, and the kind of quiet that makes days feel longer.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <a
+                  className="stay-location-card stay-location-card--map"
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Open ${stay.location || 'location'} in Google Maps`}
+                >
+                  <iframe
+                    title={`Map of ${stay.location || 'stay location'}`}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}&z=12&output=embed`}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                    tabIndex={-1}
+                  />
+                </a>
               </div>
             </section>
           )}
 
-          {photos.length > 0 && (
-            <section className="stay-mosaic">
+          {stay.highlights?.length > 0 && (
+            <section className="stay-moments stay-moments--inline">
               <div className="stay-section-head">
-                <p className="stay-eyebrow">Gallery</p>
-                <h2>See the atmosphere</h2>
+                <p className="stay-eyebrow">At a glance</p>
+                <h2>Moments that shape this stay</h2>
               </div>
-              <div className="stay-mosaic-grid">
-                {photos.map((url, i) => (
-                  <button
-                    type="button"
-                    key={url}
-                    className={`stay-mosaic-tile stay-mosaic-tile--${i % 5 === 0 ? 'wide' : i % 3 === 0 ? 'tall' : 'std'}`}
-                    style={{ backgroundImage: `url('${url}')` }}
-                    onClick={() => openPhoto(url)}
-                    aria-label="View photo"
-                  />
+              <div className="stay-moment-grid">
+                {stay.highlights.map((h) => (
+                  <article key={h} className="stay-moment-card">
+                    <span className="stay-moment-icon" aria-hidden="true">{highlightIcon(h)}</span>
+                    <p>{h}</p>
+                  </article>
                 ))}
               </div>
             </section>
           )}
         </div>
 
-        <aside className="stay-page-aside" id="book">
-          <div className="stay-book-card">
-            <p className="stay-book-kicker">Reserve your dates</p>
-            <h2>Book this stay</h2>
-            <p className="stay-book-price">
-              {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-              <strong>₹{stay.price}</strong>
-              <span>/ night</span>
-            </p>
-            <BookingForm
-              stay={stay}
-              onSuccess={(result) => setBookingResult(result)}
-            />
-            <a
-              href={whatsappChatUrl(waMessage)}
-              className="stay-book-wa"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Prefer WhatsApp? Talk to a curator →
-            </a>
-          </div>
-        </aside>
-      </div>
+        <section
+          id="stay-showcase"
+          className="stay-cinematic"
+          style={heroBg ? { '--stay-hero': `url('${heroBg}')` } : undefined}
+        >
+          <div className="stay-cinematic-bg" aria-hidden="true" />
+          <div className="stay-cinematic-veil" aria-hidden="true" />
 
-      <BookingSuccessToast result={bookingResult} onClose={() => setBookingResult(null)} />
-    </div>
+          <div className="stay-cinematic-stage">
+            <div className="stay-cinematic-frame">
+              {media.length === 0 ? (
+                <div className="stay-hero-empty">No photos yet</div>
+              ) : current.type === 'video' ? (
+                <video src={current.url} controls playsInline className="stay-cinematic-media" />
+              ) : (
+                <img src={current.url} alt={stay.title} className="stay-cinematic-media" key={current.url} />
+              )}
+
+              {media.length > 1 && (
+                <>
+                  <button type="button" className="stay-hero-nav stay-hero-nav--prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
+                  <button type="button" className="stay-hero-nav stay-hero-nav--next" onClick={() => go(1)} aria-label="Next">›</button>
+                  <div className="stay-hero-counter">{index + 1} / {media.length}</div>
+                </>
+              )}
+            </div>
+
+            <div className="stay-cinematic-copy">
+              <a href={staysIndexPath()} className="stay-back-link">← All stays</a>
+              <p className="stay-hero-location">{stay.location}</p>
+              <h1>{stay.title}</h1>
+              <div className="stay-stat-row">
+                <span className="stay-stat"><em>{stay.guest}</em> guests</span>
+                <span className="stay-stat"><em>{stay.rooms}</em> rooms</span>
+                {stay.best && <span className="stay-stat stay-stat--best">{stay.best}</span>}
+              </div>
+              {tags.length > 0 && (
+                <div className="stay-hero-tags">
+                  {tags.map((t) => <span key={t} className="stay-hero-tag">{t}</span>)}
+                </div>
+              )}
+              {stay.description && <p className="stay-hero-desc">{stay.description}</p>}
+              <div className="stay-cinematic-foot">
+                <div className="stay-hero-price">
+                  {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
+                  <strong>₹{stay.price}</strong>
+                  <span>/ night</span>
+                </div>
+                <div className="stay-hero-actions">
+                  <a href="#book" className="btn btn-amber">Book this stay →</a>
+                  <a
+                    href={whatsappChatUrl(waMessage)}
+                    className="btn btn-ghost"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ask on WhatsApp
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {media.length > 1 && (
+            <div className="stay-filmstrip" aria-label="Stay gallery">
+              {media.map((m, i) => (
+                <button
+                  type="button"
+                  key={`${m.url}-${i}`}
+                  className={`stay-film-frame${i === index ? ' is-active' : ''}`}
+                  onClick={() => setIndex(i)}
+                  aria-label={`View ${m.type} ${i + 1}`}
+                >
+                  {m.type === 'video' ? (
+                    <video src={m.url} muted className="stay-film-media" />
+                  ) : (
+                    <img src={m.url} alt="" className="stay-film-media" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="stay-booking" id="book">
+          <div className="stay-booking-inner">
+            <div className="stay-booking-intro">
+              <p className="stay-eyebrow">Ready when you are</p>
+              <h2>Book this stay</h2>
+              <p className="stay-booking-lead">
+                Choose your dates below. A curator will confirm availability and help shape the rest of your trip.
+              </p>
+              <div className="stay-book-price">
+                {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
+                <strong>₹{stay.price}</strong>
+                <span>/ night</span>
+              </div>
+            </div>
+            <div className="stay-book-card">
+              <p className="stay-book-kicker">Reserve your dates</p>
+              <BookingForm
+                stay={stay}
+                onSuccess={(result) => setBookingResult(result)}
+              />
+              <a
+                href={whatsappChatUrl(waMessage)}
+                className="stay-book-wa"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Prefer WhatsApp? Talk to a curator →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <BookingSuccessToast result={bookingResult} onClose={() => setBookingResult(null)} />
+      </div>
+    </SiteChrome>
   );
 }

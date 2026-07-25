@@ -1,0 +1,9 @@
+# Fallback only — production nginx proxies /robots.txt to the API.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://ezyescape.com/sitemap.xml

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { QUESTIONS, RESULTS, tallyAnswers } from '../data/quiz';
 import Magnetic from './Magnetic';
 import { staysIndexPath } from '../utils/paths';
@@ -14,13 +14,6 @@ export default function InlineQuiz() {
   const q = QUESTIONS[cur];
   const selectedOpt = q?.opts.find((o) => o.v === sel) || null;
   const sceneImg = selectedOpt?.img || q?.scene;
-  const progress = ((cur + (sel ? 0.35 : 0)) / QUESTIONS.length) * 100;
-
-  useEffect(() => {
-    const section = document.getElementById('quiz');
-    if (!section || !sceneImg) return;
-    section.style.setProperty('--quiz-scene', `url('${sceneImg}')`);
-  }, [sceneImg]);
 
   const goNext = () => {
     if (!sel) return;
@@ -31,11 +24,6 @@ export default function InlineQuiz() {
         setAnswers(next);
         setDone(true);
         setAnim('in');
-        const section = document.getElementById('quiz');
-        const vibe = RESULTS[tallyAnswers(next)] || RESULTS.mixed;
-        if (section && vibe.img) {
-          section.style.setProperty('--quiz-scene', `url('${vibe.img}')`);
-        }
       } else {
         setAnswers(next);
         setCur((c) => c + 1);
@@ -63,10 +51,6 @@ export default function InlineQuiz() {
     setSel(null);
     setDone(false);
     setAnim('in');
-    const section = document.getElementById('quiz');
-    if (section && QUESTIONS[0]?.scene) {
-      section.style.setProperty('--quiz-scene', `url('${QUESTIONS[0].scene}')`);
-    }
   };
 
   if (done) {
@@ -113,22 +97,6 @@ export default function InlineQuiz() {
 
   return (
     <div className={`match-console match-panel-${anim}`}>
-      <div className="match-trail" aria-hidden="true">
-        {QUESTIONS.map((step, i) => {
-          const state = i < cur ? 'is-done' : i === cur ? 'is-active' : '';
-          return (
-            <div key={step.id} className={`match-trail-step ${state}`}>
-              <span className="match-trail-node">{i + 1}</span>
-              <span className="match-trail-label">{step.sceneLabel}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="match-progress-bar" aria-hidden="true">
-        <span style={{ width: `${Math.max(8, progress)}%` }} />
-      </div>
-
       <div className="match-stage">
         <aside className="match-scene">
           <div
@@ -156,12 +124,6 @@ export default function InlineQuiz() {
                 className={`match-opt${sel === o.v ? ' is-sel' : ''}`}
                 onClick={() => setSel(o.v)}
               >
-                <span
-                  className="match-opt-img"
-                  style={{ backgroundImage: `url('${o.img}')` }}
-                  aria-hidden="true"
-                />
-                <span className="match-opt-shade" aria-hidden="true" />
                 <span className="match-opt-emoji" aria-hidden="true">{o.e}</span>
                 <span className="match-opt-text">{o.t}</span>
                 <span className="match-opt-check" aria-hidden="true">✓</span>

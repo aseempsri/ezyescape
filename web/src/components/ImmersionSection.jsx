@@ -1,20 +1,66 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Typewriter from './Typewriter';
 import { EXPERIENCES, IMMERSION_MOMENTS } from '../data/experiences';
 import assetUrl from '../utils/assetUrl';
+import AdSlot from './AdSlot';
 
 const EXP_BG = assetUrl('images/bg.png');
+const GAP = 14;
+const COLS = 4;
+const ROWS = 5;
+
+/** Convert 0-based cell spans into animatable absolute box styles. */
+function cellBox(c1, r1, c2, r2) {
+  const colSpan = c2 - c1;
+  const rowSpan = r2 - r1;
+  const colTrack = `(100% - ${(COLS - 1) * GAP}px) / ${COLS}`;
+  const rowTrack = `(100% - ${(ROWS - 1) * GAP}px) / ${ROWS}`;
+  return {
+    left: `calc(${c1} * (${colTrack} + ${GAP}px))`,
+    top: `calc(${r1} * (${rowTrack} + ${GAP}px))`,
+    width: `calc(${colSpan} * (${colTrack}) + ${(colSpan - 1) * GAP}px)`,
+    height: `calc(${rowSpan} * (${rowTrack}) + ${(rowSpan - 1) * GAP}px)`,
+  };
+}
+
+const DEFAULT_LAYOUT = {
+  kitchen: cellBox(0, 0, 2, 3),
+  sunrise: cellBox(2, 0, 3, 1),
+  forest: cellBox(3, 0, 4, 1),
+  farm: cellBox(2, 1, 4, 5),
+  culture: cellBox(0, 3, 1, 5),
+  waterfall: cellBox(1, 3, 2, 5),
+};
+
+/** Focused card always left ~75%; others always stack on the right in fixed order. */
+function layoutForFocus(focusId) {
+  if (!focusId) return DEFAULT_LAYOUT;
+
+  const others = EXPERIENCES.filter((e) => e.id !== focusId);
+  const layout = {
+    [focusId]: cellBox(0, 0, 3, 5),
+  };
+  others.forEach((exp, i) => {
+    layout[exp.id] = cellBox(3, i, 4, i + 1);
+  });
+  return layout;
+}
 
 export default function ImmersionSection() {
-  const [activeId, setActiveId] = useState(EXPERIENCES[0].id);
-  const active = EXPERIENCES.find((e) => e.id === activeId) || EXPERIENCES[0];
+  const [activeId, setActiveId] = useState(null);
+  const bgImg = (EXPERIENCES.find((e) => e.id === activeId) || EXPERIENCES[0]).img;
+  const layout = useMemo(() => layoutForFocus(activeId), [activeId]);
+
+  const onClickTile = (id) => {
+    setActiveId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <section
       className="immersion-section"
       id="experiences"
       style={{
-        backgroundImage: `url(${EXP_BG}), url(${active.img})`,
+        backgroundImage: `url(${EXP_BG}), url(${bgImg})`,
       }}
     >
       <div className="immersion-veil" aria-hidden="true" />
@@ -45,61 +91,35 @@ export default function ImmersionSection() {
           </div>
         </header>
 
-        <div className="immersion-stage" data-reveal="up" data-delay="2">
-          <article className="immersion-hero" key={active.id}>
-            <img className="immersion-hero-photo" src={active.img} alt={active.title} />
-            <div className="immersion-hero-shade" />
-            <div className="immersion-hero-copy">
-              <span className="immersion-tag">{active.tag}</span>
-              <span className="immersion-hero-emoji" aria-hidden="true">{active.emoji}</span>
-              <h3 className="immersion-hero-title">{active.title}</h3>
-              <p className="immersion-hero-desc">{active.desc}</p>
-            </div>
-          </article>
-
-          <div className="immersion-rail" role="list">
-            {EXPERIENCES.map((exp, i) => (
+        <div
+          className="immersion-gallery"
+          data-focus={activeId || undefined}
+          data-reveal="up"
+          data-delay="2"
+        >
+          {EXPERIENCES.map((exp) => {
+            const isFocus = activeId === exp.id;
+            return (
               <button
                 key={exp.id}
                 type="button"
-                role="listitem"
-                className={`immersion-chip${activeId === exp.id ? ' is-active' : ''}`}
-                onMouseEnter={() => setActiveId(exp.id)}
-                onFocus={() => setActiveId(exp.id)}
-                onClick={() => setActiveId(exp.id)}
+                className={`immersion-tile${isFocus ? ' is-focus' : ''}${activeId && !isFocus ? ' is-side' : ''}`}
+                style={layout[exp.id]}
+                aria-pressed={isFocus}
+                onClick={() => onClickTile(exp.id)}
               >
-                <span className="immersion-chip-num">{String(i + 1).padStart(2, '0')}</span>
-                <img className="immersion-chip-img" src={exp.img} alt="" />
-                <span className="immersion-chip-body">
-                  <span className="immersion-chip-emoji" aria-hidden="true">{exp.emoji}</span>
-                  <span className="immersion-chip-title">{exp.title}</span>
-                  <span className="immersion-chip-tag">{exp.tag}</span>
-                </span>
+                <img className="immersion-tile-photo" src={exp.img} alt="" />
+                <span className="immersion-tile-shade" aria-hidden="true" />
+                <span className="immersion-tile-emoji" aria-hidden="true">{exp.emoji}</span>
+                <span className="immersion-tile-tag">{exp.tag}</span>
+                <span className="immersion-tile-title">{exp.title}</span>
+                <span className="immersion-tile-desc">{exp.desc}</span>
               </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="immersion-gallery" data-reveal="up" data-delay="3">
-          {EXPERIENCES.map((exp) => (
-            <button
-              key={`tile-${exp.id}`}
-              type="button"
-              className={`immersion-tile immersion-tile--${exp.size}${activeId === exp.id ? ' is-active' : ''}`}
-              onMouseEnter={() => setActiveId(exp.id)}
-              onFocus={() => setActiveId(exp.id)}
-              onClick={() => setActiveId(exp.id)}
-            >
-              <img className="immersion-tile-photo" src={exp.img} alt="" />
-              <span className="immersion-tile-shade" aria-hidden="true" />
-              <span className="immersion-tile-emoji" aria-hidden="true">{exp.emoji}</span>
-              <span className="immersion-tile-tag">{exp.tag}</span>
-              <span className="immersion-tile-title">{exp.title}</span>
-              <span className="immersion-tile-desc">{exp.desc}</span>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
+      <AdSlot adId="home-ad1" />
     </section>
   );
 }

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 220" role="img" aria-label="Ezy Escape journey from city to mountain home">
+  <rect width="1600" height="220" fill="#eef1f5"/>
+  <path fill="#9eb0c8" d="M0 150 L80 120 L160 140 L260 100 L340 130 L420 95 L520 125 L620 90 L720 120 L820 85 L920 115 L1020 80 L1120 110 L1220 75 L1320 105 L1420 70 L1520 100 L1600 85 L1600 220 L0 220 Z"/>
+  <path fill="#7f95b3" d="M0 170 L100 145 L200 165 L300 135 L420 160 L540 130 L660 155 L780 125 L900 150 L1020 120 L1140 148 L1260 118 L1380 145 L1500 122 L1600 140 L1600 220 L0 220 Z"/>
+  <path fill="#3d5a80" d="M0 195 L120 180 L240 198 L380 175 L520 192 L680 170 L820 190 L980 168 L1120 188 L1280 165 L1420 185 L1600 172 L1600 220 L0 220 Z"/>
+  <g fill="#2c4a6e">
+    <circle cx="70" cy="118" r="10"/>
+    <path d="M62 130 h16 l4 42 h-8 l-2-18 h-4 l-2 18 h-8 z"/>
+    <path d="M54 138 h10 v18 h-6 z"/>
+    <rect x="78" y="136" width="14" height="18" rx="2"/>
+    <path d="M82 136 v-8 h6 v8"/>
+    <circle cx="160" cy="122" r="8"/>
+    <path d="M154 131 h12 l3 36 h-6 l-1-14 h-4 l-1 14 h-6 z"/>
+    <circle cx="186" cy="120" r="8"/>
+    <path d="M180 129 h12 l3 38 h-6 l-1-15 h-4 l-1 15 h-6 z"/>
+    <path d="M148 188 q20 -8 50 0" fill="none" stroke="#2c4a6e" stroke-width="3"/>
+    <rect x="250" y="148" width="70" height="28" rx="4"/>
+    <path d="M260 148 h35 l12-18 h18 v18"/>
+    <circle cx="268" cy="178" r="8"/>
+    <circle cx="304" cy="178" r="8"/>
+    <circle cx="268" cy="178" r="3" fill="#eef1f5"/>
+    <circle cx="304" cy="178" r="3" fill="#eef1f5"/>
+    <rect x="270" y="138" width="10" height="10" rx="1"/>
+    <path d="M380 170 l35-42 35 42 z"/>
+    <rect x="395" y="170" width="40" height="28"/>
+    <rect x="408" y="180" width="12" height="18" fill="#eef1f5"/>
+    <rect x="448" y="155" width="8" height="43"/>
+    <path d="M444 155 h16 l-8-12 z"/>
+    <circle cx="500" cy="125" r="9"/>
+    <path d="M492 136 h16 l4 40 h-7 l-2-16 h-6 l-2 16 h-7 z"/>
+    <path d="M486 145 h8 v4 h-12 z"/>
+    <circle cx="530" cy="128" r="8"/>
+    <path d="M523 137 h14 l3 38 h-6 l-1-14 h-4 l-1 14 h-6 z"/>
+    <path d="M512 148 h14" stroke="#2c4a6e" stroke-width="3" fill="none"/>
+    <circle cx="600" cy="126" r="9"/>
+    <path d="M592 137 h16 l3 40 h-7 l-1-16 h-6 l-1 16 h-7 z"/>
+    <ellipse cx="620" cy="150" rx="10" ry="7"/>
+    <path d="M628 148 h8 v4 h-6" fill="none" stroke="#2c4a6e" stroke-width="2"/>
+    <rect x="575" y="175" width="55" height="8" rx="1"/>
+    <circle cx="700" cy="128" r="8"/>
+    <path d="M694 137 h12 l2 30 h-5 l-1-12 h-4 l-1 12 h-5 z"/>
+    <circle cx="730" cy="126" r="8"/>
+    <path d="M724 135 h12 l2 32 h-5 l-1-13 h-4 l-1 13 h-5 z"/>
+    <circle cx="760" cy="128" r="8"/>
+    <path d="M754 137 h12 l2 30 h-5 l-1-12 h-4 l-1 12 h-5 z"/>
+    <ellipse cx="730" cy="175" rx="16" ry="8"/>
+    <path d="M722 168 q8 -18 16 0 q-8 -6 -16 0" fill="#2c4a6e"/>
+    <circle cx="840" cy="118" r="9"/>
+    <path d="M825 145 h30 l-6 8 h-18 z"/>
+    <path d="M832 145 v28 M862 145 v28"/>
+    <path d="M820 135 q20 -25 40 0" fill="none" stroke="#2c4a6e" stroke-width="3"/>
+    <circle cx="930" cy="120" r="9"/>
+    <path d="M922 131 h16 l4 42 h-8 l-2-18 h-4 l-2 18 h-8 z"/>
+    <circle cx="960" cy="122" r="8"/>
+    <path d="M953 131 h14 l3 40 h-7 l-1-16 h-4 l-1 16 h-7 z"/>
+    <circle cx="945" cy="145" r="6"/>
+    <path d="M940 152 h10 l2 28 h-5 l-1-12 h-2 l-1 12 h-5 z"/>
+    <circle cx="975" cy="148" r="5"/>
+    <path d="M971 154 h8 l2 24 h-4 l-1-10 h-2 l-1 10 h-4 z"/>
+    <circle cx="1060" cy="124" r="9"/>
+    <path d="M1052 135 h16 l3 40 h-7 l-1-16 h-6 l-1 16 h-7 z"/>
+    <rect x="1072" y="148" width="22" height="14" rx="1"/>
+    <path d="M1076 152 h14 M1076 156 h10" stroke="#eef1f5" stroke-width="1.5"/>
+    <rect x="1135" y="140" width="50" height="40" rx="2"/>
+    <path d="M1130 140 h60 l-8-14 h-44 z"/>
+    <rect x="1152" y="155" width="14" height="25" fill="#eef1f5"/>
+    <circle cx="1125" cy="155" r="7"/>
+    <path d="M1119 163 h12 l2 28 h-5 l-1-12 h-4 l-1 12 h-5 z"/>
+    <circle cx="1240" cy="122" r="9"/>
+    <path d="M1232 133 h16 l4 42 h-8 l-2-18 h-4 l-2 18 h-8 z"/>
+    <path d="M1248 140 q18 -20 8 -32" fill="none" stroke="#2c4a6e" stroke-width="3"/>
+    <circle cx="1272" cy="120" r="8"/>
+    <path d="M1265 129 h14 l3 40 h-6 l-1-15 h-4 l-1 15 h-6 z"/>
+    <path d="M1340 185 l40-70 40 70 z"/>
+    <path d="M1380 115 v-28"/>
+    <path d="M1380 90 h22 l-6 8 6 8 h-22 z"/>
+  </g>
+  <path d="M0 198 H1600" stroke="#2c4a6e" stroke-width="2" opacity="0.25"/>
+  <text x="40" y="36" fill="#2c4a6e" font-family="Poppins, Helvetica, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="2">EZY ESCAPE</text>
+  <text x="40" y="54" fill="#5a6b7d" font-family="Poppins, Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1">City - Trail - Home - Host - Hearth - Hills</text>
+</svg>

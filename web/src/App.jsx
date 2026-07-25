@@ -17,8 +17,10 @@ import useReveal from './hooks/useReveal';
 import useCounterAnimation from './hooks/useCounterAnimation';
 import assetUrl from './utils/assetUrl';
 import { whatsappChatUrl } from './utils/whatsapp';
-import { storiesPath } from './utils/paths';
 import { hasSeenSplash } from './utils/splash';
+import PostcardsSection from './components/PostcardsSection';
+import SeoHead, { organizationJsonLd } from './components/SeoHead';
+import AdSlot from './components/AdSlot';
 import './styles/index.css';
 import './styles/mobile.css';
 import './styles/hero-nav.css';
@@ -71,6 +73,12 @@ export default function App() {
 
   return (
     <>
+      <SeoHead
+        title="Ezy Escape — Curated Mountain Homestays in Kumaon"
+        description="Discover authentic mountain homestays in Almora, Ranikhet, Nainital and Kausani — matched to how you travel, hosted by local families."
+        path="/"
+        jsonLd={organizationJsonLd()}
+      />
       <Cursor />
       <Grain />
       <Loader onHeroReady={handleHeroReady} />
@@ -185,7 +193,6 @@ export default function App() {
       </section>
 
       <section className="quiz-section match-section" id="quiz">
-        <div className="match-section-bg" aria-hidden="true" />
         <div className="match-section-veil" aria-hidden="true" />
         <div className="container match-section-inner">
           <header className="match-intro" data-reveal="up">
@@ -295,54 +302,10 @@ export default function App() {
             </div>
           </div>
         </div>
+        <AdSlot adId="home-ad2" />
       </section>
 
-      <section className="testimonials-section" id="stories" style={{ paddingTop: 60, paddingBottom: 160 }}>
-        <div className="container">
-          <div className="w">
-            <div data-reveal="up">
-              <div className="eyebrow" style={{ color: '#fff' }}>Guest Stories</div>
-              <h2 className="why-big-text" data-reveal>
-                Guests come for the mountains. <br />
-                <span className="why-script-line stories-script">
-                  <em id="typewriter-7" className="typewriter-cursor">
-                    <Typewriter text="They remember the people." className="" style={{ fontStyle: 'normal', color: '#fff' }} />
-                  </em>
-                </span>
-              </h2>
-            </div>
-            <div className="t-grid-wrap">
-            <div className="t-grid">
-              {[
-                { stars: '★★★★★', text: 'We arrived as guests and left as family. The home-cooked meals, evening conversations and village walk made this feel nothing like a hotel stay. Nothing I\'ve booked before came close.', emoji: '🌸', name: 'Priya & Rahul S.', from: 'Guests from Delhi' },
-                { stars: '★★★★★', text: 'The short walk to the property became our favourite part of the whole trip. I had been nervous about it. I shouldn\'t have been. The location was peaceful, beautiful and completely worth every step.', emoji: '🏔️', name: 'Sahil M.', from: 'Guest from Mumbai' },
-                { stars: '★★★★★', text: 'Our children still talk about the host family months later. They learned about farming, local food and mountain life in a way no resort could ever offer. This is the travel I want my kids to grow up with.', emoji: '🌿', name: 'The Kapoor Family', from: 'Guests from Gurgaon' },
-              ].map((t, i) => (
-                <div key={t.name} className="t-card" data-reveal="up" data-delay={String(i + 1)}>
-                  <div className="t-stars">{t.stars}</div>
-                  <p className="t-text">{t.text}</p>
-                  <div className="t-who">
-                    <div className="t-avatar">{t.emoji}</div>
-                    <div>
-                      <div className="t-name">{t.name}</div>
-                      <div className="t-from">{t.from}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            </div>
-            <div className="testimonials-dots" aria-hidden="true">
-              <span /><span /><span />
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 28 }} data-reveal="up">
-              <a href={storiesPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
-                Read more stories <span className="btn-arrow">→</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PostcardsSection />
 
       <MobileBar />
 
@@ -375,6 +338,7 @@ export default function App() {
             </Magnetic>
           </div>
         </div>
+        <AdSlot adId="home-ad4" />
       </section>
 
       <Footer />

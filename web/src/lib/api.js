@@ -193,3 +193,147 @@ export async function adminDeleteStay(id) {
   }
   return res.json();
 }
+
+// ── Postcards ──
+export async function fetchPostcards() {
+  const res = await fetch(getApiUrl('/api/postcards'));
+  if (!res.ok) throw new Error('Failed to load postcards');
+  return res.json();
+}
+
+export async function fetchPostcard(id) {
+  const res = await fetch(getApiUrl(`/api/postcards/${encodeURIComponent(id)}`));
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to load postcard');
+  return res.json();
+}
+
+export async function submitPostcard(formData) {
+  const res = await fetch(getApiUrl('/api/postcards'), {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Could not send postcard');
+  return data;
+}
+
+export async function adminFetchPostcards(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : '';
+  const res = await fetch(getApiUrl(`/api/admin/postcards${q}`), { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to load postcards');
+  return res.json();
+}
+
+export async function adminPostcardPendingCount() {
+  const res = await fetch(getApiUrl('/api/admin/postcards/pending-count'), { credentials: 'include' });
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return data.count || 0;
+}
+
+export async function adminApprovePostcard(id) {
+  const res = await fetch(getApiUrl(`/api/admin/postcards/${id}/approve`), {
+    method: 'POST',
+    credentials: 'include',
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Approve failed');
+  return data;
+}
+
+export async function adminRejectPostcard(id) {
+  const res = await fetch(getApiUrl(`/api/admin/postcards/${id}/reject`), {
+    method: 'POST',
+    credentials: 'include',
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Reject failed');
+  return data;
+}
+
+export async function adminUpdatePostcard(id, payload) {
+  const res = await fetch(getApiUrl(`/api/admin/postcards/${id}`), {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Update failed');
+  return data;
+}
+
+export async function adminDeletePostcard(id) {
+  const res = await fetch(getApiUrl(`/api/admin/postcards/${id}`), {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Delete failed');
+  }
+  return res.json();
+}
+
+// ── Ads ──
+export async function fetchAds(site = 'ezyescape') {
+  const res = await fetch(getApiUrl(`/api/ads?site=${encodeURIComponent(site)}`));
+  if (!res.ok) throw new Error('Failed to load ads');
+  return res.json();
+}
+
+export async function adminUpdateAd(adId, payload, site = 'ezyescape') {
+  const res = await fetch(getApiUrl(`/api/ads/${encodeURIComponent(adId)}?site=${encodeURIComponent(site)}`), {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to update ad');
+  return data;
+}
+
+export async function adminAddAdMedia(adId, items, site = 'ezyescape') {
+  const res = await fetch(getApiUrl(`/api/ads/${encodeURIComponent(adId)}/media?site=${encodeURIComponent(site)}`), {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to add media');
+  return data;
+}
+
+export async function adminRemoveAdMedia(adId, index, site = 'ezyescape') {
+  const res = await fetch(
+    getApiUrl(`/api/ads/${encodeURIComponent(adId)}/media/${index}?site=${encodeURIComponent(site)}`),
+    { method: 'DELETE', credentials: 'include' }
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to remove media');
+  return data;
+}
+
+export async function adminClearAdMedia(adId, site = 'ezyescape') {
+  const res = await fetch(
+    getApiUrl(`/api/ads/${encodeURIComponent(adId)}/media?site=${encodeURIComponent(site)}`),
+    { method: 'DELETE', credentials: 'include' }
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to clear media');
+  return data;
+}
+
+export async function adminResetAd(adId, site = 'ezyescape') {
+  const res = await fetch(
+    getApiUrl(`/api/ads/${encodeURIComponent(adId)}?site=${encodeURIComponent(site)}`),
+    { method: 'DELETE', credentials: 'include' }
+  );
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to reset ad');
+  return data;
+}
+

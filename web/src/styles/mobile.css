@@ -368,27 +368,16 @@
   .stays-track-wrap {
     margin: 0 -20px;
     padding: 12px 20px 32px;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: 20px;
+    overflow: hidden;
   }
-  .stays-track { gap: 16px; padding-right: 20px; }
+  .stays-track { gap: 16px; padding-right: 0; }
   .stay-card {
     width: min(300px, 82vw);
-    scroll-snap-align: start;
   }
   .stay-img { height: 200px; }
   .stays-scroll-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(16, 30, 44, 0.45);
-    margin-top: 4px;
+    display: none;
   }
-  .stays-scroll-hint span { animation: nudgeRight 1.8s ease-in-out infinite; }
 
   /* ─── HOW IT WORKS — vertical timeline ─── */
   .how-section .w {
@@ -665,7 +654,7 @@
   .cta-sub { font-size: 0.92rem; padding: 0 8px; }
 
   /* ─── FOOTER ─── */
-  footer { padding: 48px 0 100px; }
+  footer { padding: 40px 0 100px; }
   .footer-grid {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -704,10 +693,16 @@
     min-width: 0;
   }
   .footer-bottom {
+    display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 14px;
     text-align: center;
+  }
+  .footer-bottom .f-copy,
+  .footer-bottom .wa-btn {
+    grid-column: auto;
+    justify-self: auto;
   }
   .wa-btn { width: 100%; justify-content: center; }
 

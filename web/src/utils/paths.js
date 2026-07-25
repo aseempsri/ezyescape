@@ -18,8 +18,17 @@ export function partnerPath() {
   return appPath('partner');
 }
 
+/** @deprecated Prefer postcardsPath — kept for older links. */
 export function storiesPath() {
-  return appPath('stories');
+  return postcardsPath();
+}
+
+export function postcardsPath() {
+  return appPath('postcards');
+}
+
+export function postcardPath(id) {
+  return appPath(`postcards/${encodeURIComponent(id)}`);
 }
 
 export function shopPath() {
@@ -28,6 +37,10 @@ export function shopPath() {
 
 export function contactPath() {
   return appPath('contact');
+}
+
+export function experiencesPath() {
+  return appPath('experiences');
 }
 
 export function profilePath() {

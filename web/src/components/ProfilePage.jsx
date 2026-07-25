@@ -180,7 +180,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <SiteChrome title="Your Profile — Ezy Escape">
+    <SiteChrome title="Your Profile — Ezy Escape" path="/profile" noindex>
       <div className="pf-page">
         <header className="pf-hero">
           <p className="sp-eyebrow">Account</p>

@@ -25,6 +25,9 @@ export function normalizeApiStay(s) {
     best: s.best || '',
     description: s.description || '',
     story: s.story || '',
+    hosts: s.hosts || '',
+    storyImage: s.storyImage || '',
+    hostImage: s.hostImage || '',
     directions: s.directions || '',
     highlights: s.highlights || [],
   };

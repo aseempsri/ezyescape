@@ -1,14 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  adminApprovePostcard,
+  adminDeletePostcard,
   adminDeleteStay,
+  adminFetchPostcards,
   adminFetchStays,
   adminLogin,
   adminLogout,
+  adminPostcardPendingCount,
+  adminRejectPostcard,
   adminSaveStay,
   adminSession,
+  adminUpdatePostcard,
   adminUploadFile,
 } from '../lib/api';
 import { stayPath } from '../utils/paths';
+import AdsManager from './AdsManager';
 import '../styles/admin.css';
 
 function computeFinal(price, type, value) {
@@ -19,7 +26,7 @@ function computeFinal(price, type, value) {
   return p;
 }
 
-// Confirmation password required before deleting a listing (guards against accidents).
+// Confirmation password required before deleting a listing or postcard.
 const DELETE_PASSWORD = 'ezyescape-delete';
 
 const EMPTY_STAY = {
@@ -35,12 +42,73 @@ const EMPTY_STAY = {
   discountValue: 0,
   description: '',
   story: '',
+  hosts: '',
+  storyImage: '',
+  hostImage: '',
   directions: '',
   highlights: [],
   images: [],
   videos: [],
   active: true,
 };
+
+function SingleImageField({ label, hint, value, onChange }) {
+  const fileRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      const { url } = await adminUploadFile(file);
+      onChange(url);
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  return (
+    <div className="admin-media admin-media--single">
+      <div className="admin-media-head">
+        <div>
+          <span>{label}</span>
+          {hint ? <p className="admin-field-hint">{hint}</p> : null}
+        </div>
+        <div className="admin-media-head-actions">
+          <button
+            type="button"
+            className="admin-btn admin-btn--sm admin-btn--primary"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading…' : 'Upload'}
+          </button>
+          {value ? (
+            <button type="button" className="admin-btn admin-btn--sm" onClick={() => onChange('')}>
+              Clear
+            </button>
+          ) : null}
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFile} />
+        </div>
+      </div>
+      {uploadError ? <p className="admin-error">{uploadError}</p> : null}
+      <div className="admin-media-row">
+        {value ? <span className="admin-thumb" style={{ backgroundImage: `url('${value}')` }} /> : null}
+        <input
+          value={value || ''}
+          placeholder="https://…/photo.jpg or upload"
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+}
 
 function MediaList({ label, hint, items, onChange, placeholder, previews, accept, kind }) {
   const fileRef = useRef(null);
@@ -208,7 +276,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
   return (
     <form className="admin-form" onSubmit={submit}>
       <p className="admin-form-lead">
-        Every section maps to the live property page. Fill them for a new listing and it will appear in the same layout as existing stays — gallery, moments, story, directions, pricing, and booking.
+        Every section maps to the live property page. Fill them for a new listing and it will appear in the same layout as existing stays — gallery, moments, story, hosts, directions, pricing, and booking.
       </p>
 
       <FormSection title="1 · Identity" blurb="Title, location, and page URL.">
@@ -266,19 +334,47 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         </label>
       </FormSection>
 
-      <FormSection title="4 · The story" blurb="Longer narrative (falls back to short description if empty).">
+      <FormSection title="4 · The story" blurb="Property narrative for “Life inside this home” (falls back to short description if empty).">
         <label className="admin-field admin-col-2">
           <span>Story</span>
           <textarea
             rows={6}
             value={form.story || ''}
             onChange={set('story')}
-            placeholder="Longer narrative about the home, hosts, and atmosphere."
+            placeholder="Longer narrative about the home, atmosphere, and way of living."
           />
         </label>
+        <div className="admin-col-2">
+          <SingleImageField
+            label="Story panel image"
+            hint="Photo shown beside “The story / Life inside this home”."
+            value={form.storyImage || ''}
+            onChange={(storyImage) => setForm((f) => ({ ...f, storyImage }))}
+          />
+        </div>
       </FormSection>
 
-      <FormSection title="5 · How to reach the home" blurb="Directions block on the property page.">
+      <FormSection title="5 · The hosts" blurb="Who welcomes guests — shown in its own panel on the property page.">
+        <label className="admin-field admin-col-2">
+          <span>Hosts</span>
+          <textarea
+            rows={5}
+            value={form.hosts || ''}
+            onChange={set('hosts')}
+            placeholder="Introduce the host family — what they know, how they welcome guests."
+          />
+        </label>
+        <div className="admin-col-2">
+          <SingleImageField
+            label="Hosts panel image"
+            hint="Photo shown beside “Who welcomes you in”."
+            value={form.hostImage || ''}
+            onChange={(hostImage) => setForm((f) => ({ ...f, hostImage }))}
+          />
+        </div>
+      </FormSection>
+
+      <FormSection title="6 · How to reach the home" blurb="Directions block on the property page.">
         <label className="admin-field admin-col-2">
           <span>Directions</span>
           <textarea
@@ -290,7 +386,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         </label>
       </FormSection>
 
-      <FormSection title="6 · Pricing & booking" blurb="Shown on the booking card. Guests can redeem ezy coins at checkout on the site.">
+      <FormSection title="7 · Pricing & booking" blurb="Shown on the booking card. Guests can redeem ezy coins at checkout on the site.">
         <label className="admin-field">
           <span>Price / night (₹)</span>
           <input type="number" min={0} value={form.price} onChange={set('price')} />
@@ -323,7 +419,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
       </FormSection>
 
       <FormSection
-        title="7 · Image & video gallery"
+        title="8 · Image & video gallery"
         blurb="Main gallery, filmstrip, and photo mosaic. Reorder with ↑ ↓ — first image is the cover."
       >
         <div className="admin-col-full">
@@ -383,11 +479,386 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
   );
 }
 
+function PostcardMediaEditor({ media, onChange }) {
+  const fileRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  async function handleFiles(e) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      const next = [...media];
+      for (const file of files) {
+        const { url, type } = await adminUploadFile(file);
+        next.push({
+          url,
+          type: String(type || '').startsWith('video/') ? 'video' : 'image',
+        });
+      }
+      onChange(next);
+    } catch (err) {
+      setUploadError(err.message);
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= media.length) return;
+    const next = [...media];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+
+  return (
+    <div className="admin-pc-media-editor">
+      <div className="admin-media-head">
+        <div>
+          <span>Photos &amp; videos</span>
+          <p className="admin-field-hint">Reorder, remove, or upload. First item is the cover.</p>
+        </div>
+        <div className="admin-media-head-actions">
+          <button
+            type="button"
+            className="admin-btn admin-btn--sm"
+            onClick={() => onChange([...media, { url: '', type: 'image' }])}
+          >
+            + Add URL
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn--sm admin-btn--primary"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading…' : 'Upload'}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*,video/*"
+            multiple
+            hidden
+            onChange={handleFiles}
+          />
+        </div>
+      </div>
+      {uploadError ? <p className="admin-error">{uploadError}</p> : null}
+      {media.length === 0 ? (
+        <p className="admin-hint">No media yet — upload or paste a URL.</p>
+      ) : null}
+      {media.map((item, i) => (
+        <div className="admin-media-row" key={`${item.url}-${i}`}>
+          {item.url ? (
+            item.type === 'video' ? (
+              <video className="admin-thumb" src={item.url} muted />
+            ) : (
+              <span className="admin-thumb" style={{ backgroundImage: `url('${item.url}')` }} />
+            )
+          ) : null}
+          <input
+            value={item.url}
+            placeholder="https://… or /uploads/…"
+            onChange={(e) => {
+              const next = [...media];
+              const url = e.target.value;
+              next[i] = {
+                url,
+                type: item.type === 'video' || /\.(mp4|webm|mov)(\?|$)/i.test(url) ? 'video' : 'image',
+              };
+              onChange(next);
+            }}
+          />
+          <select
+            className="admin-pc-type"
+            value={item.type === 'video' ? 'video' : 'image'}
+            onChange={(e) => {
+              const next = [...media];
+              next[i] = { ...next[i], type: e.target.value };
+              onChange(next);
+            }}
+            aria-label="Media type"
+          >
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+          <div className="admin-media-row-actions">
+            <button type="button" className="admin-btn admin-btn--sm" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
+            <button type="button" className="admin-btn admin-btn--sm" onClick={() => move(i, 1)} disabled={i === media.length - 1} aria-label="Move down">↓</button>
+            <button
+              type="button"
+              className="admin-btn admin-btn--ghost admin-btn--sm"
+              onClick={() => onChange(media.filter((_, j) => j !== i))}
+              aria-label={`Remove media ${i + 1}`}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PostcardEditForm({ postcard, onCancel, onSaved }) {
+  const [name, setName] = useState(postcard.name || '');
+  const [from, setFrom] = useState(postcard.from || '');
+  const [text, setText] = useState(postcard.text || '');
+  const [media, setMedia] = useState(() => (postcard.media || []).map((m) => ({ ...m })));
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function save(e) {
+    e.preventDefault();
+    setError('');
+    const cleaned = media.map((m) => ({ ...m, url: String(m.url || '').trim() })).filter((m) => m.url);
+    if (!name.trim() || name.trim().length < 2) {
+      setError('Name is required.');
+      return;
+    }
+    if (!text.trim() || text.trim().length < 10) {
+      setError('Review text is too short.');
+      return;
+    }
+    if (!cleaned.length) {
+      setError('Keep at least one image or video.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const updated = await adminUpdatePostcard(postcard.id, {
+        name: name.trim(),
+        from: from.trim(),
+        text: text.trim(),
+        media: cleaned,
+      });
+      onSaved(updated);
+    } catch (err) {
+      setError(err.message || 'Could not save');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="admin-pc-edit" onSubmit={save}>
+      <div className="admin-pc-edit-grid">
+        <label className="admin-field">
+          <span>Name</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} />
+        </label>
+        <label className="admin-field">
+          <span>From</span>
+          <input value={from} onChange={(e) => setFrom(e.target.value)} />
+        </label>
+        <label className="admin-field admin-col-2">
+          <span>Review text</span>
+          <textarea rows={5} value={text} onChange={(e) => setText(e.target.value)} />
+        </label>
+      </div>
+
+      <PostcardMediaEditor media={media} onChange={setMedia} />
+
+      {error ? <p className="admin-error">{error}</p> : null}
+
+      <div className="admin-form-actions">
+        <button type="submit" className="admin-btn admin-btn--primary" disabled={busy}>
+          {busy ? 'Saving…' : 'Save changes'}
+        </button>
+        <button type="button" className="admin-btn admin-btn--ghost" onClick={onCancel} disabled={busy}>
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function PostcardModeration({ onChanged }) {
+  const [items, setItems] = useState([]);
+  const [filter, setFilter] = useState('pending');
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState('');
+  const [editingId, setEditingId] = useState(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      setItems(await adminFetchPostcards(filter === 'all' ? '' : filter));
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
+
+  useEffect(() => { load(); }, [load]);
+  useEffect(() => { setEditingId(null); }, [filter]);
+
+  async function act(id, action) {
+    setBusyId(id);
+    try {
+      if (action === 'approve') await adminApprovePostcard(id);
+      else if (action === 'reject') await adminRejectPostcard(id);
+      else if (action === 'delete') {
+        const entered = window.prompt(
+          'Delete this postcard permanently?\n\nType the delete password to confirm:'
+        );
+        if (entered == null) return;
+        if (entered !== DELETE_PASSWORD) {
+          window.alert('Incorrect delete password. Postcard was not deleted.');
+          return;
+        }
+        await adminDeletePostcard(id);
+        if (editingId === id) setEditingId(null);
+      }
+      await load();
+      onChanged?.();
+    } catch (err) {
+      window.alert(err.message || 'Action failed');
+    } finally {
+      setBusyId('');
+    }
+  }
+
+  return (
+    <div className="admin-postcards">
+      <div className="admin-pc-filters">
+        {['pending', 'approved', 'rejected', 'all'].map((f) => (
+          <button
+            key={f}
+            type="button"
+            className={`admin-btn admin-btn--sm${filter === f ? ' admin-btn--primary' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {loading && <p className="admin-hint">Loading postcards…</p>}
+      {!loading && items.length === 0 && (
+        <p className="admin-hint">No postcards in this filter.</p>
+      )}
+
+      <div className="admin-pc-list">
+        {items.map((p) => {
+          const cover = p.media?.[0];
+          const isEditing = editingId === p.id;
+          return (
+            <article key={p.id} className={`admin-pc-card admin-pc-card--${p.status}${isEditing ? ' admin-pc-card--editing' : ''}`}>
+              {!isEditing ? (
+                <>
+                  <div className="admin-pc-media">
+                    {cover?.type === 'video' ? (
+                      <video src={cover.url} muted playsInline />
+                    ) : cover ? (
+                      <span style={{ backgroundImage: `url('${cover.url}')` }} />
+                    ) : (
+                      <span className="admin-pc-media-empty">No media</span>
+                    )}
+                  </div>
+                  <div className="admin-pc-body">
+                    <div className="admin-pc-meta">
+                      <strong>{p.name}</strong>
+                      {p.from ? <span> · {p.from}</span> : null}
+                      <span className={`admin-tag admin-tag--${p.status}`}>{p.status}</span>
+                    </div>
+                    <p className="admin-pc-text">{p.text}</p>
+                    <div className="admin-pc-avatar-row">
+                      {p.avatarMode === 'photo' && p.avatarUrl ? (
+                        <span className="admin-pc-face" style={{ backgroundImage: `url('${p.avatarUrl}')` }} />
+                      ) : (
+                        <span className="admin-pc-face admin-pc-face--emoji">{p.characterEmoji || '✉️'}</span>
+                      )}
+                      <small>
+                        {p.media?.length || 0} media · {new Date(p.createdAt).toLocaleString()}
+                      </small>
+                    </div>
+                    <div className="admin-listing-actions">
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn--sm"
+                        disabled={busyId === p.id}
+                        onClick={() => setEditingId(p.id)}
+                      >
+                        Edit
+                      </button>
+                      {p.status !== 'approved' && (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--primary admin-btn--sm"
+                          disabled={busyId === p.id}
+                          onClick={() => act(p.id, 'approve')}
+                        >
+                          Approve
+                        </button>
+                      )}
+                      {p.status !== 'rejected' && (
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn--sm"
+                          disabled={busyId === p.id}
+                          onClick={() => act(p.id, 'reject')}
+                        >
+                          Reject
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn--danger admin-btn--sm"
+                        disabled={busyId === p.id}
+                        onClick={() => act(p.id, 'delete')}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="admin-pc-body admin-pc-body--edit">
+                  <div className="admin-pc-meta">
+                    <strong>Edit postcard</strong>
+                    <span className={`admin-tag admin-tag--${p.status}`}>{p.status}</span>
+                  </div>
+                  <PostcardEditForm
+                    postcard={p}
+                    onCancel={() => setEditingId(null)}
+                    onSaved={async () => {
+                      setEditingId(null);
+                      await load();
+                      onChanged?.();
+                    }}
+                  />
+                  <div className="admin-listing-actions" style={{ marginTop: 12 }}>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn--danger admin-btn--sm"
+                      disabled={busyId === p.id}
+                      onClick={() => act(p.id, 'delete')}
+                    >
+                      Delete postcard
+                    </button>
+                  </div>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Dashboard({ onLogout }) {
+  const [tab, setTab] = useState('listings');
   const [stays, setStays] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // stay id, 'new', or null
   const [saving, setSaving] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -398,7 +869,24 @@ function Dashboard({ onLogout }) {
     }
   }, []);
 
+  const refreshPending = useCallback(async () => {
+    try {
+      setPendingCount(await adminPostcardPendingCount());
+    } catch {
+      setPendingCount(0);
+    }
+  }, []);
+
   useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    refreshPending();
+    const t = setInterval(refreshPending, 30000);
+    return () => clearInterval(t);
+  }, [refreshPending]);
+
+  useEffect(() => {
+    if (tab === 'postcards') refreshPending();
+  }, [tab, refreshPending]);
 
   const editingStay = useMemo(() => {
     if (editing === 'new') return { ...EMPTY_STAY };
@@ -435,14 +923,13 @@ function Dashboard({ onLogout }) {
     <div className="admin-wrap">
       <header className="admin-header">
         <div>
-          <h1>Ezy Escape · Listings</h1>
+          <h1>Ezy Escape · Admin</h1>
           <p>
-            Create full property pages: gallery, tags, moments, story, directions, pricing, and booking.
-            New listings use the same layout as existing stays.
+            Manage property listings and curate guest postcards before they appear on the site.
           </p>
         </div>
         <div className="admin-header-actions">
-          {editing == null && (
+          {tab === 'listings' && editing == null && (
             <button type="button" className="admin-btn admin-btn--primary" onClick={() => setEditing('new')}>
               + New listing
             </button>
@@ -453,7 +940,43 @@ function Dashboard({ onLogout }) {
         </div>
       </header>
 
-      {editing != null && editingStay ? (
+      <nav className="admin-tabs" aria-label="Admin sections">
+        <button
+          type="button"
+          className={`admin-tab${tab === 'listings' ? ' is-on' : ''}`}
+          onClick={() => { setTab('listings'); setEditing(null); }}
+        >
+          Listings
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === 'postcards' ? ' is-on' : ''}`}
+          onClick={() => { setTab('postcards'); setEditing(null); }}
+        >
+          Postcards
+          {pendingCount > 0 ? <span className="admin-badge">{pendingCount}</span> : null}
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === 'ads' ? ' is-on' : ''}`}
+          onClick={() => { setTab('ads'); setEditing(null); }}
+        >
+          Manage Ads
+        </button>
+      </nav>
+
+      {tab === 'ads' ? (
+        <AdsManager />
+      ) : tab === 'postcards' ? (
+        <section className="admin-card">
+          <h2>Postcard inbox</h2>
+          <p className="admin-hint" style={{ marginTop: 0, marginBottom: 0 }}>
+            Guests submit postcards privately. Approve to publish on the Postcards page (latest first).
+            Use Edit to change text, photos, and videos.
+          </p>
+          <PostcardModeration onChanged={refreshPending} />
+        </section>
+      ) : editing != null && editingStay ? (
         <section className="admin-card">
           <h2>{editing === 'new' ? 'New listing' : 'Edit listing'}</h2>
           <ListingForm
@@ -535,7 +1058,7 @@ function LoginView({ onSuccess }) {
     <div className="admin-login">
       <form className="admin-login-card" onSubmit={submit}>
         <h1>Admin access</h1>
-        <p>Enter the admin password to manage listings.</p>
+        <p>Enter the admin password to manage listings and postcards.</p>
         <input
           type="password"
           value={password}

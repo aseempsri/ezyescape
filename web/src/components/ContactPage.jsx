@@ -3,6 +3,7 @@ import SiteChrome from './SiteChrome';
 import Typewriter from './Typewriter';
 import { whatsappChatUrl, WHATSAPP_LOCAL_NUMBER, WHATSAPP_COUNTRY_CODE } from '../utils/whatsapp';
 import { partnerPath, shopPath, homeSectionPath } from '../utils/paths';
+import AdSlot from './AdSlot';
 
 const CHANNELS = [
   {
@@ -48,7 +49,11 @@ export default function ContactPage() {
   );
 
   return (
-    <SiteChrome title="Contact Us — Ezy Escape">
+    <SiteChrome
+      title="Contact Ezy Escape — Plan a Mountain Homestay"
+      description="Talk to a human about Kumaon homestays, availability, transfers from Kathgodam, or partnering your home with Ezy Escape."
+      path="/contact"
+    >
       <section className="sp-hero sp-hero--contact">
         <div className="sp-hero-veil" aria-hidden="true" />
         <div className="container sp-hero-inner">
@@ -126,6 +131,8 @@ export default function ContactPage() {
         </div>
       </section>
 
+      <AdSlot adId="contact-ad1" />
+
       <section className="sp-section sp-section--alt">
         <div className="container">
           <div className="sp-section-head">
@@ -151,6 +158,8 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      <AdSlot adId="contact-ad2" />
     </SiteChrome>
   );
 }

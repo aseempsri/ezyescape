@@ -6,16 +6,18 @@ import WalletNav from './WalletNav';
 import {
   appPath,
   staysIndexPath,
-  storiesPath,
+  postcardsPath,
   shopPath,
   partnerPath,
   contactPath,
+  experiencesPath,
   goHome,
 } from '../utils/paths';
 
 const links = [
   { href: staysIndexPath(), label: 'Homestays', short: 'Stays' },
-  { href: storiesPath(), label: 'Stories', short: 'Stories' },
+  { href: experiencesPath(), label: 'Experiences', short: 'Experiences' },
+  { href: postcardsPath(), label: 'Postcards', short: 'Postcards' },
   { href: shopPath(), label: 'Shop', short: 'Shop' },
   { href: partnerPath(), label: 'Partner', short: 'Partner' },
   { href: contactPath(), label: 'Contact', short: 'Contact' },
