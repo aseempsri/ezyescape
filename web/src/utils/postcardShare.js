@@ -15,10 +15,11 @@ export function postcardPageUrl(id) {
 
 /**
  * URL used for social crawlers / WhatsApp previews.
- * Served by the API with Open Graph tags + redirect to the pretty page.
+ * Pretty /postcards/:id path (not under /api/) so robots.txt does not block scrapers.
+ * Nginx proxies bots to the API OG HTML; browsers get the SPA wall.
  */
 export function postcardShareUrl(id) {
-  return `${getSiteOrigin()}/api/postcards/${encodeURIComponent(id)}/share`;
+  return postcardPageUrl(id);
 }
 
 export function postcardShareText(postcard) {

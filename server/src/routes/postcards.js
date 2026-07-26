@@ -49,8 +49,8 @@ export async function findApprovedPostcard(id) {
 export function shareHtmlForPostcard(req, postcard) {
   const id = String(postcard._id);
   const pageUrl = absoluteUrl(req, `/postcards/${id}`);
-  // Bust WhatsApp / Facebook OG caches after renderer fixes
-  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg?v=4`);
+  // Bust WhatsApp / Facebook OG caches after renderer + robots.txt fixes
+  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg?v=5`);
   const title = `${postcard.name}'s postcard — Ezy Escape`;
   const description = String(postcard.text || '')
     .replace(/\s+/g, ' ')

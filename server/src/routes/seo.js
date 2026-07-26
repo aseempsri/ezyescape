@@ -30,12 +30,24 @@ function sendHtml(res, html, status = 200) {
 
 router.get('/robots.txt', (_req, res) => {
   const origin = siteOrigin();
+  // Allow postcard OG/share under /api/postcards/ — Facebook & WhatsApp refuse to
+  // refresh previews for URLs blocked by Disallow: /api/
   const body = `User-agent: *
 Allow: /
+Allow: /api/postcards/
 Disallow: /admin
 Disallow: /profile
 Disallow: /api/
 Disallow: /auth/
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
 
 Sitemap: ${origin}/sitemap.xml
 `;

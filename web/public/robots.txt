@@ -1,9 +1,17 @@
 # Fallback only — production nginx proxies /robots.txt to the API.
 User-agent: *
 Allow: /
+Allow: /api/postcards/
 Disallow: /admin
 Disallow: /profile
 Disallow: /api/
 Disallow: /auth/
 
-Sitemap: https://ezyescape.com/sitemap.xml
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
