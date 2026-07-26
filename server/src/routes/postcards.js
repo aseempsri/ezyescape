@@ -49,8 +49,8 @@ export async function findApprovedPostcard(id) {
 export function shareHtmlForPostcard(req, postcard) {
   const id = String(postcard._id);
   const pageUrl = absoluteUrl(req, `/postcards/${id}`);
-  // v=2 busts crawler caches after OG renderer switched to live-card screenshots
-  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg?v=2`);
+  // Bump ?v= when OG renderer changes so WhatsApp / Facebook refresh cached previews
+  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg?v=3`);
   const title = `${postcard.name}'s postcard — Ezy Escape`;
   const description = String(postcard.text || '')
     .replace(/\s+/g, ' ')

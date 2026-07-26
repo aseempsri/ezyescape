@@ -2,132 +2,127 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
-import puppeteer from 'puppeteer';
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const FONTS_DIR = path.resolve(__dirname, '../../assets/fonts');
 
 /** OG canvas (WhatsApp / Facebook large preview). */
 const W = 1200;
 const H = 630;
-
-const HAND_FONTS = {
-  tangerine: { family: "'Tangerine', cursive", size: '2.55rem', weight: 700, line: 1.12 },
-  caveat: { family: "'Caveat', cursive", size: '2rem', weight: 600, line: 1.28 },
-  kalam: { family: "'Kalam', cursive", size: '1.55rem', weight: 400, line: 1.45 },
-  patrick: { family: "'Patrick Hand', cursive", size: '1.7rem', weight: 400, line: 1.4 },
-  shadows: { family: "'Shadows Into Light', cursive", size: '1.85rem', weight: 400, line: 1.35 },
-  satisfy: { family: "'Satisfy', cursive", size: '1.9rem', weight: 400, line: 1.35 },
-  gloria: { family: "'Gloria Hallelujah', cursive", size: '1.45rem', weight: 400, line: 1.5 },
-  indie: { family: "'Indie Flower', cursive", size: '1.7rem', weight: 400, line: 1.4 },
-};
+const CARD = { x: 64, y: 40, w: 1072, h: 550, pad: 16 };
 
 const KICKERS = {
-  letter: 'A note from the hills',
-  airmail: 'Par avion · from the hills',
-  polaroid: 'Developed in the mountains',
-  telegram: 'STOP · ridge telegram',
-  kraft: 'Packed with care',
-  night: 'Written after dark',
-  meadow: 'From the orchard path',
-  ticket: 'Admit one · slow traveller',
+  letter: 'A NOTE FROM THE HILLS',
+  airmail: 'PAR AVION · FROM THE HILLS',
+  polaroid: 'DEVELOPED IN THE MOUNTAINS',
+  telegram: 'STOP · RIDGE TELEGRAM',
+  kraft: 'PACKED WITH CARE',
+  night: 'WRITTEN AFTER DARK',
+  meadow: 'FROM THE ORCHARD PATH',
+  ticket: 'ADMIT ONE · SLOW TRAVELLER',
 };
 
-const WALL = {
-  letter: '#ebe2d4',
-  airmail: '#e8eef5',
-  polaroid: '#ebe2d4',
-  telegram: '#12151c',
-  kraft: '#c4a574',
-  night: '#071018',
-  meadow: '#dde8d6',
-  ticket: '#f3ebe0',
+const THEME = {
+  letter: {
+    wall: '#ebe2d4',
+    paper: '#faf6ef',
+    ink: '#2a241c',
+    muted: '#8a6a3e',
+    accent: '#8a6a3e',
+    stamp: '#8c3030',
+    mediaBg: '#d9d0c3',
+  },
+  airmail: {
+    wall: '#e8eef5',
+    paper: '#f4f7fb',
+    ink: '#1c2a3a',
+    muted: '#3d6fa8',
+    accent: '#3d6fa8',
+    stamp: '#324050',
+    mediaBg: '#cfd8e2',
+  },
+  polaroid: {
+    wall: '#ebe2d4',
+    paper: '#f7f4ef',
+    ink: '#2a241c',
+    muted: '#8a6a3e',
+    accent: '#8a6a3e',
+    stamp: '#8a6a3e',
+    mediaBg: '#e8e2d8',
+  },
+  telegram: {
+    wall: '#12151c',
+    paper: '#1f2430',
+    ink: '#f7edd8',
+    muted: '#f5c65c',
+    accent: '#f5c65c',
+    stamp: '#f5c65c',
+    mediaBg: '#2c3344',
+  },
+  kraft: {
+    wall: '#c4a574',
+    paper: '#b08958',
+    ink: '#2c1c0c',
+    muted: '#5a3d1c',
+    accent: '#4a3218',
+    stamp: '#4a3218',
+    mediaBg: '#a07848',
+  },
+  night: {
+    wall: '#071018',
+    paper: '#0b1524',
+    ink: '#e8eef8',
+    muted: '#9eb6d8',
+    accent: '#9eb6d8',
+    stamp: '#c8dcff',
+    mediaBg: '#243556',
+  },
+  meadow: {
+    wall: '#dde8d6',
+    paper: '#eef6ea',
+    ink: '#243528',
+    muted: '#4f7340',
+    accent: '#4f7340',
+    stamp: '#46703c',
+    mediaBg: '#c5d6bf',
+  },
+  ticket: {
+    wall: '#f3ebe0',
+    paper: '#fff8ee',
+    ink: '#2a241c',
+    muted: '#a0672e',
+    accent: '#a0672e',
+    stamp: '#2a241c',
+    mediaBg: '#ddd2c4',
+  },
 };
 
-const CSS_CANDIDATES = [
-  path.resolve(__dirname, '../../../web/src/styles/postcards.css'),
-  path.resolve(__dirname, '../../web/src/styles/postcards.css'),
-  path.resolve('/var/www/ezyescape/web/src/styles/postcards.css'),
-  path.resolve('/var/www/ezyescape-src/web/src/styles/postcards.css'),
-];
+const HAND_FONTS = {
+  tangerine: { file: 'Caveat-Regular.ttf', family: 'EECaveat', size: 44 },
+  caveat: { file: 'Caveat-Regular.ttf', family: 'EECaveat', size: 38 },
+  kalam: { file: 'Kalam-Regular.ttf', family: 'EEKalam', size: 30 },
+  patrick: { file: 'PatrickHand-Regular.ttf', family: 'EEPatrick', size: 32 },
+  shadows: { file: 'PatrickHand-Regular.ttf', family: 'EEPatrick', size: 34 },
+  satisfy: { file: 'Caveat-Regular.ttf', family: 'EECaveat', size: 36 },
+  gloria: { file: 'Kalam-Regular.ttf', family: 'EEKalam', size: 28 },
+  indie: { file: 'IndieFlower-Regular.ttf', family: 'EEIndie', size: 32 },
+};
 
-const CHROME_CANDIDATES = [
-  process.env.PUPPETEER_EXECUTABLE_PATH,
-  process.env.CHROME_PATH,
-  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-  '/Applications/Chromium.app/Contents/MacOS/Chromium',
-  '/usr/bin/google-chrome-stable',
-  '/usr/bin/google-chrome',
-  '/usr/bin/chromium-browser',
-  '/usr/bin/chromium',
-  '/snap/bin/chromium',
-].filter(Boolean);
+let fontsRegistered = false;
 
-let browserPromise = null;
-let postcardCssCache = null;
-
-function escapeHtml(s) {
-  return String(s || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function loadPostcardCss() {
-  if (postcardCssCache != null) return postcardCssCache;
-  for (const candidate of CSS_CANDIDATES) {
-    try {
-      if (fs.existsSync(candidate)) {
-        postcardCssCache = fs.readFileSync(candidate, 'utf8');
-        return postcardCssCache;
-      }
-    } catch {
-      /* try next */
+function registerFonts() {
+  if (fontsRegistered) return;
+  const seen = new Set();
+  for (const meta of Object.values(HAND_FONTS)) {
+    if (seen.has(meta.family)) continue;
+    const abs = path.join(FONTS_DIR, meta.file);
+    if (fs.existsSync(abs)) {
+      GlobalFonts.registerFromPath(abs, meta.family);
+      seen.add(meta.family);
     }
   }
-  postcardCssCache = '';
-  return postcardCssCache;
-}
-
-function findChrome() {
-  for (const candidate of CHROME_CANDIDATES) {
-    try {
-      if (fs.existsSync(candidate)) return candidate;
-    } catch {
-      /* try next */
-    }
-  }
-  return null;
-}
-
-async function getBrowser() {
-  if (!browserPromise) {
-    // Prefer system Chrome when present; otherwise Puppeteer's bundled Chromium.
-    const executablePath = findChrome() || undefined;
-    browserPromise = puppeteer
-      .launch({
-        ...(executablePath ? { executablePath } : {}),
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--font-render-hinting=none',
-          '--hide-scrollbars',
-        ],
-      })
-      .catch((err) => {
-        browserPromise = null;
-        throw err;
-      });
-  }
-  return browserPromise;
-}
-
-function firstImageUrl(postcard, origin) {
-  const media = postcard.media || [];
-  const image = media.find((m) => m.type === 'image' && m.url);
-  return absolutize(image?.url || '', origin);
+  fontsRegistered = true;
 }
 
 function absolutize(url, baseOrigin) {
@@ -147,267 +142,355 @@ function absolutize(url, baseOrigin) {
   return `${baseOrigin}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
-function stampHtml(layout) {
-  if (layout === 'airmail') {
-    return `<span class="pc-postmark"><em>Ezy</em><span>Escape</span></span>`;
-  }
-  if (layout === 'ticket') {
-    return `<span class="pc-ticket-stub">EE · PASS</span>`;
-  }
-  if (layout === 'telegram') {
-    return `<span class="pc-telegram-stamp">RCVD</span>`;
-  }
-  if (layout === 'polaroid') {
-    return `<span class="pc-polaroid-date">Ezy Escape</span>`;
-  }
-  return 'Ezy Escape';
+function firstImageUrl(postcard, origin) {
+  const media = postcard.media || [];
+  const image = media.find((m) => m.type === 'image' && m.url);
+  return absolutize(image?.url || '', origin);
 }
 
-function avatarHtml(postcard, origin) {
-  if (postcard.avatarMode === 'photo' && postcard.avatarUrl) {
-    const url = escapeHtml(absolutize(postcard.avatarUrl, origin));
-    return `<span class="pc-avatar pc-avatar--photo" style="background-image:url('${url}')" aria-hidden="true"></span>`;
-  }
-  return `<span class="pc-avatar pc-avatar--char" aria-hidden="true">${escapeHtml(
-    postcard.characterEmoji || '✉️'
-  )}</span>`;
-}
-
-function buildOgHtml(postcard, origin) {
-  const layout = KICKERS[postcard.layout] ? postcard.layout : 'letter';
-  const font = HAND_FONTS[postcard.handFont] || HAND_FONTS.caveat;
-  const kicker = KICKERS[layout];
-  const wall = WALL[layout] || WALL.letter;
-  const photoUrl = firstImageUrl(postcard, origin);
-  const css = loadPostcardCss();
-  const name = escapeHtml(postcard.name || 'Guest');
-  const from = escapeHtml(postcard.from || '');
-  const text = escapeHtml(postcard.text || '');
-
-  const textStyle = [
-    `font-family:${font.family}`,
-    `font-size:${font.size}`,
-    `font-weight:${font.weight}`,
-    `line-height:${font.line}`,
-  ].join(';');
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Gloria+Hallelujah&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Poppins:wght@400;600;700&family=Satisfy&family=Shadows+Into+Light&family=Tangerine:wght@400;700&display=swap" rel="stylesheet" />
-  <style>
-    ${css}
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: ${wall};
-      font-family: 'Poppins', system-ui, sans-serif;
-    }
-    #og-frame {
-      width: ${W}px;
-      height: ${H}px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 36px 48px;
-      box-sizing: border-box;
-      background: ${wall};
-    }
-    #og-frame .pc-card {
-      width: 100%;
-      max-width: 1040px;
-      transform: none !important;
-    }
-    #og-frame .pc-share,
-    #og-frame .pc-media-nav,
-    #og-frame .pc-media-dots {
-      display: none !important;
-    }
-    #og-frame .pc-card-media {
-      min-height: 420px;
-    }
-    #og-frame .pc-card-inner--polaroid .pc-card-media {
-      min-height: 340px;
-    }
-    #og-frame .pc-card-media-el {
-      width: 100%;
-      height: 100%;
-      min-height: inherit;
-      background-size: cover;
-      background-position: center;
-    }
-  </style>
-</head>
-<body>
-  <div id="og-frame">
-    <article class="pc-card pc-card--${escapeHtml(layout)} pc-card--font-${escapeHtml(postcard.handFont || 'caveat')}">
-      <div class="pc-card-stamp" aria-hidden="true">${stampHtml(layout)}</div>
-      <div class="pc-card-inner pc-card-inner--${escapeHtml(layout)}">
-        <div class="pc-card-copy">
-          <p class="pc-card-kicker">${escapeHtml(kicker)}</p>
-          <p class="pc-card-text" style="${textStyle}">“${text}”</p>
-          <div class="pc-card-signer">
-            ${avatarHtml(postcard, origin)}
-            <div class="pc-card-signer-meta">
-              <div class="pc-card-name">${name}</div>
-              ${from ? `<div class="pc-card-from">${from}</div>` : ''}
-            </div>
-          </div>
-        </div>
-        <div class="pc-card-media">
-          ${
-            photoUrl
-              ? `<div class="pc-card-media-el" style="background-image:url('${escapeHtml(photoUrl)}')"></div>`
-              : `<div class="pc-card-media-empty">No media yet</div>`
-          }
-        </div>
-      </div>
-    </article>
-  </div>
-</body>
-</html>`;
-}
-
-async function renderWithChrome(postcard, origin) {
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-  try {
-    await page.setViewport({ width: W, height: H, deviceScaleFactor: 2 });
-    await page.setContent(buildOgHtml(postcard, origin), {
-      waitUntil: ['load', 'networkidle0'],
-      timeout: 25000,
-    });
-    // Ensure webfonts + photo are ready
-    await page.evaluate(async () => {
-      if (document.fonts?.ready) await document.fonts.ready;
-      const imgs = [...document.querySelectorAll('.pc-card-media-el, .pc-avatar--photo')];
-      await Promise.all(
-        imgs.map((el) => {
-          const bg = getComputedStyle(el).backgroundImage;
-          const m = bg && bg.match(/url\(["']?(.*?)["']?\)/);
-          if (!m?.[1] || m[1] === 'none') return null;
-          return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve();
-            img.onerror = () => resolve();
-            img.src = m[1];
-          });
-        })
-      );
-    });
-    const frame = await page.$('#og-frame');
-    const png = await frame.screenshot({ type: 'png' });
-    return sharp(png)
-      .resize(W, H, { fit: 'fill' })
-      .jpeg({ quality: 84, mozjpeg: true })
-      .toBuffer();
-  } finally {
-    await page.close().catch(() => {});
-  }
-}
-
-/** Sharp fallback when Chrome is unavailable — approximate layout only. */
-async function renderWithSharp(postcard, origin) {
-  const layout = KICKERS[postcard.layout] ? postcard.layout : 'letter';
-  const wall = WALL[layout] || WALL.letter;
-  const ink = layout === 'telegram' || layout === 'night' ? '#f7edd8' : '#2a241c';
-  const accent = layout === 'airmail' ? '#3d6fa8' : '#8a6a3e';
-  const photoUrl = firstImageUrl(postcard, origin);
-  const name = String(postcard.name || 'Guest').slice(0, 40);
-  const from = String(postcard.from || '').slice(0, 40);
-  const words = String(postcard.text || '').trim().split(/\s+/);
+function wrapText(ctx, text, maxWidth, maxLines) {
+  const words = String(text || '').trim().split(/\s+/).filter(Boolean);
   const lines = [];
   let cur = '';
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w;
-    if (next.length > 28 && cur) {
+  for (const word of words) {
+    const next = cur ? `${cur} ${word}` : word;
+    if (ctx.measureText(next).width > maxWidth && cur) {
       lines.push(cur);
-      cur = w;
-      if (lines.length >= 5) break;
-    } else cur = next;
-  }
-  if (lines.length < 5 && cur) lines.push(cur);
-  if (words.join(' ').length > lines.join(' ').length && lines.length) {
-    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/[.,;:!?]?$/, '')}…`;
-  }
-
-  const mediaW = 480;
-  const mediaH = 480;
-  const mediaX = layout === 'airmail' || layout === 'polaroid' ? 90 : 620;
-  const mediaY = 75;
-  let photoBuf = null;
-  if (photoUrl) {
-    try {
-      const res = await fetch(photoUrl, { redirect: 'follow' });
-      if (res.ok) {
-        photoBuf = await sharp(Buffer.from(await res.arrayBuffer()))
-          .rotate()
-          .resize(mediaW, mediaH, { fit: 'cover' })
-          .png()
-          .toBuffer();
-      }
-    } catch {
-      /* placeholder */
+      cur = word;
+      if (lines.length >= maxLines) break;
+    } else {
+      cur = next;
     }
   }
+  if (lines.length < maxLines && cur) lines.push(cur);
+  const full = words.join(' ');
+  const shown = lines.join(' ');
+  if (full.length > shown.length && lines.length) {
+    let last = lines[lines.length - 1].replace(/[.,;:!?]?$/, '');
+    while (last.length > 1 && ctx.measureText(`${last}…`).width > maxWidth) {
+      last = last.slice(0, -1);
+    }
+    lines[lines.length - 1] = `${last}…`;
+  }
+  return lines.slice(0, maxLines);
+}
 
-  const quote = lines
-    .map((line, i) => {
-      const y = 150 + i * 36;
-      let shown = line;
-      if (i === 0) shown = `“${shown}`;
-      if (i === lines.length - 1) shown = `${shown}”`;
-      return `<text x="${layout === 'airmail' ? 610 : 100}" y="${y}" font-size="26" font-family="Georgia, serif" font-style="italic" fill="${ink}">${escapeHtml(shown)}</text>`;
-    })
-    .join('');
+function layoutBoxes(layout) {
+  const { x, y, w, h, pad } = CARD;
 
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${W}" height="${H}" fill="${wall}"/>
-  <rect x="70" y="48" width="1060" height="534" rx="6" fill="${layout === 'telegram' ? '#1f2430' : layout === 'night' ? '#0b1524' : '#faf6ef'}"/>
-  <text x="${layout === 'airmail' ? 610 : 100}" y="100" font-size="13" font-family="Arial, sans-serif" font-weight="700" letter-spacing="2" fill="${accent}">${escapeHtml((KICKERS[layout] || '').toUpperCase())}</text>
-  ${quote}
-  <text x="${layout === 'airmail' ? 610 : 100}" y="520" font-size="20" font-family="Arial, sans-serif" font-weight="700" fill="${ink}">${escapeHtml(name)}</text>
-  ${from ? `<text x="${layout === 'airmail' ? 610 : 100}" y="545" font-size="15" font-family="Arial, sans-serif" fill="${accent}">${escapeHtml(from)}</text>` : ''}
-</svg>`;
+  if (layout === 'polaroid') {
+    const photoH = 318;
+    return {
+      photo: { x: x + pad, y: y + pad, w: w - pad * 2, h: photoH },
+      copy: {
+        x: x + pad + 10,
+        y: y + pad + photoH + 22,
+        w: w - pad * 2 - 20,
+        maxLines: 3,
+      },
+      signerY: y + h - 38,
+      stamp: { x: x + w - 150, y: y + h - 42 },
+    };
+  }
 
-  const layers = [{ input: Buffer.from(svg), top: 0, left: 0 }];
-  if (photoBuf) layers.push({ input: photoBuf, top: mediaY, left: mediaX });
+  if (layout === 'airmail') {
+    const inset = 12;
+    const mediaW = Math.round(w * 0.48);
+    return {
+      photo: { x: x + inset, y: y + inset, w: mediaW - inset, h: h - inset * 2 },
+      copy: {
+        x: x + mediaW + 28,
+        y: y + 34,
+        w: w - mediaW - 78,
+        maxLines: 6,
+      },
+      signerY: y + h - 48,
+      stamp: { x: x + w - 78, y: y + 56 },
+    };
+  }
 
-  return sharp({
-    create: { width: W, height: H, channels: 3, background: wall },
-  })
-    .composite(layers)
-    .jpeg({ quality: 80, mozjpeg: true })
-    .toBuffer();
+  const mediaW = Math.round(w * 0.48);
+  return {
+    photo: { x: x + w - mediaW, y, w: mediaW, h },
+    copy: {
+      x: x + 36,
+      y: y + 34,
+      w: w - mediaW - 70,
+      maxLines: 6,
+    },
+    signerY: y + h - 48,
+    stamp: { x: x + w - 70, y: y + 56 },
+  };
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+function drawAirmailBorder(ctx, x, y, w, h) {
+  const band = 9;
+  const colors = ['#c45c4a', '#f7f9fc', '#3d6fa8', '#f7f9fc'];
+  const inset = 12;
+  ctx.save();
+  roundRect(ctx, x, y, w, h, 6);
+  ctx.clip();
+
+  ctx.translate(x, y);
+  ctx.rotate((-45 * Math.PI) / 180);
+  for (let i = -h * 2; i < w + h * 2; i += band) {
+    ctx.fillStyle = colors[Math.floor(Math.abs(i) / band) % colors.length];
+    ctx.fillRect(i, -w, band, w + h * 3);
+  }
+  ctx.restore();
+
+  ctx.fillStyle = '#f4f7fb';
+  ctx.fillRect(x + inset, y + inset, w - inset * 2, h - inset * 2);
+}
+
+function drawStamp(ctx, layout, theme, box, handFamily) {
+  const { x, y } = box;
+  ctx.save();
+  if (layout === 'airmail') {
+    ctx.strokeStyle = theme.stamp;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.arc(x, y, 36, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = theme.stamp;
+    ctx.font = '700 11px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('EZY', x, y - 4);
+    ctx.fillText('ESCAPE', x, y + 12);
+  } else if (layout === 'telegram') {
+    ctx.strokeStyle = theme.stamp;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - 44, y - 16, 88, 36);
+    ctx.fillStyle = theme.stamp;
+    ctx.font = '700 15px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('RCVD', x, y + 6);
+  } else if (layout === 'ticket') {
+    ctx.fillStyle = '#2a241c';
+    ctx.fillRect(x - 48, y - 18, 96, 40);
+    ctx.fillStyle = '#f5d9a8';
+    ctx.font = '700 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('EE · PASS', x, y + 6);
+  } else if (layout === 'polaroid') {
+    ctx.translate(x, y);
+    ctx.rotate((-3 * Math.PI) / 180);
+    ctx.fillStyle = theme.stamp;
+    ctx.font = `400 24px "${handFamily}", Georgia, serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText('Ezy Escape', 0, 0);
+  } else {
+    ctx.fillStyle = theme.paper;
+    ctx.strokeStyle = theme.stamp;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 34, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = theme.stamp;
+    ctx.font = '700 11px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('EZY', x, y - 4);
+    ctx.fillText('ESCAPE', x, y + 12);
+  }
+  ctx.restore();
 }
 
 /**
- * Render a 1200×630 Open Graph image that matches the website PostcardCard.
- * Prefers a Chromium screenshot of the real card CSS; falls back to Sharp.
+ * Render a 1200×630 Open Graph image matching website postcard layouts.
  */
 export async function renderPostcardOgImage(postcard, opts = {}) {
+  registerFonts();
   const origin = (opts.origin || process.env.SITE_URL || 'https://ezyescape.com').replace(/\/+$/, '');
-  try {
-    return await renderWithChrome(postcard, origin);
-  } catch (err) {
-    console.error('[postcardOg] Chrome render failed, using Sharp fallback:', err.message);
-    return renderWithSharp(postcard, origin);
+  const layout = THEME[postcard.layout] ? postcard.layout : 'letter';
+  const theme = THEME[layout];
+  const hand = HAND_FONTS[postcard.handFont] || HAND_FONTS.caveat;
+  const boxes = layoutBoxes(layout);
+  const name = String(postcard.name || 'Guest').slice(0, 42);
+  const from = String(postcard.from || '').slice(0, 42);
+  const initial = (name[0] || 'G').toUpperCase();
+  const kicker = KICKERS[layout] || KICKERS.letter;
+
+  const canvas = createCanvas(W, H);
+  const ctx = canvas.getContext('2d');
+
+  // Wall
+  ctx.fillStyle = theme.wall;
+  ctx.fillRect(0, 0, W, H);
+
+  // Soft card shadow
+  ctx.fillStyle = 'rgba(40, 28, 14, 0.14)';
+  roundRect(ctx, CARD.x + 10, CARD.y + 14, CARD.w, CARD.h, 6);
+  ctx.fill();
+
+  // Paper
+  if (layout === 'airmail') {
+    drawAirmailBorder(ctx, CARD.x, CARD.y, CARD.w, CARD.h);
+  } else {
+    ctx.fillStyle = theme.paper;
+    roundRect(ctx, CARD.x, CARD.y, CARD.w, CARD.h, layout === 'polaroid' ? 2 : 4);
+    ctx.fill();
   }
+
+  if (layout === 'ticket') {
+    ctx.strokeStyle = '#c49a6c';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 7]);
+    ctx.strokeRect(CARD.x + 8, CARD.y + 8, CARD.w - 16, CARD.h - 16);
+    ctx.setLineDash([]);
+  }
+
+  // Photo
+  const photoUrl = firstImageUrl(postcard, origin);
+  ctx.fillStyle = theme.mediaBg;
+  ctx.fillRect(boxes.photo.x, boxes.photo.y, boxes.photo.w, boxes.photo.h);
+  if (photoUrl) {
+    try {
+      const img = await loadImage(photoUrl);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(boxes.photo.x, boxes.photo.y, boxes.photo.w, boxes.photo.h);
+      ctx.clip();
+      const scale = Math.max(boxes.photo.w / img.width, boxes.photo.h / img.height);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      const dx = boxes.photo.x + (boxes.photo.w - dw) / 2;
+      const dy = boxes.photo.y + (boxes.photo.h - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.restore();
+    } catch {
+      /* keep placeholder */
+    }
+  }
+
+  // Airmail ruled lines (copy side only)
+  if (layout === 'airmail') {
+    ctx.strokeStyle = 'rgba(61, 111, 168, 0.14)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 12; i += 1) {
+      const yy = boxes.copy.y + 44 + i * 28;
+      ctx.beginPath();
+      ctx.moveTo(boxes.copy.x, yy);
+      ctx.lineTo(CARD.x + CARD.w - 28, yy);
+      ctx.stroke();
+    }
+  }
+
+  // Kicker
+  ctx.fillStyle = theme.accent;
+  ctx.font = '700 13px Arial';
+  ctx.textAlign = 'left';
+  ctx.letterSpacing = '2px';
+  try {
+    ctx.letterSpacing = '0.18em';
+  } catch {
+    /* optional */
+  }
+  ctx.fillText(kicker, boxes.copy.x, boxes.copy.y + 4);
+  ctx.letterSpacing = '0px';
+
+  // Quote
+  ctx.fillStyle = theme.ink;
+  ctx.font = `400 ${hand.size}px "${hand.family}", Georgia, serif`;
+  const quoteLines = wrapText(ctx, postcard.text, boxes.copy.w, boxes.copy.maxLines);
+  const lineGap = layout === 'polaroid' ? 8 : 10;
+  quoteLines.forEach((line, i) => {
+    let shown = line;
+    if (i === 0) shown = `“${shown}`;
+    if (i === quoteLines.length - 1) shown = `${shown}”`;
+    ctx.fillText(shown, boxes.copy.x, boxes.copy.y + 48 + i * (hand.size + lineGap));
+  });
+
+  // Avatar monogram
+  const avatarCx = boxes.copy.x + 22;
+  const avatarCy = boxes.signerY;
+  const avatarUrl =
+    postcard.avatarMode === 'photo' && postcard.avatarUrl
+      ? absolutize(postcard.avatarUrl, origin)
+      : '';
+  if (avatarUrl) {
+    try {
+      const avatar = await loadImage(avatarUrl);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(avatarCx, avatarCy, 22, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(avatar, avatarCx - 22, avatarCy - 22, 44, 44);
+      ctx.restore();
+    } catch {
+      ctx.fillStyle = theme.accent;
+      ctx.beginPath();
+      ctx.arc(avatarCx, avatarCy, 22, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else {
+    ctx.fillStyle = theme.accent;
+    ctx.beginPath();
+    ctx.arc(avatarCx, avatarCy, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = layout === 'telegram' || layout === 'night' ? theme.paper : '#ffffff';
+    ctx.font = '700 18px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(initial, avatarCx, avatarCy + 6);
+    ctx.textAlign = 'left';
+  }
+
+  // Name / from
+  ctx.fillStyle = theme.ink;
+  ctx.font = '700 20px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(name, boxes.copy.x + 56, boxes.signerY - 2);
+  if (from) {
+    ctx.fillStyle = theme.muted;
+    ctx.font = '400 15px Arial';
+    ctx.fillText(from, boxes.copy.x + 56, boxes.signerY + 18);
+  }
+
+  // Stamp
+  drawStamp(ctx, layout, theme, boxes.stamp, hand.family);
+
+  // Re-draw airmail stripe rim on top of photo edges
+  if (layout === 'airmail') {
+    const inset = 12;
+    ctx.save();
+    roundRect(ctx, CARD.x, CARD.y, CARD.w, CARD.h, 6);
+    ctx.clip();
+    // mask out interior — draw only the rim by clearing? simpler: redraw stripes then fill inner hole with nothing by clipping difference
+    const band = 9;
+    const colors = ['#c45c4a', '#f7f9fc', '#3d6fa8', '#f7f9fc'];
+    ctx.save();
+    // outer clip already set; now exclude inner
+    ctx.beginPath();
+    ctx.rect(CARD.x, CARD.y, CARD.w, CARD.h);
+    ctx.rect(CARD.x + inset, CARD.y + inset, CARD.w - inset * 2, CARD.h - inset * 2);
+    ctx.clip('evenodd');
+    ctx.translate(CARD.x, CARD.y);
+    ctx.rotate((-45 * Math.PI) / 180);
+    for (let i = -CARD.h * 2; i < CARD.w + CARD.h * 2; i += band) {
+      ctx.fillStyle = colors[Math.floor(Math.abs(i) / band) % colors.length];
+      ctx.fillRect(i, -CARD.w, band, CARD.w + CARD.h * 3);
+    }
+    ctx.restore();
+    ctx.restore();
+  }
+
+  const png = canvas.toBuffer('image/png');
+  return sharp(png).jpeg({ quality: 84, mozjpeg: true }).toBuffer();
 }
 
 export async function closePostcardOgBrowser() {
-  if (!browserPromise) return;
-  try {
-    const browser = await browserPromise;
-    await browser.close();
-  } catch {
-    /* ignore */
-  } finally {
-    browserPromise = null;
-  }
+  // no-op (compatibility)
 }
