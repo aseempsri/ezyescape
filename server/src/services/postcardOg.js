@@ -111,8 +111,15 @@ const HAND_FONTS = {
 
 let fontsRegistered = false;
 
+const UI_SANS = 'EEPoppins';
+
 function registerFonts() {
   if (fontsRegistered) return;
+  const uiRegular = path.join(FONTS_DIR, 'Poppins-Regular.ttf');
+  const uiBold = path.join(FONTS_DIR, 'Poppins-Bold.ttf');
+  if (fs.existsSync(uiRegular)) GlobalFonts.registerFromPath(uiRegular, UI_SANS);
+  if (fs.existsSync(uiBold)) GlobalFonts.registerFromPath(uiBold, UI_SANS);
+
   const seen = new Set();
   for (const meta of Object.values(HAND_FONTS)) {
     if (seen.has(meta.family)) continue;
@@ -266,7 +273,7 @@ function drawStamp(ctx, layout, theme, box, handFamily) {
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.fillStyle = theme.stamp;
-    ctx.font = '700 11px Arial';
+    ctx.font = '700 11px EEPoppins';
     ctx.textAlign = 'center';
     ctx.fillText('EZY', x, y - 4);
     ctx.fillText('ESCAPE', x, y + 12);
@@ -275,14 +282,14 @@ function drawStamp(ctx, layout, theme, box, handFamily) {
     ctx.lineWidth = 2;
     ctx.strokeRect(x - 44, y - 16, 88, 36);
     ctx.fillStyle = theme.stamp;
-    ctx.font = '700 15px Arial';
+    ctx.font = '700 15px EEPoppins';
     ctx.textAlign = 'center';
     ctx.fillText('RCVD', x, y + 6);
   } else if (layout === 'ticket') {
     ctx.fillStyle = '#2a241c';
     ctx.fillRect(x - 48, y - 18, 96, 40);
     ctx.fillStyle = '#f5d9a8';
-    ctx.font = '700 12px Arial';
+    ctx.font = '700 12px EEPoppins';
     ctx.textAlign = 'center';
     ctx.fillText('EE · PASS', x, y + 6);
   } else if (layout === 'polaroid') {
@@ -301,7 +308,7 @@ function drawStamp(ctx, layout, theme, box, handFamily) {
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = theme.stamp;
-    ctx.font = '700 11px Arial';
+    ctx.font = '700 11px EEPoppins';
     ctx.textAlign = 'center';
     ctx.fillText('EZY', x, y - 4);
     ctx.fillText('ESCAPE', x, y + 12);
@@ -391,7 +398,7 @@ export async function renderPostcardOgImage(postcard, opts = {}) {
 
   // Kicker
   ctx.fillStyle = theme.accent;
-  ctx.font = '700 13px Arial';
+  ctx.font = '700 13px EEPoppins';
   ctx.textAlign = 'left';
   ctx.letterSpacing = '2px';
   try {
@@ -442,7 +449,7 @@ export async function renderPostcardOgImage(postcard, opts = {}) {
     ctx.arc(avatarCx, avatarCy, 22, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = layout === 'telegram' || layout === 'night' ? theme.paper : '#ffffff';
-    ctx.font = '700 18px Arial';
+    ctx.font = '700 18px EEPoppins';
     ctx.textAlign = 'center';
     ctx.fillText(initial, avatarCx, avatarCy + 6);
     ctx.textAlign = 'left';
@@ -450,12 +457,12 @@ export async function renderPostcardOgImage(postcard, opts = {}) {
 
   // Name / from
   ctx.fillStyle = theme.ink;
-  ctx.font = '700 20px Arial';
+  ctx.font = '700 20px EEPoppins';
   ctx.textAlign = 'left';
   ctx.fillText(name, boxes.copy.x + 56, boxes.signerY - 2);
   if (from) {
     ctx.fillStyle = theme.muted;
-    ctx.font = '400 15px Arial';
+    ctx.font = '400 15px EEPoppins';
     ctx.fillText(from, boxes.copy.x + 56, boxes.signerY + 18);
   }
 
