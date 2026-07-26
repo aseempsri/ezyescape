@@ -49,7 +49,8 @@ export async function findApprovedPostcard(id) {
 export function shareHtmlForPostcard(req, postcard) {
   const id = String(postcard._id);
   const pageUrl = absoluteUrl(req, `/postcards/${id}`);
-  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg`);
+  // v=2 busts crawler caches after OG renderer switched to live-card screenshots
+  const ogImage = absoluteUrl(req, `/api/postcards/${id}/og.jpg?v=2`);
   const title = `${postcard.name}'s postcard — Ezy Escape`;
   const description = String(postcard.text || '')
     .replace(/\s+/g, ' ')
@@ -127,11 +128,13 @@ async function sendOgImage(req, res) {
   try {
     const doc = await findApproved(req.params.id);
     if (!doc) return res.status(404).json({ error: 'Postcard not found' });
-    const jpg = await renderPostcardOgImage(serialize(doc));
+    const jpg = await renderPostcardOgImage(serialize(doc), {
+      origin: absoluteUrl(req, '/').replace(/\/$/, ''),
+    });
     res
       .status(200)
       .type('jpeg')
-      .set('Cache-Control', 'public, max-age=86400')
+      .set('Cache-Control', 'public, max-age=3600')
       .send(jpg);
   } catch (err) {
     console.error('postcard og image failed:', err);

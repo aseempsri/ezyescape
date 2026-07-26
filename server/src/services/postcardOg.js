@@ -1,17 +1,24 @@
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+import puppeteer from 'puppeteer';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/** OG canvas (WhatsApp / Facebook large preview). */
 const W = 1200;
 const H = 630;
 
-const LAYOUT_THEME = {
-  letter: { paper: '#f4efe6', ink: '#2a241c', muted: '#6b5e4e', accent: '#c45c3a', mediaBg: '#d9d0c3' },
-  airmail: { paper: '#f7f3ec', ink: '#1c2a3a', muted: '#4a5d72', accent: '#2f6fad', mediaBg: '#cfd8e2' },
-  polaroid: { paper: '#f8f6f2', ink: '#2a241c', muted: '#6b5e4e', accent: '#c47d0a', mediaBg: '#e8e2d8' },
-  telegram: { paper: '#1f2430', ink: '#f0e6d4', muted: '#b8a88c', accent: '#d4a84b', mediaBg: '#2c3344' },
-  kraft: { paper: '#c4a574', ink: '#2c1c0c', muted: '#5a3d1c', accent: '#6b3f18', mediaBg: '#a88858' },
-  night: { paper: '#1a2744', ink: '#e8eef8', muted: '#9eb6d8', accent: '#f5c65c', mediaBg: '#243556' },
-  meadow: { paper: '#e8f0e4', ink: '#243528', muted: '#4f6a55', accent: '#5a8f4a', mediaBg: '#c5d6bf' },
-  ticket: { paper: '#f3ebe0', ink: '#2a241c', muted: '#6b5e4e', accent: '#b45309', mediaBg: '#ddd2c4' },
+const HAND_FONTS = {
+  tangerine: { family: "'Tangerine', cursive", size: '2.55rem', weight: 700, line: 1.12 },
+  caveat: { family: "'Caveat', cursive", size: '2rem', weight: 600, line: 1.28 },
+  kalam: { family: "'Kalam', cursive", size: '1.55rem', weight: 400, line: 1.45 },
+  patrick: { family: "'Patrick Hand', cursive", size: '1.7rem', weight: 400, line: 1.4 },
+  shadows: { family: "'Shadows Into Light', cursive", size: '1.85rem', weight: 400, line: 1.35 },
+  satisfy: { family: "'Satisfy', cursive", size: '1.9rem', weight: 400, line: 1.35 },
+  gloria: { family: "'Gloria Hallelujah', cursive", size: '1.45rem', weight: 400, line: 1.5 },
+  indie: { family: "'Indie Flower', cursive", size: '1.7rem', weight: 400, line: 1.4 },
 };
 
 const KICKERS = {
@@ -25,188 +32,382 @@ const KICKERS = {
   ticket: 'Admit one · slow traveller',
 };
 
-function escapeXml(s) {
+const WALL = {
+  letter: '#ebe2d4',
+  airmail: '#e8eef5',
+  polaroid: '#ebe2d4',
+  telegram: '#12151c',
+  kraft: '#c4a574',
+  night: '#071018',
+  meadow: '#dde8d6',
+  ticket: '#f3ebe0',
+};
+
+const CSS_CANDIDATES = [
+  path.resolve(__dirname, '../../../web/src/styles/postcards.css'),
+  path.resolve(__dirname, '../../web/src/styles/postcards.css'),
+  path.resolve('/var/www/ezyescape/web/src/styles/postcards.css'),
+  path.resolve('/var/www/ezyescape-src/web/src/styles/postcards.css'),
+];
+
+const CHROME_CANDIDATES = [
+  process.env.PUPPETEER_EXECUTABLE_PATH,
+  process.env.CHROME_PATH,
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  '/usr/bin/google-chrome-stable',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium-browser',
+  '/usr/bin/chromium',
+  '/snap/bin/chromium',
+].filter(Boolean);
+
+let browserPromise = null;
+let postcardCssCache = null;
+
+function escapeHtml(s) {
   return String(s || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
+    .replace(/"/g, '&quot;');
 }
 
-function wrapText(text, maxChars, maxLines) {
-  const words = String(text || '').trim().split(/\s+/).filter(Boolean);
-  const lines = [];
-  let cur = '';
-  for (const word of words) {
-    const next = cur ? `${cur} ${word}` : word;
-    if (next.length > maxChars && cur) {
-      lines.push(cur);
-      cur = word;
-      if (lines.length >= maxLines) break;
-    } else {
-      cur = next;
+function loadPostcardCss() {
+  if (postcardCssCache != null) return postcardCssCache;
+  for (const candidate of CSS_CANDIDATES) {
+    try {
+      if (fs.existsSync(candidate)) {
+        postcardCssCache = fs.readFileSync(candidate, 'utf8');
+        return postcardCssCache;
+      }
+    } catch {
+      /* try next */
     }
   }
-  if (lines.length < maxLines && cur) lines.push(cur);
-  const joined = words.join(' ');
-  const shown = lines.join(' ');
-  if (joined.length > shown.length && lines.length) {
-    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/[.,;:!?]?$/, '')}…`;
-  }
-  return lines.slice(0, maxLines);
+  postcardCssCache = '';
+  return postcardCssCache;
 }
 
-async function loadPhotoBuffer(url, width, height) {
-  if (!url) return null;
-  try {
-    const res = await fetch(url, { redirect: 'follow' });
-    if (!res.ok) return null;
-    const ctype = res.headers.get('content-type') || '';
-    if (ctype.includes('video')) return null;
-    const buf = Buffer.from(await res.arrayBuffer());
-    return sharp(buf)
-      .rotate()
-      .resize(width, height, { fit: 'cover', position: 'centre' })
-      .jpeg({ quality: 85 })
-      .toBuffer();
-  } catch {
-    return null;
+function findChrome() {
+  for (const candidate of CHROME_CANDIDATES) {
+    try {
+      if (fs.existsSync(candidate)) return candidate;
+    } catch {
+      /* try next */
+    }
   }
+  return null;
 }
 
-function firstImageUrl(postcard) {
+async function getBrowser() {
+  if (!browserPromise) {
+    // Prefer system Chrome when present; otherwise Puppeteer's bundled Chromium.
+    const executablePath = findChrome() || undefined;
+    browserPromise = puppeteer
+      .launch({
+        ...(executablePath ? { executablePath } : {}),
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--font-render-hinting=none',
+          '--hide-scrollbars',
+        ],
+      })
+      .catch((err) => {
+        browserPromise = null;
+        throw err;
+      });
+  }
+  return browserPromise;
+}
+
+function firstImageUrl(postcard, origin) {
   const media = postcard.media || [];
   const image = media.find((m) => m.type === 'image' && m.url);
-  if (image) return image.url;
-  return '';
+  return absolutize(image?.url || '', origin);
 }
 
-function mediaGeometry(layout) {
-  if (layout === 'polaroid') {
-    return { x: 80, y: 40, w: 1040, h: 360, rx: 4 };
+function absolutize(url, baseOrigin) {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const u = new URL(url);
+      if (/localhost|127\.0\.0\.1/i.test(u.hostname) && baseOrigin) {
+        return `${baseOrigin}${u.pathname}${u.search}`;
+      }
+    } catch {
+      /* keep */
+    }
+    return url;
   }
+  if (!baseOrigin) return url;
+  return `${baseOrigin}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+function stampHtml(layout) {
   if (layout === 'airmail') {
-    return { x: 48, y: 48, w: 560, h: 534, rx: 10 };
+    return `<span class="pc-postmark"><em>Ezy</em><span>Escape</span></span>`;
   }
-  return { x: 560, y: 48, w: 592, h: 534, rx: 10 };
-}
-
-function copyGeometry(layout) {
+  if (layout === 'ticket') {
+    return `<span class="pc-ticket-stub">EE · PASS</span>`;
+  }
+  if (layout === 'telegram') {
+    return `<span class="pc-telegram-stamp">RCVD</span>`;
+  }
   if (layout === 'polaroid') {
-    return { x: 80, y: 430, maxChars: 52, maxLines: 3, fontSize: 28 };
+    return `<span class="pc-polaroid-date">Ezy Escape</span>`;
   }
-  if (layout === 'airmail') {
-    return { x: 650, y: 70, maxChars: 26, maxLines: 5, fontSize: 32 };
-  }
-  return { x: 56, y: 70, maxChars: 26, maxLines: 5, fontSize: 34 };
+  return 'Ezy Escape';
 }
 
-/**
- * Render a 1200×630 Open Graph image that mirrors the site postcard (copy + photo).
- */
-export async function renderPostcardOgImage(postcard) {
-  const layout = LAYOUT_THEME[postcard.layout] ? postcard.layout : 'letter';
-  const theme = LAYOUT_THEME[layout];
-  const kicker = KICKERS[layout] || KICKERS.letter;
-  const media = mediaGeometry(layout);
-  const copy = copyGeometry(layout);
-  const quoteLines = wrapText(postcard.text, copy.maxChars, copy.maxLines);
+function avatarHtml(postcard, origin) {
+  if (postcard.avatarMode === 'photo' && postcard.avatarUrl) {
+    const url = escapeHtml(absolutize(postcard.avatarUrl, origin));
+    return `<span class="pc-avatar pc-avatar--photo" style="background-image:url('${url}')" aria-hidden="true"></span>`;
+  }
+  return `<span class="pc-avatar pc-avatar--char" aria-hidden="true">${escapeHtml(
+    postcard.characterEmoji || '✉️'
+  )}</span>`;
+}
+
+function buildOgHtml(postcard, origin) {
+  const layout = KICKERS[postcard.layout] ? postcard.layout : 'letter';
+  const font = HAND_FONTS[postcard.handFont] || HAND_FONTS.caveat;
+  const kicker = KICKERS[layout];
+  const wall = WALL[layout] || WALL.letter;
+  const photoUrl = firstImageUrl(postcard, origin);
+  const css = loadPostcardCss();
+  const name = escapeHtml(postcard.name || 'Guest');
+  const from = escapeHtml(postcard.from || '');
+  const text = escapeHtml(postcard.text || '');
+
+  const textStyle = [
+    `font-family:${font.family}`,
+    `font-size:${font.size}`,
+    `font-weight:${font.weight}`,
+    `line-height:${font.line}`,
+  ].join(';');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Gloria+Hallelujah&family=Indie+Flower&family=Kalam:wght@300;400;700&family=Patrick+Hand&family=Poppins:wght@400;600;700&family=Satisfy&family=Shadows+Into+Light&family=Tangerine:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    ${css}
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: ${wall};
+      font-family: 'Poppins', system-ui, sans-serif;
+    }
+    #og-frame {
+      width: ${W}px;
+      height: ${H}px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 48px;
+      box-sizing: border-box;
+      background: ${wall};
+    }
+    #og-frame .pc-card {
+      width: 100%;
+      max-width: 1040px;
+      transform: none !important;
+    }
+    #og-frame .pc-share,
+    #og-frame .pc-media-nav,
+    #og-frame .pc-media-dots {
+      display: none !important;
+    }
+    #og-frame .pc-card-media {
+      min-height: 420px;
+    }
+    #og-frame .pc-card-inner--polaroid .pc-card-media {
+      min-height: 340px;
+    }
+    #og-frame .pc-card-media-el {
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="og-frame">
+    <article class="pc-card pc-card--${escapeHtml(layout)} pc-card--font-${escapeHtml(postcard.handFont || 'caveat')}">
+      <div class="pc-card-stamp" aria-hidden="true">${stampHtml(layout)}</div>
+      <div class="pc-card-inner pc-card-inner--${escapeHtml(layout)}">
+        <div class="pc-card-copy">
+          <p class="pc-card-kicker">${escapeHtml(kicker)}</p>
+          <p class="pc-card-text" style="${textStyle}">“${text}”</p>
+          <div class="pc-card-signer">
+            ${avatarHtml(postcard, origin)}
+            <div class="pc-card-signer-meta">
+              <div class="pc-card-name">${name}</div>
+              ${from ? `<div class="pc-card-from">${from}</div>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="pc-card-media">
+          ${
+            photoUrl
+              ? `<div class="pc-card-media-el" style="background-image:url('${escapeHtml(photoUrl)}')"></div>`
+              : `<div class="pc-card-media-empty">No media yet</div>`
+          }
+        </div>
+      </div>
+    </article>
+  </div>
+</body>
+</html>`;
+}
+
+async function renderWithChrome(postcard, origin) {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+  try {
+    await page.setViewport({ width: W, height: H, deviceScaleFactor: 2 });
+    await page.setContent(buildOgHtml(postcard, origin), {
+      waitUntil: ['load', 'networkidle0'],
+      timeout: 25000,
+    });
+    // Ensure webfonts + photo are ready
+    await page.evaluate(async () => {
+      if (document.fonts?.ready) await document.fonts.ready;
+      const imgs = [...document.querySelectorAll('.pc-card-media-el, .pc-avatar--photo')];
+      await Promise.all(
+        imgs.map((el) => {
+          const bg = getComputedStyle(el).backgroundImage;
+          const m = bg && bg.match(/url\(["']?(.*?)["']?\)/);
+          if (!m?.[1] || m[1] === 'none') return null;
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+            img.src = m[1];
+          });
+        })
+      );
+    });
+    const frame = await page.$('#og-frame');
+    const png = await frame.screenshot({ type: 'png' });
+    return sharp(png)
+      .resize(W, H, { fit: 'fill' })
+      .jpeg({ quality: 84, mozjpeg: true })
+      .toBuffer();
+  } finally {
+    await page.close().catch(() => {});
+  }
+}
+
+/** Sharp fallback when Chrome is unavailable — approximate layout only. */
+async function renderWithSharp(postcard, origin) {
+  const layout = KICKERS[postcard.layout] ? postcard.layout : 'letter';
+  const wall = WALL[layout] || WALL.letter;
+  const ink = layout === 'telegram' || layout === 'night' ? '#f7edd8' : '#2a241c';
+  const accent = layout === 'airmail' ? '#3d6fa8' : '#8a6a3e';
+  const photoUrl = firstImageUrl(postcard, origin);
   const name = String(postcard.name || 'Guest').slice(0, 40);
   const from = String(postcard.from || '').slice(0, 40);
-  const emoji = postcard.avatarMode === 'character' ? postcard.characterEmoji || '✉️' : '';
+  const words = String(postcard.text || '').trim().split(/\s+/);
+  const lines = [];
+  let cur = '';
+  for (const w of words) {
+    const next = cur ? `${cur} ${w}` : w;
+    if (next.length > 28 && cur) {
+      lines.push(cur);
+      cur = w;
+      if (lines.length >= 5) break;
+    } else cur = next;
+  }
+  if (lines.length < 5 && cur) lines.push(cur);
+  if (words.join(' ').length > lines.join(' ').length && lines.length) {
+    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/[.,;:!?]?$/, '')}…`;
+  }
 
-  const photoBuf = await loadPhotoBuffer(firstImageUrl(postcard), media.w, media.h);
+  const mediaW = 480;
+  const mediaH = 480;
+  const mediaX = layout === 'airmail' || layout === 'polaroid' ? 90 : 620;
+  const mediaY = 75;
+  let photoBuf = null;
+  if (photoUrl) {
+    try {
+      const res = await fetch(photoUrl, { redirect: 'follow' });
+      if (res.ok) {
+        photoBuf = await sharp(Buffer.from(await res.arrayBuffer()))
+          .rotate()
+          .resize(mediaW, mediaH, { fit: 'cover' })
+          .png()
+          .toBuffer();
+      }
+    } catch {
+      /* placeholder */
+    }
+  }
 
-  const quoteSvg = quoteLines
+  const quote = lines
     .map((line, i) => {
-      const y = copy.y + 52 + i * (copy.fontSize + 10);
+      const y = 150 + i * 36;
       let shown = line;
       if (i === 0) shown = `“${shown}`;
-      if (i === quoteLines.length - 1) shown = `${shown}”`;
-      return `<text x="${copy.x}" y="${y}" font-size="${copy.fontSize}" font-family="Georgia, 'Times New Roman', serif" font-style="italic" fill="${theme.ink}">${escapeXml(shown)}</text>`;
+      if (i === lines.length - 1) shown = `${shown}”`;
+      return `<text x="${layout === 'airmail' ? 610 : 100}" y="${y}" font-size="26" font-family="Georgia, serif" font-style="italic" fill="${ink}">${escapeHtml(shown)}</text>`;
     })
     .join('');
 
-  const signerY = Math.min(
-    layout === 'polaroid' ? 590 : 530,
-    copy.y + 52 + quoteLines.length * (copy.fontSize + 10) + 40
-  );
-
-  const avatarSvg = emoji
-    ? `<text x="${copy.x + 20}" y="${signerY + 10}" font-size="30" text-anchor="middle">${escapeXml(emoji)}</text>`
-    : `<circle cx="${copy.x + 20}" cy="${signerY}" r="20" fill="${theme.accent}" opacity="0.9"/>`;
-
-  const border =
-    layout === 'airmail'
-      ? `<rect x="18" y="18" width="${W - 36}" height="${H - 36}" fill="none" stroke="#c45c3a" stroke-width="6"/>
-         <rect x="30" y="30" width="${W - 60}" height="${H - 60}" fill="none" stroke="#2f6fad" stroke-width="3"/>`
-      : layout === 'ticket'
-        ? `<rect x="24" y="24" width="${W - 48}" height="${H - 48}" fill="none" stroke="${theme.ink}" stroke-width="2" stroke-dasharray="10 8" rx="8"/>`
-        : '';
-
-  const stamp =
-    layout === 'telegram'
-      ? `<rect x="${W - 150}" y="40" width="100" height="44" rx="4" fill="none" stroke="${theme.accent}" stroke-width="2"/>
-         <text x="${W - 100}" y="68" text-anchor="middle" font-size="18" font-family="Arial, sans-serif" font-weight="700" fill="${theme.accent}">RCVD</text>`
-      : `<circle cx="${W - 90}" cy="78" r="42" fill="${theme.paper}" stroke="${theme.accent}" stroke-width="3" stroke-dasharray="4 5"/>
-         <text x="${W - 90}" y="74" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-weight="700" fill="${theme.accent}" letter-spacing="1">EZY</text>
-         <text x="${W - 90}" y="90" text-anchor="middle" font-size="11" font-family="Arial, sans-serif" font-weight="700" fill="${theme.accent}" letter-spacing="1">ESCAPE</text>`;
-
-  // Transparent SVG overlay (no full-bleed fill) so the photo shows through.
-  const overlaySvg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-  ${border}
-  <text x="${copy.x}" y="${copy.y}" font-size="13" font-family="Arial, sans-serif" font-weight="700" letter-spacing="2" fill="${theme.accent}">${escapeXml(kicker.toUpperCase())}</text>
-  ${quoteSvg}
-  ${avatarSvg}
-  <text x="${copy.x + 52}" y="${signerY - 2}" font-size="22" font-family="Arial, sans-serif" font-weight="700" fill="${theme.ink}">${escapeXml(name)}</text>
-  ${from ? `<text x="${copy.x + 52}" y="${signerY + 24}" font-size="16" font-family="Arial, sans-serif" fill="${theme.muted}">${escapeXml(from)}</text>` : ''}
-  ${stamp}
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${W}" height="${H}" fill="${wall}"/>
+  <rect x="70" y="48" width="1060" height="534" rx="6" fill="${layout === 'telegram' ? '#1f2430' : layout === 'night' ? '#0b1524' : '#faf6ef'}"/>
+  <text x="${layout === 'airmail' ? 610 : 100}" y="100" font-size="13" font-family="Arial, sans-serif" font-weight="700" letter-spacing="2" fill="${accent}">${escapeHtml((KICKERS[layout] || '').toUpperCase())}</text>
+  ${quote}
+  <text x="${layout === 'airmail' ? 610 : 100}" y="520" font-size="20" font-family="Arial, sans-serif" font-weight="700" fill="${ink}">${escapeHtml(name)}</text>
+  ${from ? `<text x="${layout === 'airmail' ? 610 : 100}" y="545" font-size="15" font-family="Arial, sans-serif" fill="${accent}">${escapeHtml(from)}</text>` : ''}
 </svg>`;
 
-  const layers = [];
+  const layers = [{ input: Buffer.from(svg), top: 0, left: 0 }];
+  if (photoBuf) layers.push({ input: photoBuf, top: mediaY, left: mediaX });
 
-  if (photoBuf) {
-    const rounded = await sharp(photoBuf)
-      .resize(media.w, media.h, { fit: 'cover' })
-      .composite([
-        {
-          input: Buffer.from(
-            `<svg width="${media.w}" height="${media.h}"><rect width="${media.w}" height="${media.h}" rx="${media.rx}" ry="${media.rx}" fill="#fff"/></svg>`
-          ),
-          blend: 'dest-in',
-        },
-      ])
-      .png()
-      .toBuffer();
-    layers.push({ input: rounded, top: media.y, left: media.x });
-  } else {
-    const placeholder = await sharp({
-      create: {
-        width: media.w,
-        height: media.h,
-        channels: 3,
-        background: theme.mediaBg,
-      },
-    })
-      .png()
-      .toBuffer();
-    layers.push({ input: placeholder, top: media.y, left: media.x });
-  }
-
-  layers.push({ input: Buffer.from(overlaySvg), top: 0, left: 0 });
-
-  // WhatsApp rejects / skips large previews — keep JPEG under ~300KB.
   return sharp({
-    create: {
-      width: W,
-      height: H,
-      channels: 3,
-      background: theme.paper,
-    },
+    create: { width: W, height: H, channels: 3, background: wall },
   })
     .composite(layers)
-    .jpeg({ quality: 72, mozjpeg: true })
+    .jpeg({ quality: 80, mozjpeg: true })
     .toBuffer();
+}
+
+/**
+ * Render a 1200×630 Open Graph image that matches the website PostcardCard.
+ * Prefers a Chromium screenshot of the real card CSS; falls back to Sharp.
+ */
+export async function renderPostcardOgImage(postcard, opts = {}) {
+  const origin = (opts.origin || process.env.SITE_URL || 'https://ezyescape.com').replace(/\/+$/, '');
+  try {
+    return await renderWithChrome(postcard, origin);
+  } catch (err) {
+    console.error('[postcardOg] Chrome render failed, using Sharp fallback:', err.message);
+    return renderWithSharp(postcard, origin);
+  }
+}
+
+export async function closePostcardOgBrowser() {
+  if (!browserPromise) return;
+  try {
+    const browser = await browserPromise;
+    await browser.close();
+  } catch {
+    /* ignore */
+  } finally {
+    browserPromise = null;
+  }
 }
