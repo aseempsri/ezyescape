@@ -22,8 +22,12 @@ export async function logout() {
   return res.json();
 }
 
-export function googleSignInUrl() {
-  return getApiUrl('/auth/google');
+export function googleSignInUrl(returnTo) {
+  const base = getApiUrl('/auth/google');
+  const target = returnTo || `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (!target || target === '/') return base;
+  const params = new URLSearchParams({ returnTo: target });
+  return `${base}?${params.toString()}`;
 }
 
 export async function authStatus() {

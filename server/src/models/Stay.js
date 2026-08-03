@@ -20,6 +20,8 @@ const staySchema = new mongoose.Schema(
     storyImage: { type: String, default: '', trim: true },
     hostImage: { type: String, default: '', trim: true },
     directions: { type: String, default: '', trim: true },
+    // Google Maps search query or "lat,lng" — used for the property map embed.
+    mapQuery: { type: String, default: '', trim: true },
     highlights: { type: [String], default: [] },
     images: { type: [String], default: [] },
     videos: { type: [String], default: [] },

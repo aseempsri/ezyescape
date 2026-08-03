@@ -133,7 +133,7 @@ export default function ContactPage() {
 
       <AdSlot adId="contact-ad1" />
 
-      <section className="sp-section sp-section--alt">
+      <section className="sp-section">
         <div className="container">
           <div className="sp-section-head">
             <p className="sp-eyebrow">Quick links</p>

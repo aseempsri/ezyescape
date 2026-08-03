@@ -12,11 +12,11 @@
   --sp-sun: #fff6e8;
   --sp-mint: #e8f7ef;
   --sp-amber: #f5a623;
+  --section-cream: #F9F6F1;
+  --section-white: #FFFFFF;
 
-  background:
-    radial-gradient(ellipse at 90% -5%, rgba(245, 166, 35, 0.16), transparent 42%),
-    radial-gradient(ellipse at 0% 30%, rgba(77, 163, 224, 0.1), transparent 40%),
-    linear-gradient(180deg, #ffffff 0%, var(--sp-sun) 28%, #ffffff 58%, #ffffff 100%);
+  /* Post-hero pages: cream base; sections alternate cream ↔ white */
+  background: var(--section-cream);
   color: var(--sp-ink);
 }
 
@@ -44,9 +44,26 @@
   text-shadow: none;
 }
 
+.site-page .sp-title {
+  line-height: 1;
+}
+
+.site-page .sp-title br {
+  display: none;
+}
+
 .site-page .sp-title-script {
+  display: block;
+  margin-top: 0.18em;
+  line-height: 0.95;
   animation: none;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.site-page .sp-title-line {
+  display: block;
+  margin-bottom: 0;
+  line-height: 1.12;
 }
 
 .site-page .sp-title-script .typewriter-cursor::after {
@@ -59,11 +76,25 @@
   color: var(--sp-muted);
 }
 
-/* Sections & cards — white surfaces */
-.site-page .sp-section--alt {
-  background: rgba(255, 255, 255, 0.65);
-  border-top: 1px solid var(--sp-line);
-  border-bottom: 1px solid var(--sp-line);
+/* Sections — cream ↔ white only (same rhythm as homepage) */
+.site-page .sp-section {
+  background: var(--section-cream);
+}
+
+.site-page .sp-section--alt,
+.site-page .sp-section--split {
+  background: var(--section-white);
+  border-top: none;
+  border-bottom: none;
+}
+
+.site-page .sp-cta-band {
+  background: var(--section-cream);
+}
+
+/* After a white section, CTA stays cream; after cream listing pages, use white when marked */
+.site-page .sp-cta-band.sp-section--alt {
+  background: var(--section-white);
 }
 
 .site-page .sp-section-head h2,
@@ -149,6 +180,8 @@
   background:
     linear-gradient(165deg, rgba(245, 166, 35, 0.1), transparent 45%),
     #ffffff;
+  border: none;
+  box-shadow: 0 10px 30px rgba(28, 42, 58, 0.06);
 }
 
 .site-page .sp-field {
@@ -187,11 +220,15 @@
   color: #c47d0a !important;
 }
 
-/* Postcards wall — brighter white paper ground */
-.site-page .pc-wall {
-  background:
-    radial-gradient(ellipse at 20% 0%, rgba(245, 166, 35, 0.08), transparent 50%),
-    linear-gradient(180deg, #ffffff 0%, #f7fbff 50%, #fff9f0 100%);
+/* Postcards wall + homestays listing — cream after hero */
+.site-page .pc-wall,
+.site-page .hs-section {
+  background: var(--section-cream);
+}
+
+.site-page .exp-upcoming-section,
+.site-page .exp-upcoming-section.section-tone-white {
+  background: var(--section-cream) !important;
 }
 
 /* Homestays filters on light pages */
@@ -211,6 +248,37 @@
   background: var(--amber, #f5a623);
   border-color: var(--amber, #f5a623);
   color: #101e2c;
+}
+
+.site-page .hs-search-field input,
+.site-page .hs-location-field select {
+  background: #fff;
+  border-color: rgba(28, 42, 58, 0.14);
+  color: var(--sp-ink);
+  box-shadow: 0 4px 14px rgba(28, 42, 58, 0.04);
+}
+
+.site-page .hs-search-field input::placeholder {
+  color: rgba(28, 42, 58, 0.4);
+}
+
+.site-page .hs-location-field select {
+  background-image: linear-gradient(45deg, transparent 50%, #5a6b7d 50%), linear-gradient(135deg, #5a6b7d 50%, transparent 50%);
+  background-position: calc(100% - 18px) 55%, calc(100% - 12px) 55%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
+
+.site-page .hs-location-field select option {
+  color: #1c2a3a;
+  background: #fff;
+}
+
+.site-page .hs-mosaic--equal .hs-tile {
+  background: #fff;
+  border-color: rgba(28, 42, 58, 0.1);
+  box-shadow: 0 10px 28px rgba(28, 42, 58, 0.07);
 }
 
 .site-page .hs-tile-body h2,
@@ -234,14 +302,13 @@
   color: #d4890f;
 }
 
-/* Experiences stage — softer page wash; keep photo stage readable */
+/* Experiences past-events stage — white after cream upcoming */
 .site-page .immersion-section--page {
-  background-color: #f7fbff;
+  background-color: var(--section-white);
 }
 
 .site-page .immersion-section--page .immersion-veil {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(232, 244, 252, 0.45));
+  background: transparent;
 }
 
 .site-page .immersion-section--page .immersion-chip--text,

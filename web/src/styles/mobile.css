@@ -146,6 +146,13 @@
     white-space: nowrap;
     font-size: clamp(1.15rem, 4.2vw, 1.45rem) !important;
   }
+  .match-section .match-intro-title,
+  .match-section .match-intro-title .why-big-line,
+  .immersion-section .immersion-title-lead,
+  .impact-section .why-big-line {
+    font-size: clamp(1.15rem, 4.2vw, 1.45rem) !important;
+    color: #f2a625 !important;
+  }
   .why-section .why-script-line {
     white-space: nowrap;
     font-size: clamp(2.22rem, 8.4vw, 3.12rem) !important;
@@ -365,9 +372,15 @@
     font-size: 0.78rem;
     cursor: pointer;
   }
+  .stays-track-bleed {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
   .stays-track-wrap {
-    margin: 0 -20px;
-    padding: 12px 20px 32px;
+    margin: 0;
+    padding: 12px 0 32px;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
@@ -382,9 +395,19 @@
     transform: none !important;
     will-change: auto;
   }
-  .stays-track { gap: 16px; padding-right: 0; }
+  .stays-track {
+    gap: 16px;
+    padding: 0;
+  }
   .stay-card {
     width: min(300px, 82vw);
+  }
+  .stay-card:first-child {
+    margin-left: 0;
+  }
+  .s-filter {
+    cursor: pointer;
+    pointer-events: auto;
   }
   .stay-img { height: 200px; }
   .stays-scroll-hint {
@@ -566,6 +589,15 @@
     max-width: none;
   }
 
+  /* Homepage postcards — “They leave a postcard.” */
+  .pc-home .stories-script {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    margin-top: 0.2em;
+    font-size: clamp(3.1rem, 12.5vw, 4.4rem) !important;
+    line-height: 1.1 !important;
+  }
+
   .testimonials-section .why-big-text {
     text-align: center !important;
   }
@@ -579,6 +611,16 @@
     display: inline-block !important;
     white-space: nowrap !important;
     font-size: clamp(3.6rem, 14vw, 5.2rem) !important;
+  }
+
+  /* Experiences preview — keep “gatherings in the hills” on one line */
+  .home-exp-section .stays-script {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    max-width: 100%;
+    margin-top: 0.28em;
+    font-size: clamp(2.9rem, 11.8vw, 4.25rem) !important;
+    line-height: 1.05 !important;
   }
 
   /* Marketing page heroes */
@@ -595,11 +637,14 @@
     white-space: nowrap !important;
     font-size: 1.05rem !important;
     letter-spacing: -0.02em;
-    line-height: 1.15;
+    line-height: 1.12;
+    margin-bottom: 0;
   }
   .sp-hero-inner .sp-title-script {
     white-space: nowrap;
     font-size: clamp(2.5rem, 10.5vw, 3.8rem) !important;
+    margin-top: 0.14em;
+    line-height: 0.95;
   }
   .sp-hero-actions {
     justify-content: center;

@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SiteChrome from './SiteChrome';
 import Typewriter from './Typewriter';
-import { PROPERTY_EXPERIENCES } from '../data/propertyExperiences';
+import { PROPERTY_EXPERIENCES, UPCOMING_EVENTS } from '../data/propertyExperiences';
 import { homeSectionPath, staysIndexPath } from '../utils/paths';
-import assetUrl from '../utils/assetUrl';
+import { whatsappChatUrl } from '../utils/whatsapp';
 import AdSlot from './AdSlot';
 import '../styles/immersion.css';
-
-const EXP_BG = assetUrl('images/bg.png');
 
 export default function ExperiencesPage() {
   const [activeId, setActiveId] = useState(PROPERTY_EXPERIENCES[0].id);
@@ -18,6 +16,7 @@ export default function ExperiencesPage() {
   const active = PROPERTY_EXPERIENCES[activeIndex] || PROPERTY_EXPERIENCES[0];
   const touchRef = useRef({ x: 0, y: 0 });
   const railRef = useRef(null);
+  const skipChipScrollRef = useRef(true);
 
   const selectByOffset = useCallback((delta) => {
     const next = (activeIndex + delta + PROPERTY_EXPERIENCES.length) % PROPERTY_EXPERIENCES.length;
@@ -25,12 +24,26 @@ export default function ExperiencesPage() {
   }, [activeIndex]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Keep the active chip centered in the horizontal rail only —
+  // never scroll the page (scrollIntoView was jumping past the hero on load).
+  useEffect(() => {
+    if (skipChipScrollRef.current) {
+      skipChipScrollRef.current = false;
+      return;
+    }
     const rail = railRef.current;
     if (!rail) return;
     const chip = rail.querySelector('.immersion-chip.is-active');
-    if (chip && typeof chip.scrollIntoView === 'function') {
-      chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
+    if (!chip) return;
+    const railRect = rail.getBoundingClientRect();
+    const chipRect = chip.getBoundingClientRect();
+    const delta =
+      chipRect.left + chipRect.width / 2 - (railRect.left + railRect.width / 2);
+    if (Math.abs(delta) < 2) return;
+    rail.scrollBy({ left: delta, behavior: 'smooth' });
   }, [activeId]);
 
   const onHeroTouchStart = (e) => {
@@ -46,6 +59,8 @@ export default function ExperiencesPage() {
     if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
     selectByOffset(dx < 0 ? 1 : -1);
   };
+
+  const pastEvents = useMemo(() => PROPERTY_EXPERIENCES, []);
 
   return (
     <SiteChrome
@@ -70,13 +85,58 @@ export default function ExperiencesPage() {
         </div>
       </section>
 
+      <section className="exp-upcoming-section section-bg-cream">
+        <div className="container">
+          <header className="exp-upcoming-head">
+            <p className="sp-eyebrow" style={{ color: '#c47a0a' }}>Event bookings</p>
+            <h2>Upcoming</h2>
+            <p>Reserve a seat for the next gatherings in the hills — limited spots with host families.</p>
+          </header>
+          <div className="exp-upcoming-grid">
+            {UPCOMING_EVENTS.map((ev) => (
+              <article key={ev.id} className="exp-upcoming-card">
+                <div className="exp-upcoming-media">
+                  <img src={ev.img} alt={ev.title} />
+                  <div className="exp-upcoming-date">
+                    <span className="exp-upcoming-month">{ev.month}</span>
+                    <strong>{ev.day}</strong>
+                  </div>
+                </div>
+                <div className="exp-upcoming-body">
+                  <span className="exp-upcoming-tag">{ev.tag}</span>
+                  <h3>{ev.title}</h3>
+                  <p>{ev.desc}</p>
+                  <p className="exp-upcoming-meta">{ev.place} · {ev.spots}</p>
+                  <a
+                    className="btn btn-amber exp-upcoming-book"
+                    href={whatsappChatUrl(ev.waMessage)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Book now
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section
-        className="immersion-section immersion-section--page"
+        className="immersion-section immersion-section--page immersion-section--light section-bg-white"
         id="experiences-stage"
-        style={{ backgroundImage: `url(${EXP_BG}), url(${active.img})` }}
       >
-        <div className="immersion-veil" aria-hidden="true" />
         <div className="container immersion-inner">
+          <header className="immersion-intro immersion-intro--page" data-reveal="up">
+            <p className="sp-eyebrow" style={{ color: '#c47a0a' }}>Past events</p>
+            <h2 className="immersion-title">
+              <span className="immersion-title-lead">Moments already shared</span>
+            </h2>
+            <p className="immersion-sub">
+              Browse festivals and gatherings that have lit up our mountain homes — tap a card to step inside.
+            </p>
+          </header>
+
           <div className="immersion-stage" data-reveal="up">
             <article
               className="immersion-hero"
@@ -91,7 +151,7 @@ export default function ExperiencesPage() {
                   <span className="immersion-tag">{active.tag}</span>
                   <span className="immersion-hero-count" aria-hidden="true">
                     {String(activeIndex + 1).padStart(2, '0')}
-                    <span> / {String(PROPERTY_EXPERIENCES.length).padStart(2, '0')}</span>
+                    <span> / {String(pastEvents.length).padStart(2, '0')}</span>
                   </span>
                 </div>
                 <span className="immersion-hero-emoji" aria-hidden="true">{active.emoji}</span>
@@ -101,8 +161,8 @@ export default function ExperiencesPage() {
               </div>
             </article>
 
-            <div className="immersion-rail" role="list" aria-label="Browse experiences" ref={railRef}>
-              {PROPERTY_EXPERIENCES.map((exp, i) => (
+            <div className="immersion-rail" role="list" aria-label="Browse past experiences" ref={railRef}>
+              {pastEvents.map((exp, i) => (
                 <button
                   key={exp.id}
                   type="button"

@@ -767,3 +767,15 @@ video.admin-thumb {
   .admin-pc-card { grid-template-columns: 1fr; }
   .admin-pc-media { width: 100%; height: 160px; }
 }
+
+.admin-field-hint {
+  margin: -4px 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-field-hint code {
+  font-size: 0.74rem;
+  color: rgba(245, 166, 35, 0.9);
+}

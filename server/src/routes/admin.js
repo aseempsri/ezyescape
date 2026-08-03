@@ -81,6 +81,7 @@ function parseStayBody(body) {
     storyImage: body.storyImage?.trim() || '',
     hostImage: body.hostImage?.trim() || '',
     directions: body.directions?.trim() || '',
+    mapQuery: body.mapQuery?.trim() || '',
     highlights: toArray(body.highlights),
     images: toArray(body.images),
     videos: toArray(body.videos),

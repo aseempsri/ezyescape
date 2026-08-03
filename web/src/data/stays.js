@@ -103,7 +103,7 @@ export const STAYS = [
   {
     id: 4,
     slug: 'valley-view-cottage',
-    cat: 'quiet accessible',
+    cat: 'quiet accessible workation',
     location: 'Kausani, Kumaon',
     title: 'The Valley View Cottage',
     disPrice: 5500,

@@ -66,7 +66,16 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
     return (
       <div className="booking-signin-prompt">
         <p>Sign in to book this cottage and use your ezy coins.</p>
-        <button type="button" className="auth-btn auth-btn--google" onClick={() => requireLogin()}>
+        <button
+          type="button"
+          className="auth-btn auth-btn--google"
+          onClick={() => {
+            if (!window.location.hash.includes('book')) {
+              window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}#book`);
+            }
+            requireLogin();
+          }}
+        >
           Sign in to book
         </button>
       </div>

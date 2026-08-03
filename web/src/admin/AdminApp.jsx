@@ -46,6 +46,7 @@ const EMPTY_STAY = {
   storyImage: '',
   hostImage: '',
   directions: '',
+  mapQuery: '',
   highlights: [],
   images: [],
   videos: [],
@@ -374,7 +375,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         </div>
       </FormSection>
 
-      <FormSection title="6 · How to reach the home" blurb="Directions block on the property page.">
+      <FormSection title="6 · How to reach the home" blurb="Directions and Google Maps coordinates for the property page map.">
         <label className="admin-field admin-col-2">
           <span>Directions</span>
           <textarea
@@ -384,6 +385,17 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
             placeholder="Nearest station/airport, drive time, last-mile tips."
           />
         </label>
+        <label className="admin-field admin-col-2">
+          <span>Google Maps query / coordinates</span>
+          <input
+            value={form.mapQuery || ''}
+            onChange={set('mapQuery')}
+            placeholder="29.5970, 79.6580  or  Village Name, Almora, Uttarakhand"
+          />
+        </label>
+        <p className="admin-field-hint admin-col-2">
+          Paste a place name or <code>latitude, longitude</code>. Used for the map embed and “Open in Google Maps” link. Falls back to Location if empty.
+        </p>
       </FormSection>
 
       <FormSection title="7 · Pricing & booking" blurb="Shown on the booking card. Guests can redeem ezy coins at checkout on the site.">

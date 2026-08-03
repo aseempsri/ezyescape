@@ -6,21 +6,31 @@ import {
   FALLBACK_STAYS,
   STAY_FILTERS,
   normalizeApiStay,
+  stayCardChip,
   stayMatchesFilter,
 } from '../utils/stays';
 
 const MOBILE_MQ = '(max-width: 768px)';
 const TOUCH_RESUME_MS = 3000;
+const CARD_W = 340;
+const CARD_GAP = 24;
 
-function buildLoop(items) {
+/** Duplicate cards until one half fills the viewport — keeps the marquee gap-free. */
+function buildLoop(items, viewportWidth = 1440) {
   if (!items.length) return [];
+  const vw = viewportWidth || 1440;
+  // One half must be wider than the viewport so empty cream never shows.
+  const minHalfWidth = Math.max(vw + CARD_W * 2, 1800);
+  const minCount = Math.ceil(minHalfWidth / (CARD_W + CARD_GAP)) + 2;
   let base = [...items];
-  while (base.length < 4) base = [...base, ...items];
+  while (base.length < Math.max(minCount, 8)) {
+    base = [...base, ...items];
+  }
   return [...base, ...base];
 }
 
 function StayCard({ stay, onOpen }) {
-  const guests = stay.guest || stay.guests;
+  const chip = stayCardChip(stay);
   const touchRef = useRef({ x: 0, y: 0, dragged: false });
 
   return (
@@ -60,8 +70,8 @@ function StayCard({ stay, onOpen }) {
       <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
         <div className="stay-img-overlay" />
         <div className="stay-img-tags">
-          <span className="s-tag s-tag--host">
-            Hosts up to <em>{guests}</em>
+          <span className={`s-tag s-tag--chip s-tag--${chip.kind}`}>
+            {chip.label}
           </span>
         </div>
       </div>
@@ -80,8 +90,17 @@ function StayCard({ stay, onOpen }) {
 export default function StaysSection() {
   const [filter, setFilter] = useState('all');
   const [stays, setStays] = useState(FALLBACK_STAYS);
+  const [viewportW, setViewportW] = useState(
+    () => (typeof window !== 'undefined' ? window.innerWidth : 1440),
+  );
   const wrapRef = useRef(null);
   const trackRef = useRef(null);
+
+  useEffect(() => {
+    const onResize = () => setViewportW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -96,12 +115,12 @@ export default function StaysSection() {
   }, []);
 
   const filtered = useMemo(
-    () => stays.filter((s) => stayMatchesFilter(s.cat, filter)),
+    () => stays.filter((s) => stayMatchesFilter(s.cat, filter, s)),
     [stays, filter],
   );
 
-  const loop = useMemo(() => buildLoop(filtered), [filtered]);
-  const durationSec = Math.max(28, Math.round(loop.length / 2) * 7);
+  const loop = useMemo(() => buildLoop(filtered, viewportW), [filtered, viewportW]);
+  const durationSec = Math.max(32, Math.round(loop.length / 2) * 4);
 
   useEffect(() => {
     const cards = document.querySelectorAll('.stays-section .stay-card');
@@ -185,11 +204,11 @@ export default function StaysSection() {
   };
 
   return (
-    <section className="stays-section" id="stays" style={{ paddingTop: 100, paddingBottom: 120 }}>
+    <section className="stays-section section-bg-cream" id="stays" style={{ paddingTop: 100, paddingBottom: 120 }}>
       <div className="container">
         <div className="stays-header">
           <div data-reveal="left">
-            <div className="eyebrow" style={{ color: '#101e2c' }}>Curated Collection</div>
+            <div className="eyebrow eyebrow--underline" style={{ color: '#101e2c' }}>Curated Collection</div>
             <h2 className="why-big-text" data-reveal>
               Not Just Rooms <br />
               <span className="why-script-line stays-script">
@@ -199,11 +218,13 @@ export default function StaysSection() {
               </span>
             </h2>
           </div>
-          <div className="stays-filter-row" data-reveal="right">
+          <div className="stays-filter-row" data-reveal="right" role="tablist" aria-label="Filter stays">
             {STAY_FILTERS.map((f) => (
               <button
                 key={f.id}
                 type="button"
+                role="tab"
+                aria-selected={filter === f.id}
                 className={`s-filter${filter === f.id ? ' on' : ''}`}
                 onClick={() => setFilter(f.id)}
               >
@@ -212,7 +233,9 @@ export default function StaysSection() {
             ))}
           </div>
         </div>
+      </div>
 
+      <div className="stays-track-bleed">
         <div className="stays-track-wrap" id="staysWrap" ref={wrapRef}>
           {loop.length > 0 ? (
             <div
@@ -230,7 +253,9 @@ export default function StaysSection() {
             <p className="stays-empty">No stays match this filter yet.</p>
           )}
         </div>
+      </div>
 
+      <div className="container">
         <div className="w" style={{ textAlign: 'center', marginTop: 8 }} data-reveal="up">
           <a href={staysIndexPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
             View All Homestays <span className="btn-arrow">→</span>

@@ -12,12 +12,12 @@ export default function InlineQuiz() {
   const [anim, setAnim] = useState('in');
 
   const q = QUESTIONS[cur];
-  const selectedOpt = q?.opts.find((o) => o.v === sel) || null;
+  const selectedOpt = q?.opts.find((o) => o.t === sel) || null;
   const sceneImg = selectedOpt?.img || q?.scene;
 
   const goNext = () => {
-    if (!sel) return;
-    const next = [...answers, sel];
+    if (!selectedOpt) return;
+    const next = [...answers, selectedOpt.t];
     setAnim('out');
     window.setTimeout(() => {
       if (cur >= QUESTIONS.length - 1) {
@@ -54,7 +54,10 @@ export default function InlineQuiz() {
   };
 
   if (done) {
-    const res = RESULTS[tallyAnswers(answers)] || RESULTS.mixed;
+    const vibes = answers.map((label, i) => (
+      QUESTIONS[i]?.opts.find((o) => o.t === label)?.v || 'mixed'
+    ));
+    const res = RESULTS[tallyAnswers(vibes)] || RESULTS.mixed;
     return (
       <div className={`match-result match-panel-${anim}`}>
         <div className="match-result-visual" style={{ backgroundImage: `url('${res.img}')` }}>
@@ -119,10 +122,10 @@ export default function InlineQuiz() {
           <div className={`match-opts match-opts--${q.opts.length}`}>
             {q.opts.map((o) => (
               <button
-                key={o.v + o.t}
+                key={o.t}
                 type="button"
-                className={`match-opt${sel === o.v ? ' is-sel' : ''}`}
-                onClick={() => setSel(o.v)}
+                className={`match-opt${sel === o.t ? ' is-sel' : ''}`}
+                onClick={() => setSel(o.t)}
               >
                 <span className="match-opt-emoji" aria-hidden="true">{o.e}</span>
                 <span className="match-opt-text">{o.t}</span>

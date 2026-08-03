@@ -151,7 +151,7 @@ const SEED = [
     title: 'The Valley View Cottage',
     slug: 'valley-view-cottage',
     location: 'Kausani, Kumaon',
-    cat: 'quiet accessible',
+    cat: 'quiet accessible workation',
     best: 'Remote Workers · Couples',
     guests: 3,
     rooms: 2,

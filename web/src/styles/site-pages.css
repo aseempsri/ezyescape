@@ -11,7 +11,7 @@
 }
 
 .site-page-main {
-  padding-bottom: 40px;
+  padding-bottom: 0;
 }
 
 .sp-eyebrow {
@@ -28,22 +28,29 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: clamp(2rem, 4.5vw, 3.4rem);
-  line-height: 1.08;
+  line-height: 1;
   letter-spacing: -0.02em;
   color: #fff;
 }
 
+.sp-title br {
+  display: none;
+}
+
 .sp-title-line {
-  display: inline-block;
+  display: block;
+  margin-bottom: 0;
+  line-height: 1.12;
 }
 
 .sp-title-script {
-  display: inline-block;
+  display: block;
+  margin-top: 0.18em;
   font-family: 'Tangerine', cursive;
   font-size: clamp(2.6rem, 6vw, 4.4rem);
   font-weight: 400;
   color: #fff;
-  line-height: 1;
+  line-height: 0.95;
   text-shadow:
     0 0 12px rgba(245, 166, 35, 0.55),
     0 0 28px rgba(245, 166, 35, 0.35),

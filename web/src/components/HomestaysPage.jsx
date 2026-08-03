@@ -6,18 +6,21 @@ import {
   FALLBACK_STAYS,
   STAY_FILTERS,
   normalizeApiStay,
+  stayCardChip,
   stayMatchesFilter,
+  uniqueStayLocations,
 } from '../utils/stays';
 import { goStay, homeSectionPath, postcardsPath } from '../utils/paths';
+import { whatsappChatUrl } from '../utils/whatsapp';
 import AdSlot from './AdSlot';
 import '../styles/homestays-page.css';
 
-function StayTile({ stay, featured = false }) {
-  const guests = stay.guest || stay.guests;
+function StayTile({ stay }) {
+  const chip = stayCardChip(stay);
 
   return (
     <article
-      className={`hs-tile${featured ? ' hs-tile--feature' : ''}`}
+      className="hs-tile"
       role="link"
       tabIndex={0}
       onClick={() => goStay(stay.slug || stay.id)}
@@ -34,31 +37,14 @@ function StayTile({ stay, featured = false }) {
       >
         <div className="hs-tile-shade" />
         <div className="hs-tile-chips">
-          <span className="s-tag s-tag--host">
-            Hosts up to <em>{guests}</em>
+          <span className={`s-tag s-tag--chip s-tag--${chip.kind}`}>
+            {chip.label}
           </span>
         </div>
-        {featured && (
-          <div className="hs-tile-feature-copy">
-            <p className="hs-tile-loc">{stay.location}</p>
-            <h2>{stay.title}</h2>
-          </div>
-        )}
       </div>
       <div className="hs-tile-body">
-        {!featured && (
-          <>
-            <p className="hs-tile-loc">{stay.location}</p>
-            <h2>{stay.title}</h2>
-          </>
-        )}
-        {/* Mobile: always show title block so every card matches */}
-        {featured && (
-          <div className="hs-tile-body-mobile">
-            <p className="hs-tile-loc">{stay.location}</p>
-            <h2>{stay.title}</h2>
-          </div>
-        )}
+        <p className="hs-tile-loc">{stay.location}</p>
+        <h2>{stay.title}</h2>
         <p className="hs-tile-price">
           {stay.disPrice ? <del>₹ {stay.disPrice}</del> : null}
           <strong>₹ {stay.price}</strong>
@@ -71,8 +57,34 @@ function StayTile({ stay, featured = false }) {
   );
 }
 
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 80);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      type="button"
+      className="hs-to-top"
+      aria-label="Back to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+    >
+      ↑
+    </button>
+  );
+}
+
 export default function HomestaysPage() {
   const [filter, setFilter] = useState('all');
+  const [location, setLocation] = useState('all');
+  const [query, setQuery] = useState('');
   const [stays, setStays] = useState(FALLBACK_STAYS);
   const [loading, setLoading] = useState(true);
 
@@ -91,13 +103,20 @@ export default function HomestaysPage() {
     return () => { active = false; };
   }, []);
 
-  const visible = useMemo(
-    () => stays.filter((s) => stayMatchesFilter(s.cat, filter)),
-    [stays, filter],
-  );
+  const locations = useMemo(() => uniqueStayLocations(stays), [stays]);
 
-  const featured = filter === 'all' && visible.length > 0 ? visible[0] : null;
-  const rest = featured ? visible.slice(1) : visible;
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return stays.filter((s) => {
+      if (!stayMatchesFilter(s.cat, filter, s)) return false;
+      if (location !== 'all' && String(s.location || '').toLowerCase() !== location.toLowerCase()) {
+        return false;
+      }
+      if (!q) return true;
+      const hay = `${s.title} ${s.location} ${s.best} ${s.description}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [stays, filter, location, query]);
 
   return (
     <SiteChrome
@@ -119,11 +138,6 @@ export default function HomestaysPage() {
           <p className="sp-lead">
             Browse mountain homes matched by pace, place, and people — not by star ratings.
           </p>
-          <div className="sp-hero-actions">
-            <a href={homeSectionPath('quiz')} className="btn btn-amber">
-              Match My Stay →
-            </a>
-          </div>
         </div>
       </section>
 
@@ -138,34 +152,54 @@ export default function HomestaysPage() {
                   : `${visible.length} home${visible.length === 1 ? '' : 's'}${filter === 'all' ? ' in the hills' : ` · ${STAY_FILTERS.find((f) => f.id === filter)?.label || ''}`}`}
               </h2>
             </div>
-            <div className="hs-filters" role="tablist" aria-label="Filter homestays">
-              {STAY_FILTERS.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={filter === f.id}
-                  className={`hs-filter${filter === f.id ? ' is-on' : ''}`}
-                  onClick={() => setFilter(f.id)}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
+            <form
+              className="hs-search"
+              role="search"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <label className="hs-search-field">
+                <span className="visually-hidden">Search stays</span>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by name, place, vibe…"
+                />
+              </label>
+              <label className="hs-location-field">
+                <span className="visually-hidden">Location</span>
+                <select value={location} onChange={(e) => setLocation(e.target.value)}>
+                  <option value="all">All locations</option>
+                  {locations.map((loc) => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+              </label>
+              <button type="submit" className="btn btn-amber hs-search-btn">Search</button>
+            </form>
+          </div>
+
+          <div className="hs-filters" role="tablist" aria-label="Filter homestays">
+            {STAY_FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={filter === f.id}
+                className={`hs-filter${filter === f.id ? ' is-on' : ''}`}
+                onClick={() => setFilter(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
 
           {!loading && visible.length === 0 && (
-            <p className="hs-empty">No homes match this filter yet. Try All, or take the quiz.</p>
+            <p className="hs-empty">No homes match this search yet. Try clearing filters, or take the quiz.</p>
           )}
 
-          {featured && (
-            <div className="hs-feature-wrap">
-              <StayTile stay={featured} featured />
-            </div>
-          )}
-
-          <div className="hs-mosaic">
-            {rest.map((stay) => (
+          <div className="hs-mosaic hs-mosaic--equal">
+            {visible.map((stay) => (
               <StayTile key={stay.id} stay={stay} />
             ))}
           </div>
@@ -187,13 +221,21 @@ export default function HomestaysPage() {
           <h2>Still deciding?</h2>
           <p>Tell us how you travel. We’ll match a mountain home to your vibe.</p>
           <div className="sp-hero-actions">
-            <a href={homeSectionPath('quiz')} className="btn btn-amber">Match My Stay →</a>
             <a href={postcardsPath()} className="btn btn-ghost">Read postcards</a>
+            <a
+              href={whatsappChatUrl('Hi! I\'d like help picking a homestay.')}
+              className="btn btn-amber"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Talk to a curator →
+            </a>
           </div>
         </div>
       </section>
 
       <AdSlot adId="homestays-ad2" />
+      <BackToTop />
     </SiteChrome>
   );
 }

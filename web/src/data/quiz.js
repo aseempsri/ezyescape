@@ -27,6 +27,12 @@ export const QUESTIONS = [
         v: 'mixed',
         img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80',
       },
+      {
+        e: '🌿',
+        t: 'Quiet spot, even if farther',
+        v: 'quiet',
+        img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80',
+      },
     ],
   },
   {
@@ -55,6 +61,12 @@ export const QUESTIONS = [
         v: 'accessible',
         img: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80',
       },
+      {
+        e: '🫖',
+        t: 'Simple tea & light meals',
+        v: 'quiet',
+        img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80',
+      },
     ],
   },
   {
@@ -82,6 +94,12 @@ export const QUESTIONS = [
         t: 'I need my privacy',
         v: 'quiet',
         img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=600&q=80',
+      },
+      {
+        e: '🗣️',
+        t: 'Deep chats over chai',
+        v: 'culture',
+        img: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80',
       },
     ],
   },

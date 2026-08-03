@@ -60,13 +60,20 @@ export function AuthProvider({ children }) {
     const authResult = params.get('auth');
     const welcome = params.get('welcome');
     if (authResult === 'success' || authResult === 'failed') {
+      const hash = window.location.hash;
       params.delete('auth');
       params.delete('welcome');
-      const next = `${window.location.pathname}${params.toString() ? `?${params}` : ''}${window.location.hash}`;
+      const next = `${window.location.pathname}${params.toString() ? `?${params}` : ''}${hash}`;
       window.history.replaceState({}, '', next);
       if (authResult === 'success') {
         refresh().then(() => {
           if (welcome) setWelcomeToast(Number(welcome) || 500);
+          if (hash) {
+            window.requestAnimationFrame(() => {
+              const el = document.querySelector(hash);
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          }
         });
       }
     }
@@ -101,7 +108,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signIn = useCallback(() => {
-    window.location.href = googleSignInUrl();
+    const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash || ''}`;
+    window.location.href = googleSignInUrl(returnTo);
   }, []);
 
   const signOut = useCallback(async () => {

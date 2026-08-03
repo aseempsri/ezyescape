@@ -7,10 +7,10 @@ export default defineConfig({
   base: process.env.GITHUB_ACTIONS === 'true' ? '/ezyescape/' : '/',
   server: {
     proxy: {
-      '/auth': 'http://localhost:3001',
-      '/api': 'http://localhost:3001',
-      '/uploads': 'http://localhost:3001',
-      '/health': 'http://localhost:3001',
+      '/auth': 'http://localhost:3002',
+      '/api': 'http://localhost:3002',
+      '/uploads': 'http://localhost:3002',
+      '/health': 'http://localhost:3002',
     },
   },
 })

@@ -68,3 +68,59 @@ export const PROPERTY_EXPERIENCES = [
     img: assetUrl('images/experiences/harvest-celebrations.png'),
   },
 ];
+
+/** Bookable upcoming gatherings (Experiences page). */
+export const UPCOMING_EVENTS = [
+  {
+    id: 'up-yoga',
+    month: 'SEP',
+    day: '14',
+    title: 'Sunrise Yoga Circle',
+    desc: 'A gentle morning practice on a Ranikhet ridge — mats, chai, and valley light.',
+    tag: 'Wellness',
+    place: 'Ranikhet',
+    spots: '8 spots left',
+    img: assetUrl('images/experiences/upcoming-sunrise-yoga.png'),
+    waMessage:
+      "Hi Ezy Escape! I'd like to book a seat for Sunrise Yoga Circle (14 Sep, Ranikhet). Could you share availability and how to join?",
+  },
+  {
+    id: 'up-folk',
+    month: 'OCT',
+    day: '05',
+    title: 'Folk Music Evening',
+    desc: 'Local musicians, shared dinner, and songs that belong to the hills.',
+    tag: 'Music',
+    place: 'Almora',
+    spots: '12 spots left',
+    img: assetUrl('images/experiences/upcoming-folk-music.png'),
+    waMessage:
+      "Hi Ezy Escape! I'm interested in booking the Folk Music Evening (5 Oct, Almora). Can you tell me more and reserve a spot?",
+  },
+  {
+    id: 'up-diwali',
+    month: 'OCT',
+    day: '20',
+    title: 'Diwali Homestay Gathering',
+    desc: 'Diya lighting, sweets, and courtyard stories with a host family.',
+    tag: 'Festival',
+    place: 'Kausani',
+    spots: '6 spots left',
+    img: assetUrl('images/experiences/upcoming-diwali.png'),
+    waMessage:
+      "Hi Ezy Escape! I'd love to join the Diwali Homestay Gathering (20 Oct, Kausani). Please share details and how I can book.",
+  },
+  {
+    id: 'up-bonfire',
+    month: 'NOV',
+    day: '09',
+    title: 'Bonfire Story Night',
+    desc: 'Firelight, folk tales, and warm cups under a clear mountain sky.',
+    tag: 'Evening',
+    place: 'Nainital Hills',
+    spots: '10 spots left',
+    img: assetUrl('images/experiences/upcoming-bonfire.png'),
+    waMessage:
+      "Hi Ezy Escape! I'd like to book Bonfire Story Night (9 Nov, Nainital Hills). Could you help me reserve a seat?",
+  },
+];

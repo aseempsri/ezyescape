@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { resolvePostcardStyle } from '../data/postcardStyles';
 import PostcardShareMenu from './PostcardShareMenu';
+import assetUrl from '../utils/assetUrl';
 
 const IMAGE_DWELL_MS = 4200;
+const STAMP_URL = assetUrl('images/postcard-stamp.png');
 
 function Avatar({ postcard }) {
   if (postcard.avatarMode === 'photo' && postcard.avatarUrl) {
@@ -166,25 +168,16 @@ function MediaStage({ media, idx, setIdx, current }) {
   );
 }
 
-function Stamp({ layout }) {
-  if (layout === 'airmail') {
-    return (
-      <span className="pc-postmark">
-        <em>Ezy</em>
-        <span>Escape</span>
-      </span>
-    );
-  }
-  if (layout === 'ticket') {
-    return <span className="pc-ticket-stub">EE · PASS</span>;
-  }
-  if (layout === 'telegram') {
-    return <span className="pc-telegram-stamp">RCVD</span>;
-  }
-  if (layout === 'polaroid') {
-    return <span className="pc-polaroid-date">Ezy Escape</span>;
-  }
-  return 'Ezy Escape';
+function Stamp() {
+  return (
+    <img
+      className="pc-card-stamp"
+      src={STAMP_URL}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+    />
+  );
 }
 
 export default function PostcardCard({ postcard, index = 0, highlighted = false }) {
@@ -196,6 +189,7 @@ export default function PostcardCard({ postcard, index = 0, highlighted = false 
   const [idx, setIdx] = useState(0);
   const current = media[idx] || null;
   const { font, layout, kicker } = resolvePostcardStyle(postcard, index);
+  const mediaLeft = index % 2 === 1;
 
   useEffect(() => {
     setIdx(0);
@@ -211,12 +205,8 @@ export default function PostcardCard({ postcard, index = 0, highlighted = false 
   return (
     <article
       id={`postcard-${postcard.id}`}
-      className={`pc-card pc-card--${layout} pc-card--font-${font.id}${highlighted ? ' pc-card--focus' : ''}`}
+      className={`pc-card pc-card--${layout} pc-card--font-${font.id}${mediaLeft ? ' pc-card--media-left' : ' pc-card--media-right'}${highlighted ? ' pc-card--focus' : ''}`}
     >
-      <div className="pc-card-stamp" aria-hidden="true">
-        <Stamp layout={layout} />
-      </div>
-
       <div className={`pc-card-inner pc-card-inner--${layout}`}>
         <div className="pc-card-copy">
           <p className="pc-card-kicker">{kicker}</p>
@@ -234,6 +224,7 @@ export default function PostcardCard({ postcard, index = 0, highlighted = false 
         </div>
 
         <div className="pc-card-media">
+          <Stamp />
           <MediaStage media={media} idx={idx} setIdx={setIdx} current={current} />
         </div>
       </div>

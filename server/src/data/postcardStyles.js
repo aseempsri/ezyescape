@@ -25,8 +25,11 @@ export const LAYOUT_IDS = [
 /** Deterministic unique pair from sequence index (creation order). */
 export function styleForIndex(index) {
   const i = Math.max(0, Number(index) || 0);
+  let layout = LAYOUT_IDS[i % LAYOUT_IDS.length];
+  // Wall cards stay side-by-side (image | note) — skip stacked polaroid in rotation
+  if (layout === 'polaroid') layout = 'letter';
   return {
-    layout: LAYOUT_IDS[i % LAYOUT_IDS.length],
+    layout,
     handFont: HAND_FONT_IDS[(i * 3 + 1) % HAND_FONT_IDS.length],
   };
 }

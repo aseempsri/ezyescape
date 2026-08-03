@@ -315,7 +315,16 @@ export function configureGoogleAuth() {
 
   router.get(
     '/google',
-    passport.authenticate('google', { scope: ['profile', 'email'], session: false })
+    (req, res, next) => {
+      const returnTo = String(req.query.returnTo || '/').trim() || '/';
+      // Only allow same-site relative paths (block open redirects).
+      const safeReturn = returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/';
+      passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        session: false,
+        state: Buffer.from(JSON.stringify({ returnTo: safeReturn }), 'utf8').toString('base64url'),
+      })(req, res, next);
+    }
   );
 
   router.get(
@@ -325,7 +334,22 @@ export function configureGoogleAuth() {
       const token = signToken(req.user, JWT_SECRET);
       res.cookie('ezyescape_token', token, cookieOptions());
       const welcome = req.user.welcomeAwarded ? '&welcome=500' : '';
-      res.redirect(`${process.env.FRONTEND_URL}?auth=success${welcome}`);
+      let returnTo = '/';
+      try {
+        if (req.query.state) {
+          const parsed = JSON.parse(Buffer.from(String(req.query.state), 'base64url').toString('utf8'));
+          if (parsed?.returnTo?.startsWith('/') && !parsed.returnTo.startsWith('//')) {
+            returnTo = parsed.returnTo;
+          }
+        }
+      } catch {
+        returnTo = '/';
+      }
+      const hashIdx = returnTo.indexOf('#');
+      const hash = hashIdx >= 0 ? returnTo.slice(hashIdx) : '';
+      const pathAndQuery = hashIdx >= 0 ? returnTo.slice(0, hashIdx) : returnTo;
+      const joiner = pathAndQuery.includes('?') ? '&' : '?';
+      res.redirect(`${process.env.FRONTEND_URL}${pathAndQuery}${joiner}auth=success${welcome}${hash}`);
     }
   );
 

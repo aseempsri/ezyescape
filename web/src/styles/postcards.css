@@ -217,25 +217,53 @@
 
 .pc-card-stamp {
   position: absolute;
-  top: 16px;
-  right: 18px;
-  z-index: 3;
-  font-family: 'Tangerine', cursive;
-  font-size: 1.35rem;
-  color: rgba(140, 48, 48, 0.72);
-  border: 2px solid rgba(140, 48, 48, 0.45);
-  border-radius: 50%;
-  width: 72px;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 1;
-  transform: rotate(12deg);
-  letter-spacing: 0.02em;
+  top: 12px;
+  z-index: 4;
+  width: clamp(56px, 18%, 78px);
+  height: auto;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  display: block;
   pointer-events: none;
-  background: rgba(250, 246, 239, 0.35);
+  filter: drop-shadow(0 2px 4px rgba(40, 20, 10, 0.28));
+  user-select: none;
+}
+
+/* Image on the right → stamp top-right; image on the left → stamp top-left */
+.pc-card--media-right .pc-card-stamp {
+  right: 12px;
+  left: auto;
+  transform: rotate(8deg);
+}
+
+.pc-card--media-left .pc-card-stamp {
+  left: 12px;
+  right: auto;
+  transform: rotate(-8deg);
+}
+
+/* Same stamp asset on every paper style */
+.pc-card--airmail .pc-card-stamp,
+.pc-card--letter .pc-card-stamp,
+.pc-card--polaroid .pc-card-stamp,
+.pc-card--telegram .pc-card-stamp,
+.pc-card--kraft .pc-card-stamp,
+.pc-card--night .pc-card-stamp,
+.pc-card--meadow .pc-card-stamp,
+.pc-card--ticket .pc-card-stamp {
+  top: 12px;
+  width: clamp(56px, 18%, 78px);
+  height: auto;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  box-shadow: none;
 }
 
 .pc-card-inner {
@@ -244,6 +272,19 @@
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   min-height: 320px;
+}
+
+/* Alternate wall rhythm: text|image, image|text, text|image, image|text… */
+.pc-card--media-left .pc-card-inner .pc-card-media {
+  order: -1;
+}
+
+.pc-card--media-right .pc-card-inner .pc-card-media {
+  order: 0;
+}
+
+.pc-card--media-left .pc-card-inner {
+  grid-template-columns: 0.95fr 1.05fr;
 }
 
 .pc-card-copy {
@@ -323,16 +364,6 @@
   color: #3d6fa8;
 }
 
-.pc-card--airmail .pc-card-stamp {
-  border: none;
-  background: transparent;
-  width: auto;
-  height: auto;
-  right: 22px;
-  top: 18px;
-  transform: rotate(-8deg);
-}
-
 .pc-postmark {
   display: flex;
   flex-direction: column;
@@ -355,10 +386,6 @@
   font-style: normal;
   font-size: 0.72rem;
   letter-spacing: 0.16em;
-}
-
-.pc-card--letter .pc-card-stamp {
-  font-family: 'Tangerine', cursive;
 }
 
 /* Polaroid — stacked photo over caption */
@@ -391,19 +418,6 @@
 .pc-card-inner--polaroid .pc-card-copy {
   padding: 18px 10px 6px;
   gap: 14px;
-}
-
-.pc-card--polaroid .pc-card-stamp {
-  top: auto;
-  bottom: 22px;
-  right: 28px;
-  width: auto;
-  height: auto;
-  border: none;
-  background: transparent;
-  transform: rotate(-3deg);
-  color: #8a6a3e;
-  font-size: 0.95rem;
 }
 
 .pc-polaroid-date {
@@ -450,20 +464,6 @@
   border-top-color: rgba(245, 198, 92, 0.3);
 }
 
-.pc-card--telegram .pc-card-stamp {
-  border-color: rgba(245, 198, 92, 0.5);
-  color: #f5c65c;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: 2px;
-  width: auto;
-  height: auto;
-  padding: 8px 10px;
-  font-size: 0.65rem;
-  font-family: 'Poppins', sans-serif;
-  letter-spacing: 0.2em;
-  transform: rotate(0);
-}
-
 .pc-telegram-stamp {
   font-weight: 700;
 }
@@ -492,11 +492,6 @@
 .pc-card--kraft .pc-card-name { color: #2c1c0c; }
 .pc-card--kraft .pc-card-from { color: #5a3d1c; }
 .pc-card--kraft .pc-card-signer { border-top-color: rgba(70, 45, 20, 0.35); }
-.pc-card--kraft .pc-card-stamp {
-  border-color: rgba(70, 45, 20, 0.45);
-  color: rgba(70, 45, 20, 0.75);
-  background: rgba(255, 240, 210, 0.35);
-}
 
 /* Night ink */
 .pc-card--night {
@@ -519,11 +514,6 @@
 .pc-card--night .pc-card-name { color: #e8eef8; }
 .pc-card--night .pc-card-from { color: #9eb6d8; }
 .pc-card--night .pc-card-signer { border-top-color: rgba(158, 182, 216, 0.28); }
-.pc-card--night .pc-card-stamp {
-  border-color: rgba(180, 210, 255, 0.4);
-  color: rgba(200, 220, 255, 0.8);
-  background: rgba(20, 35, 55, 0.5);
-}
 
 /* Meadow / orchard */
 .pc-card--meadow {
@@ -543,12 +533,6 @@
 .pc-card--meadow .pc-card-kicker { color: #4f7340; }
 .pc-card--meadow .pc-card-from { color: #5d7f4a; }
 .pc-card--meadow .pc-card-signer { border-top-color: rgba(80, 120, 70, 0.28); }
-.pc-card--meadow .pc-card-stamp {
-  border-color: rgba(80, 120, 70, 0.4);
-  color: rgba(70, 110, 60, 0.75);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.35);
-}
 
 /* Trail ticket */
 .pc-card--ticket {
@@ -578,20 +562,6 @@
 .pc-card--ticket .pc-card-kicker {
   color: #a0672e;
   letter-spacing: 0.2em;
-}
-
-.pc-card--ticket .pc-card-stamp {
-  border: none;
-  background: #2a241c;
-  color: #f5d9a8;
-  border-radius: 4px;
-  width: auto;
-  height: auto;
-  padding: 10px 12px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  transform: rotate(4deg);
 }
 
 .pc-ticket-stub {
@@ -685,16 +655,16 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
-  width: 44px;
-  height: 44px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1.5px solid rgba(255, 255, 255, 0.55);
   background: rgba(12, 18, 28, 0.72);
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease, background 0.2s, opacity 0.2s;
   display: inline-flex;
   align-items: center;
@@ -710,8 +680,8 @@
   border-color: transparent;
 }
 
-.pc-media-nav--prev { left: 12px; }
-.pc-media-nav--next { right: 12px; }
+.pc-media-nav--prev { left: 8px; }
+.pc-media-nav--next { right: 8px; }
 
 .pc-media-dots {
   position: absolute;
@@ -782,6 +752,357 @@
 
 .pc-home .pc-card {
   max-width: 100%;
+}
+
+/* Homepage: single vintage template stage */
+.pc-home-stage-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.pc-stage {
+  width: 100%;
+}
+
+.pc-stage-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.72 / 1;
+  background-image: var(--pc-template);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 2px;
+  box-shadow:
+    0 18px 48px rgba(20, 28, 40, 0.14),
+    0 4px 14px rgba(20, 28, 40, 0.08);
+  overflow: hidden;
+  container-type: size;
+  container-name: pc-stage;
+}
+
+.pc-stage:has(.pc-share.is-open) .pc-stage-frame {
+  overflow: visible;
+}
+
+.pc-stage:has(.pc-share.is-open) {
+  z-index: 5;
+}
+
+.pc-stage-share-fixed .pc-share-btn {
+  padding: 6px 10px;
+  font-size: 0.68rem;
+}
+
+.pc-stage-stamp {
+  position: absolute;
+  top: 4.5%;
+  right: 3.8%;
+  left: auto;
+  width: clamp(64px, 11%, 96px);
+  height: auto;
+  z-index: 6;
+  pointer-events: none;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 2px 4px rgba(40, 20, 10, 0.18));
+  user-select: none;
+}
+
+.pc-stage-share-fixed {
+  position: absolute;
+  z-index: 7;
+  right: 4.5%;
+  bottom: clamp(1.4rem, 10.5cqh, 3rem);
+  pointer-events: auto;
+}
+
+.pc-stage-share-slot {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 5.75rem;
+  height: 2.1rem;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.pc-stage-slide {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  z-index: 2;
+  will-change: transform;
+  min-height: 0;
+}
+
+.pc-stage-slide--enter {
+  animation: pcStageIn 780ms cubic-bezier(0.22, 0.9, 0.28, 1) forwards;
+}
+
+.pc-stage-slide--idle {
+  transform: translateX(0);
+}
+
+.pc-stage-slide--exit {
+  animation: pcStageOut 720ms cubic-bezier(0.55, 0.05, 0.8, 0.35) forwards;
+}
+
+@keyframes pcStageIn {
+  from { transform: translateX(108%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes pcStageOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(-108%); }
+}
+
+.pc-stage-media {
+  position: relative;
+  margin: 7.5% 1.5% 8.5% 10.5%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(40, 30, 20, 0.06);
+  isolation: isolate;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.pc-stage-media-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+  display: block;
+}
+
+.pc-stage-media-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: rgba(60, 45, 30, 0.45);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.pc-stage-media .pc-media-nav,
+.pc-stage-media .pc-media-dots {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.pc-stage.is-hovered .pc-stage-media .pc-media-nav,
+.pc-stage.is-hovered .pc-stage-media .pc-media-dots,
+.pc-stage-media:focus-within .pc-media-nav,
+.pc-stage-media:focus-within .pc-media-dots {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .pc-stage-media .pc-media-nav,
+  .pc-stage-media .pc-media-dots {
+    opacity: 1;
+  }
+}
+
+.pc-stage-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 10% 0 4.5%;
+  padding-top: clamp(1.75rem, 10cqh, 3rem);
+  padding-bottom: clamp(1.5rem, 10cqh, 2.75rem);
+  padding-right: 1%;
+  min-height: 0;
+  max-height: 100%;
+  z-index: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+  align-self: stretch;
+}
+
+.pc-stage-copy .pc-card-kicker {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+  color: rgba(110, 78, 48, 0.72);
+}
+
+.pc-stage-text {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  color: rgba(52, 36, 24, 0.92);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.pc-stage-text-inner {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Desktop stage only — larger handwriting; mobile keeps its own fit */
+@media (min-width: 721px) {
+  .pc-stage-text-inner {
+    font-size: 1.88em;
+    -webkit-line-clamp: 7;
+    line-height: 1.22;
+  }
+}
+
+.pc-stage-signer {
+  margin-top: 10px;
+  padding-top: 10px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 4;
+  transform: none;
+}
+
+.pc-stage-signer .pc-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+}
+
+.pc-stage-signer .pc-share-btn {
+  padding: 6px 10px;
+  font-size: 0.68rem;
+}
+
+.pc-stage-signer .pc-card-name {
+  color: rgba(40, 28, 18, 0.92);
+}
+
+.pc-stage-signer .pc-card-from {
+  color: rgba(90, 70, 50, 0.7);
+}
+
+@media (max-width: 720px) {
+  .pc-home-stage-wrap {
+    max-width: none;
+    width: calc(100% + 40px);
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 0 8px;
+  }
+
+  .pc-stage-frame {
+    aspect-ratio: 10 / 16;
+    background-image: var(--pc-template-mobile);
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .pc-stage-slide {
+    grid-template-columns: 1fr;
+    /* Midline of postcard-mobile template — image above, copy below */
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pc-stage-media {
+    /* One line-gap above the template’s center horizontal rule */
+    margin: 22% 10% 0.85rem 10%;
+  }
+
+  .pc-stage-copy {
+    margin: 0 9% 8% 9%;
+    /* Gap below the center rule before “A note from the hills” */
+    padding-top: 0.85rem;
+    padding-bottom: 0.35rem;
+    justify-content: flex-start;
+    /* Quote band: one line after kicker → one line before signer rule */
+    --pc-quote-gap: 0.95rem;
+  }
+
+  .pc-stage-copy .pc-card-kicker {
+    margin-top: 0;
+    margin-bottom: var(--pc-quote-gap);
+    font-size: 0.62rem;
+  }
+
+  .pc-stage-text {
+    /* basis 0 keeps band height stable while probing font sizes */
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .pc-stage-text-inner {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: hidden;
+    font-size: inherit;
+    height: auto;
+    max-height: none;
+    width: 100%;
+    min-width: 0;
+    padding-top: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .pc-stage-signer {
+    /* One line gap above the dotted rule (border-top) */
+    margin-top: var(--pc-quote-gap);
+    padding-top: 8px;
+  }
+
+  .pc-stage-stamp {
+    width: clamp(48px, 16%, 68px);
+    top: 3%;
+    right: 42%;
+    left: auto;
+  }
+
+  /* Icon-only share, parked above the bottom-right diamond ornament */
+  .pc-stage-share-fixed {
+    right: 10%;
+    bottom: 5.2%;
+  }
+
+  .pc-stage-share-fixed .pc-share-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 4px 12px rgba(40, 28, 14, 0.16);
+  }
+
+  .pc-stage-share-fixed .pc-share-btn span {
+    display: none;
+  }
+
+  .pc-stage-share-fixed .pc-share-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pc-stage-share-slot {
+    display: none;
+  }
+
+  .pc-stage-signer .pc-card-name {
+    white-space: nowrap;
+  }
 }
 
 .pc-home-actions {
@@ -1174,19 +1495,19 @@
   }
 
   .pc-card-stamp {
-    top: 12px;
-    right: 12px;
-    width: 56px;
-    height: 56px;
-    font-size: 1.05rem;
+    top: 10px;
+    width: clamp(48px, 16%, 64px);
+    height: auto;
   }
 
-  .pc-card--airmail .pc-card-stamp,
-  .pc-card--telegram .pc-card-stamp,
-  .pc-card--ticket .pc-card-stamp,
-  .pc-card--polaroid .pc-card-stamp {
-    width: auto;
-    height: auto;
+  .pc-card--media-right .pc-card-stamp {
+    right: 10px;
+    left: auto;
+  }
+
+  .pc-card--media-left .pc-card-stamp {
+    left: 10px;
+    right: auto;
   }
 
   .pc-card-copy {

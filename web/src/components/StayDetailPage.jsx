@@ -184,101 +184,6 @@ export default function StayDetailPage({ idOrSlug }) {
       jsonLd={lodgingJsonLd(stay)}
     >
       <div className="stay-page">
-        <div className="stay-narrative">
-          <header className="stay-page-intro">
-            <a href={staysIndexPath()} className="stay-back-link">← All stays</a>
-            <p className="stay-hero-location">{stay.location}</p>
-            <h1>{stay.title}</h1>
-            {stay.description ? <p className="stay-page-intro-lead">{stay.description}</p> : null}
-          </header>
-
-          {storyParas.length > 0 && (
-            <section className="stay-story">
-              <div className="stay-story-visual" style={storyVisual ? { backgroundImage: `url('${storyVisual}')` } : undefined}>
-                <div className="stay-story-visual-shade" />
-                <p className="stay-story-kicker">The story</p>
-                <h2>Life inside this home</h2>
-              </div>
-              <div className="stay-story-copy">
-                {storyParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
-              </div>
-            </section>
-          )}
-
-          {hostParas.length > 0 && (
-            <section className="stay-hosts">
-              <div className="stay-hosts-copy">
-                <div className="stay-section-head">
-                  <p className="stay-eyebrow">The hosts</p>
-                  <h2>Who welcomes you in</h2>
-                </div>
-                {hostParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
-              </div>
-              <div
-                className="stay-hosts-visual"
-                style={hostVisual ? { backgroundImage: `url('${hostVisual}')` } : undefined}
-                aria-hidden="true"
-              />
-            </section>
-          )}
-
-          {(stay.location || locationParas.length > 0) && (
-            <section className="stay-location">
-              <div className="stay-section-head">
-                <p className="stay-eyebrow">About the location</p>
-                <h2>{stay.location || 'The hills around you'}</h2>
-              </div>
-              <div className="stay-location-split">
-                <div className="stay-location-card stay-location-card--text">
-                  <span className="stay-journey-icon" aria-hidden="true">🗺</span>
-                  <div>
-                    {locationParas.length > 0 ? (
-                      locationParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)
-                    ) : (
-                      <p>
-                        This stay sits in {stay.location} — a place shaped by mountain light, local rhythms, and the kind of quiet that makes days feel longer.
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <a
-                  className="stay-location-card stay-location-card--map"
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`Open ${stay.location || 'location'} in Google Maps`}
-                >
-                  <iframe
-                    title={`Map of ${stay.location || 'stay location'}`}
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}&z=12&output=embed`}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                    tabIndex={-1}
-                  />
-                </a>
-              </div>
-            </section>
-          )}
-
-          {stay.highlights?.length > 0 && (
-            <section className="stay-moments stay-moments--inline">
-              <div className="stay-section-head">
-                <p className="stay-eyebrow">At a glance</p>
-                <h2>Moments that shape this stay</h2>
-              </div>
-              <div className="stay-moment-grid">
-                {stay.highlights.map((h) => (
-                  <article key={h} className="stay-moment-card">
-                    <span className="stay-moment-icon" aria-hidden="true">{highlightIcon(h)}</span>
-                    <p>{h}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-
         <section
           id="stay-showcase"
           className="stay-cinematic"
@@ -310,6 +215,7 @@ export default function StayDetailPage({ idOrSlug }) {
               <a href={staysIndexPath()} className="stay-back-link">← All stays</a>
               <p className="stay-hero-location">{stay.location}</p>
               <h1>{stay.title}</h1>
+              {stay.description && <p className="stay-hero-desc stay-hero-desc--full">{stay.description}</p>}
               <div className="stay-stat-row">
                 <span className="stay-stat"><em>{stay.guest}</em> guests</span>
                 <span className="stay-stat"><em>{stay.rooms}</em> rooms</span>
@@ -320,7 +226,6 @@ export default function StayDetailPage({ idOrSlug }) {
                   {tags.map((t) => <span key={t} className="stay-hero-tag">{t}</span>)}
                 </div>
               )}
-              {stay.description && <p className="stay-hero-desc">{stay.description}</p>}
               <div className="stay-cinematic-foot">
                 <div className="stay-hero-price">
                   {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
@@ -363,37 +268,151 @@ export default function StayDetailPage({ idOrSlug }) {
           )}
         </section>
 
-        <section className="stay-booking" id="book">
-          <div className="stay-booking-inner">
-            <div className="stay-booking-intro">
-              <p className="stay-eyebrow">Ready when you are</p>
-              <h2>Book this stay</h2>
-              <p className="stay-booking-lead">
-                Choose your dates below. A curator will confirm availability and help shape the rest of your trip.
-              </p>
-              <div className="stay-book-price">
-                {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-                <strong>₹{stay.price}</strong>
-                <span>/ night</span>
-              </div>
-            </div>
-            <div className="stay-book-card">
-              <p className="stay-book-kicker">Reserve your dates</p>
-              <BookingForm
-                stay={stay}
-                onSuccess={(result) => setBookingResult(result)}
-              />
-              <a
-                href={whatsappChatUrl(waMessage)}
-                className="stay-book-wa"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Prefer WhatsApp? Talk to a curator →
-              </a>
+        <div className="stay-narrative">
+          <div className="stay-band">
+            <div className="stay-band-inner">
+              <header className="stay-page-intro">
+                <p className="stay-hero-location">{stay.location}</p>
+                <h1>{stay.title}</h1>
+                {stay.description ? <p className="stay-page-intro-lead stay-page-intro-lead--full">{stay.description}</p> : null}
+              </header>
             </div>
           </div>
-        </section>
+
+          {storyParas.length > 0 && (
+            <div className="stay-band">
+              <div className="stay-band-inner">
+                <section className="stay-story">
+                  <div className="stay-story-visual" style={storyVisual ? { backgroundImage: `url('${storyVisual}')` } : undefined} aria-hidden="true" />
+                  <div className="stay-story-copy">
+                    <div className="stay-story-head">
+                      <p className="stay-story-kicker">The story</p>
+                      <h2>Life inside this home</h2>
+                    </div>
+                    {storyParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
+                  </div>
+                </section>
+              </div>
+            </div>
+          )}
+
+          {hostParas.length > 0 && (
+            <div className="stay-band">
+              <div className="stay-band-inner">
+                <section className="stay-hosts">
+                  <div className="stay-hosts-copy">
+                    <div className="stay-section-head">
+                      <p className="stay-eyebrow">The hosts</p>
+                      <h2>Who welcomes you in</h2>
+                    </div>
+                    {hostParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)}
+                  </div>
+                  <div
+                    className="stay-hosts-visual"
+                    style={hostVisual ? { backgroundImage: `url('${hostVisual}')` } : undefined}
+                    aria-hidden="true"
+                  />
+                </section>
+              </div>
+            </div>
+          )}
+
+          {(stay.location || locationParas.length > 0) && (
+            <div className="stay-band">
+              <div className="stay-band-inner">
+                <section className="stay-location">
+                  <div className="stay-section-head">
+                    <p className="stay-eyebrow">About the location</p>
+                    <h2>{stay.location || 'The hills around you'}</h2>
+                  </div>
+                  <div className="stay-location-split">
+                    <div className="stay-location-card stay-location-card--text">
+                      <span className="stay-journey-icon" aria-hidden="true">🗺</span>
+                      <div>
+                        {locationParas.length > 0 ? (
+                          locationParas.map((p) => <p key={p.slice(0, 48)}>{p}</p>)
+                        ) : (
+                          <p>
+                            This stay sits in {stay.location} — a place shaped by mountain light, local rhythms, and the kind of quiet that makes days feel longer.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <a
+                      className="stay-location-card stay-location-card--map"
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open ${stay.location || 'location'} in Google Maps`}
+                    >
+                      <iframe
+                        title={`Map of ${stay.location || 'stay location'}`}
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(stay.mapQuery || stay.location || 'Kumaon')}&z=12&output=embed`}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        allowFullScreen
+                        tabIndex={-1}
+                      />
+                    </a>
+                  </div>
+                </section>
+              </div>
+            </div>
+          )}
+
+          {stay.highlights?.length > 0 && (
+            <div className="stay-band">
+              <div className="stay-band-inner">
+                <section className="stay-moments stay-moments--inline">
+                  <div className="stay-section-head">
+                    <p className="stay-eyebrow">At a glance</p>
+                    <h2>Moments that shape this stay</h2>
+                  </div>
+                  <div className="stay-moment-grid">
+                    {stay.highlights.map((h) => (
+                      <article key={h} className="stay-moment-card">
+                        <span className="stay-moment-icon" aria-hidden="true">{highlightIcon(h)}</span>
+                        <p>{h}</p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </div>
+          )}
+
+          <section className="stay-booking stay-band" id="book">
+            <div className="stay-band-inner stay-booking-inner">
+              <div className="stay-booking-intro">
+                <p className="stay-eyebrow">Ready when you are</p>
+                <h2>Book this stay</h2>
+                <p className="stay-booking-lead">
+                  Choose your dates below. A curator will confirm availability and help shape the rest of your trip.
+                </p>
+                <div className="stay-book-price">
+                  {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
+                  <strong>₹{stay.price}</strong>
+                  <span>/ night</span>
+                </div>
+              </div>
+              <div className="stay-book-card">
+                <p className="stay-book-kicker">Reserve your dates</p>
+                <BookingForm
+                  stay={stay}
+                  onSuccess={(result) => setBookingResult(result)}
+                />
+                <a
+                  href={whatsappChatUrl(waMessage)}
+                  className="stay-book-wa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Prefer WhatsApp? Talk to a curator →
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
 
         <BookingSuccessToast result={bookingResult} onClose={() => setBookingResult(null)} />
       </div>

@@ -1,10 +1,7 @@
 import { useMemo, useState } from 'react';
 import Typewriter from './Typewriter';
 import { EXPERIENCES, IMMERSION_MOMENTS } from '../data/experiences';
-import assetUrl from '../utils/assetUrl';
-import AdSlot from './AdSlot';
 
-const EXP_BG = assetUrl('images/bg.png');
 const GAP = 14;
 const COLS = 4;
 const ROWS = 5;
@@ -48,7 +45,6 @@ function layoutForFocus(focusId) {
 
 export default function ImmersionSection() {
   const [activeId, setActiveId] = useState(null);
-  const bgImg = (EXPERIENCES.find((e) => e.id === activeId) || EXPERIENCES[0]).img;
   const layout = useMemo(() => layoutForFocus(activeId), [activeId]);
 
   const onClickTile = (id) => {
@@ -56,25 +52,18 @@ export default function ImmersionSection() {
   };
 
   return (
-    <section
-      className="immersion-section"
-      id="experiences"
-      style={{
-        backgroundImage: `url(${EXP_BG}), url(${bgImg})`,
-      }}
-    >
-      <div className="immersion-veil" aria-hidden="true" />
+    <section className="immersion-section immersion-section--light section-bg-white" id="experiences">
       <div className="container immersion-inner">
         <header className="immersion-intro" data-reveal="up">
-          <div className="eyebrow" style={{ color: '#fff' }}>
-            <span className="line" />Local Immersion<span className="line" />
+          <div className="eyebrow eyebrow--underline" style={{ color: '#101e2c' }}>
+            Local Immersion
           </div>
           <h2 className="immersion-title">
             <span className="immersion-title-lead">Your stay can be</span>
             <br />
             <span className="immersion-title-script">
               <em id="typewriter-5" className="typewriter-cursor">
-                <Typewriter text="more than a stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
+                <Typewriter text="more than a stay" className="" style={{ fontStyle: 'normal' }} />
               </em>
             </span>
           </h2>
@@ -119,7 +108,6 @@ export default function ImmersionSection() {
           })}
         </div>
       </div>
-      <AdSlot adId="home-ad1" />
     </section>
   );
 }

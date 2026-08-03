@@ -36,6 +36,7 @@ export function serializeStay(stay) {
     storyImage: stay.storyImage || '',
     hostImage: stay.hostImage || '',
     directions: stay.directions || '',
+    mapQuery: stay.mapQuery || '',
     highlights: stay.highlights || [],
     images: stay.images || [],
     videos: stay.videos || [],

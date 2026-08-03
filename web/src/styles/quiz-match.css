@@ -15,6 +15,116 @@
   justify-content: center;
 }
 
+/* White background — Match My Stay */
+.quiz-section.match-section.match-section--light {
+  background: #ffffff;
+}
+
+.match-section--light .match-section-veil {
+  background: transparent;
+}
+
+.match-section--light .match-intro-eyebrow,
+.match-section--light .eyebrow {
+  color: #0d1b2a !important;
+}
+
+.match-section--light .match-intro-title .why-big-line {
+  color: #f2a625;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.match-section--light .match-intro-script,
+.match-section--light .match-intro-script em,
+.match-section--light .match-intro-script .typewriter-cursor {
+  color: #132b45 !important;
+}
+
+.match-section--light .match-intro-sub {
+  color: rgba(13, 27, 42, 0.62);
+}
+
+.match-section--light .match-console,
+.match-section--light .match-result {
+  border: 1px solid rgba(19, 43, 69, 0.1);
+  background: #f7f9fc;
+  box-shadow: 0 18px 48px rgba(13, 27, 42, 0.08);
+}
+
+.match-section--light .match-board {
+  background: #f7f9fc;
+}
+
+.match-section--light .match-eyebrow {
+  color: #c47a0a;
+}
+
+.match-section--light .match-question {
+  color: #0d1b2a;
+}
+
+.match-section--light .match-hint {
+  color: rgba(13, 27, 42, 0.55);
+}
+
+.match-section--light .match-opt {
+  border: 1.5px solid rgba(19, 43, 69, 0.1);
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(13, 27, 42, 0.04);
+}
+
+.match-section--light .match-opt:hover {
+  border-color: rgba(245, 166, 35, 0.55);
+  background: #fffdf8;
+}
+
+.match-section--light .match-opt.is-sel {
+  border-color: var(--amber, #f5a623);
+  background: linear-gradient(90deg, rgba(245, 166, 35, 0.18), #ffffff);
+  box-shadow:
+    0 0 0 2px rgba(245, 166, 35, 0.35),
+    0 0 18px rgba(245, 166, 35, 0.45),
+    0 0 36px rgba(245, 166, 35, 0.28),
+    0 10px 28px rgba(245, 166, 35, 0.2);
+}
+
+.match-section--light .match-opt-text {
+  color: #0d1b2a;
+}
+
+.match-section--light .match-opt-emoji {
+  background: rgba(13, 27, 42, 0.04);
+  border-color: rgba(13, 27, 42, 0.08);
+}
+
+.match-section--light .match-result-desc {
+  color: rgba(13, 27, 42, 0.72);
+}
+
+.match-section--light .match-result-tag {
+  color: #c47a0a;
+}
+
+.match-section--light .q-back-btn,
+.match-section--light .q-counter {
+  color: rgba(13, 27, 42, 0.55);
+}
+
+.match-section--light .q-next-btn {
+  color: rgba(13, 27, 42, 0.4);
+}
+
+.match-section--light .q-next-btn.active {
+  color: #0d1b2a;
+}
+
+.match-section--light .retake-btn {
+  color: rgba(13, 27, 42, 0.55);
+}
+
 .match-section-veil {
   position: absolute;
   inset: 0;
@@ -43,13 +153,20 @@
 }
 
 .match-intro-eyebrow {
-  margin-bottom: 6px !important;
+  margin-bottom: 18px !important;
+  text-underline-offset: 10px;
 }
 
 .match-intro-title {
   margin-bottom: 6px !important;
-  font-size: clamp(1.55rem, 2.8vw, 2.35rem) !important;
-  line-height: 1.15 !important;
+  font-size: clamp(1.3rem, 2.2vw, 1.7rem) !important;
+  line-height: 1.2 !important;
+  color: #f2a625;
+}
+
+.match-intro-title .why-big-line {
+  display: inline-block;
+  margin-bottom: 0.55em;
 }
 
 .match-intro-script {
@@ -57,7 +174,8 @@
   font-size: clamp(3.38rem, 7.1vw, 5.4rem);
   color: #fff;
   display: inline-block;
-  line-height: 1;
+  line-height: 1.1;
+  margin-top: 0.2em;
 }
 
 .match-intro-sub {
@@ -228,14 +346,14 @@
   border-radius: 14px;
   overflow: hidden;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
-  padding: 14px 48px 14px 14px;
+  padding: 14px 48px;
   cursor: none;
-  text-align: left;
+  text-align: center;
   background: rgba(18, 32, 51, 0.9);
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 14px;
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
@@ -250,8 +368,10 @@
   border-color: var(--amber, #f5a623);
   background: linear-gradient(90deg, rgba(245, 166, 35, 0.16), rgba(245, 166, 35, 0.05));
   box-shadow:
-    0 0 0 1px rgba(245, 166, 35, 0.28),
-    0 10px 24px rgba(0, 0, 0, 0.28);
+    0 0 0 2px rgba(245, 166, 35, 0.35),
+    0 0 18px rgba(245, 166, 35, 0.4),
+    0 0 36px rgba(245, 166, 35, 0.22),
+    0 10px 24px rgba(0, 0, 0, 0.2);
   transform: translateX(4px);
 }
 
@@ -442,7 +562,7 @@
   }
 
   .match-intro-title {
-    font-size: 1.35rem !important;
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem) !important;
   }
 
   .match-intro-script {
@@ -524,7 +644,9 @@
 
   .match-opt {
     min-height: 0;
-    padding: 12px 44px 12px 12px;
+    padding: 12px 44px;
+    justify-content: center;
+    text-align: center;
   }
 
   .match-opt-emoji {

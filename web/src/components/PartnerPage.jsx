@@ -70,7 +70,7 @@ export default function PartnerPage() {
         </div>
       </section>
 
-      <section className="sp-section sp-section--split">
+      <section className="sp-section sp-section--split sp-section--alt">
         <div className="container sp-split">
           <div>
             <p className="sp-eyebrow">How it works</p>

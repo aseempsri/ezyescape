@@ -8,6 +8,7 @@ import Magnetic from './components/Magnetic';
 import Typewriter from './components/Typewriter';
 import InlineQuiz from './components/InlineQuiz';
 import ImmersionSection from './components/ImmersionSection';
+import HomeExperiencesSection from './components/HomeExperiencesSection';
 import StaysSection from './components/StaysSection';
 import Footer from './components/Footer';
 import MobileBar from './components/MobileBar';
@@ -149,11 +150,11 @@ export default function App() {
 
       <Marquee />
 
-      <section className="why-section" id="why" style={{ paddingBottom: 0, paddingTop: 100 }}>
+      <section className="why-section section-bg-cream" id="why" style={{ paddingBottom: 0, paddingTop: 100 }}>
         <div className="container">
           <div className="why-grid">
             <div className="why-left">
-              <div className="eyebrow" data-reveal><span className="eyebrow-line" />Feel The Difference</div>
+              <div className="eyebrow eyebrow--underline" data-reveal><span className="eyebrow-line" />Feel The Difference</div>
               <h2 className="why-big-text" data-reveal>
                 <span className="why-big-line">Most travel sites sell rooms.</span>
                 <br />
@@ -192,19 +193,19 @@ export default function App() {
         </div>
       </section>
 
-      <section className="quiz-section match-section" id="quiz">
+      <section className="quiz-section match-section match-section--light section-bg-white" id="quiz">
         <div className="match-section-veil" aria-hidden="true" />
         <div className="container match-section-inner">
           <header className="match-intro" data-reveal="up">
-            <div className="eyebrow match-intro-eyebrow" style={{ justifyContent: 'center', color: '#fff' }}>
-              <span className="line" />Mountain Matchmaker<span className="line" />
+            <div className="eyebrow match-intro-eyebrow eyebrow--underline" style={{ justifyContent: 'center' }}>
+              Mountain Matchmaker
             </div>
             <h2 className="why-big-text match-intro-title" data-reveal>
               <span className="why-big-line">Know your vibe.</span>
               <br />
               <span className="match-intro-script">
-                <em id="typewriter-1" className="typewriter-cursor" style={{ color: '#fff' }}>
-                  <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal', color: '#fff' }} />
+                <em id="typewriter-1" className="typewriter-cursor">
+                  <Typewriter text="Match your stay" className="" style={{ fontStyle: 'normal' }} />
                 </em>
               </span>
             </h2>
@@ -221,11 +222,11 @@ export default function App() {
 
       <StaysSection />
 
-      <section className="honest-section" style={{ paddingTop: 100, paddingBottom: 110 }}>
+      <section className="honest-section section-bg-white" style={{ paddingTop: 100, paddingBottom: 110 }}>
         <div className="container">
           <div className="why-grid honest-layout">
             <div className="why-left honest-left">
-              <div className="eyebrow" data-reveal style={{ color: '#fff' }}>
+              <div className="eyebrow eyebrow--underline" data-reveal>
                 <span className="eyebrow-line" />Honest by Design
               </div>
               <h2 className="why-big-text" data-reveal>
@@ -233,7 +234,7 @@ export default function App() {
                 <br />
                 <span className="why-script-line honest-script">
                   <em id="typewriter-3" className="typewriter-cursor">
-                    <Typewriter text="for everyone." className="" style={{ fontStyle: 'normal', color: '#fff' }} />
+                    <Typewriter text="for everyone." className="" style={{ fontStyle: 'normal' }} />
                   </em>
                 </span>
               </h2>
@@ -271,18 +272,21 @@ export default function App() {
         </div>
       </section>
 
+      <HomeExperiencesSection />
+
       <ImmersionSection />
 
-      <section className="impact-section" id="impact" style={{ background: '#f7f3ed', paddingTop: 80, paddingBottom: 110 }}>
+      <section className="impact-section section-bg-cream" id="impact" style={{ paddingTop: 80, paddingBottom: 110 }}>
         <div className="container">
           <div className="w">
             <div style={{ textAlign: 'center', marginBottom: 14 }} data-reveal="up">
-              <div className="eyebrow" style={{ justifyContent: 'center' }}>Responsible Tourism</div>
+              <div className="eyebrow eyebrow--underline" style={{ justifyContent: 'center' }}>Responsible Tourism</div>
               <h2 className="why-big-text" data-reveal>
-                Your stay supports <br />
-                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(4.4vw,4.4vw,4.4vw)', color: '#fff' }}>
-                  <em id="typewriter-6" className="typewriter-cursor" style={{ color: '#111d2d' }}>
-                    <Typewriter text="a local family." className="" style={{ fontStyle: 'normal', color: '#111d2d' }} />
+                <span className="why-big-line">Your stay supports</span>
+                <br />
+                <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(2.4rem, 3.9vw, 3.55rem)', color: '#1a181c' }}>
+                  <em id="typewriter-6" className="typewriter-cursor" style={{ color: '#1a181c' }}>
+                    <Typewriter text="a local family." className="" style={{ fontStyle: 'normal', color: '#1a181c' }} />
                   </em>
                 </span>
               </h2>
@@ -302,23 +306,22 @@ export default function App() {
             </div>
           </div>
         </div>
-        <AdSlot adId="home-ad2" />
       </section>
 
       <PostcardsSection />
 
       <MobileBar />
 
-      <section className="cta-section" style={{ background: '#f7f3ed', paddingTop: 40, paddingBottom: 110 }}>
+      <section className="cta-section section-bg-cream" style={{ paddingTop: 40, paddingBottom: 110 }}>
         <div className="cta-bg-glow" />
         <div className="w" style={{ position: 'relative', zIndex: 1 }}>
           <div data-reveal="up">
-            <div className="eyebrow" style={{ justifyContent: 'center' }}><span className="line" />Ready to Escape?<span className="line" /></div>
+            <div className="eyebrow eyebrow--underline" style={{ justifyContent: 'center' }}>Ready to Escape?</div>
             <h2 className="why-big-text" data-reveal>
               Find a mountain home<br />
-              <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(4.4vw,4.4vw,4.4vw)', color: '#fff' }}>
-                <em id="typewriter-8" className="typewriter-cursor" style={{ color: '#111d2d' }}>
-                  <Typewriter text="that matches you." className="" style={{ fontStyle: 'normal', color: '#111d2d' }} />
+              <span style={{ fontFamily: 'Tangerine,cursive', fontSize: 'clamp(4.4vw,4.4vw,4.4vw)' }}>
+                <em id="typewriter-8" className="typewriter-cursor" style={{ color: '#132b45' }}>
+                  <Typewriter text="that matches you." className="" style={{ fontStyle: 'normal', color: '#132b45' }} />
                 </em>
               </span>
             </h2>
