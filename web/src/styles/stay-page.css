@@ -683,7 +683,7 @@
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
   gap: 28px;
-  align-items: start;
+  align-items: center;
   padding: 28px;
   border-radius: 28px;
   border: 1px solid rgba(245, 166, 35, 0.28);
@@ -722,11 +722,13 @@
   font-size: 0.66rem;
   font-weight: 700;
   color: var(--stay-amber);
+  text-align: center;
 }
 
 .stay-book-price {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 0 0 16px;
   color: var(--stay-ink);
@@ -735,13 +737,15 @@
 .stay-book-price del { color: #8a97a6; }
 .stay-book-price strong { font-size: 1.4rem; color: var(--stay-ink); }
 .stay-book-price span { color: var(--stay-muted); font-size: 0.85rem; }
+.stay-book-price-sep { opacity: 0.45; }
 
 .stay-book-wa {
-  display: inline-block;
+  display: block;
   margin-top: 14px;
   color: var(--stay-muted);
   font-size: 0.82rem;
   text-decoration: none;
+  text-align: center;
 }
 
 .stay-book-wa:hover {
@@ -749,6 +753,34 @@
 }
 
 /* Booking form readability on white cards */
+.stay-page .booking-mode-btn {
+  border-color: rgba(16, 30, 44, 0.12);
+  background: #fff;
+  color: rgba(16, 30, 44, 0.7);
+}
+
+.stay-page .booking-mode-btn.is-on {
+  border-color: rgba(245, 166, 35, 0.55);
+  background: rgba(245, 166, 35, 0.14);
+  color: #101e2c;
+}
+
+.stay-page .booking-rate-hint {
+  color: rgba(16, 30, 44, 0.58);
+}
+
+.stay-page .booking-guest-cap {
+  color: rgba(16, 30, 44, 0.78);
+}
+
+.stay-page .booking-guest-cap--sub {
+  color: rgba(16, 30, 44, 0.52);
+}
+
+.stay-page .booking-check {
+  color: rgba(16, 30, 44, 0.75);
+}
+
 .stay-page .booking-field {
   color: var(--stay-muted);
 }
@@ -858,6 +890,11 @@
 @media (max-width: 560px) {
   .stay-moment-grid {
     grid-template-columns: 1fr;
+  }
+
+  .stay-moment-card {
+    align-items: center;
+    text-align: center;
   }
 
   .stay-hero-actions .btn {

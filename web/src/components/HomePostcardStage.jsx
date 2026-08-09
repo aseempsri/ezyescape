@@ -12,6 +12,8 @@ const TEXT_MAX_PX = 64;
 const TEMPLATE_URL = assetUrl('images/postcard-2.png');
 const TEMPLATE_MOBILE_URL = assetUrl('images/postcard-mobile.png');
 const STAMP_URL = assetUrl('images/postcard-stamp.png');
+const STAMP_POSTAL_URL = assetUrl('images/postcard-stamp-postal.png');
+const STAMP_POSTAL_STRAIGHT_URL = assetUrl('images/postcard-stamp-postal-straight.png');
 
 function Avatar({ postcard }) {
   if (postcard.avatarMode === 'photo' && postcard.avatarUrl) {
@@ -226,6 +228,34 @@ export default function HomePostcardStage({ cards }) {
     setMediaIdx((i) => (i + dir + media.length) % media.length);
   };
 
+  const goCard = (dir) => {
+    if (cards.length < 2) return;
+    clearTimers();
+    setCardIdx((i) => (i + dir + cards.length) % cards.length);
+    setPhase('enter');
+    setMediaIdx(0);
+  };
+
+  const mediaSwipe = useRef({ x: 0, y: 0, active: false });
+
+  const onMediaTouchStart = (e) => {
+    if (media.length < 2) return;
+    const t = e.touches[0];
+    if (!t) return;
+    mediaSwipe.current = { x: t.clientX, y: t.clientY, active: true };
+  };
+
+  const onMediaTouchEnd = (e) => {
+    if (!mediaSwipe.current.active || media.length < 2) return;
+    mediaSwipe.current.active = false;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - mediaSwipe.current.x;
+    const dy = t.clientY - mediaSwipe.current.y;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+    goMedia(dx < 0 ? 1 : -1);
+  };
+
   if (!postcard) return null;
 
   const textStyle = font
@@ -260,8 +290,22 @@ export default function HomePostcardStage({ cards }) {
         aria-label="Guest postcards"
       >
         <img
-          className="pc-stage-stamp"
+          className="pc-stage-stamp pc-stage-stamp--classic"
           src={STAMP_URL}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
+        <img
+          className="pc-stage-stamp pc-stage-stamp--postal"
+          src={STAMP_POSTAL_URL}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
+        <img
+          className="pc-stage-stamp pc-stage-stamp--postal-straight"
+          src={STAMP_POSTAL_STRAIGHT_URL}
           alt=""
           aria-hidden="true"
           draggable={false}
@@ -272,8 +316,51 @@ export default function HomePostcardStage({ cards }) {
           <PostcardShareMenu key={postcard.id} postcard={postcard} />
         </div>
 
+        {cards.length > 1 ? (
+          <>
+            <button
+              type="button"
+              className="pc-stage-nav pc-stage-nav--prev"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                goCard(-1);
+              }}
+              aria-label="Previous postcard"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="pc-stage-nav pc-stage-nav--next"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                goCard(1);
+              }}
+              aria-label="Next postcard"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+                />
+              </svg>
+            </button>
+          </>
+        ) : null}
+
         <div key={postcard.id} className={`pc-stage-slide pc-stage-slide--${phase}`}>
-          <div className="pc-stage-media">
+          <div
+            className="pc-stage-media"
+            onTouchStart={onMediaTouchStart}
+            onTouchEnd={onMediaTouchEnd}
+          >
             {current ? (
               current.type === 'video' ? (
                 <video
@@ -347,12 +434,14 @@ export default function HomePostcardStage({ cards }) {
           </div>
 
           <div className="pc-stage-copy">
-            <p className="pc-card-kicker">{kicker}</p>
-            <p className="pc-stage-text" ref={textBoxRef} style={textStyle}>
-              <span className="pc-stage-text-inner" ref={textInnerRef}>
-                “{postcard.text}”
-              </span>
-            </p>
+            <div className="pc-stage-quote-block">
+              <p className="pc-card-kicker">{kicker}</p>
+              <p className="pc-stage-text" ref={textBoxRef} style={textStyle}>
+                <span className="pc-stage-text-inner" ref={textInnerRef}>
+                  “{postcard.text}”
+                </span>
+              </p>
+            </div>
             <div className="pc-card-signer pc-stage-signer">
               <Avatar postcard={postcard} />
               <div className="pc-card-signer-meta">

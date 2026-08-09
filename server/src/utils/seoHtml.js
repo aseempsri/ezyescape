@@ -182,3 +182,53 @@ export function staysIndexSeoHtml(req, stays) {
     bodyHtml: `${page.body}<ul>${list}</ul>`,
   });
 }
+
+export function eventSeoHtml(req, event) {
+  const slug = event.slug || String(event.id || event._id);
+  const path = `/experiences/${encodeURIComponent(slug)}`;
+  const origin = absoluteUrl(req, '/').replace(/\/$/, '');
+  const title = `${event.title} — Ezy Escape Experiences`;
+  const description = String(event.desc || event.details || '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
+  const image = event.img || event.images?.[0] || DEFAULT_OG_IMAGE;
+  const when = event.dateLabel || [event.month, event.day].filter(Boolean).join(' ');
+
+  const bodyHtml = `
+    <nav aria-label="Breadcrumb">
+      <a href="${escapeHtml(absoluteUrl(req, '/'))}">Home</a> /
+      <a href="${escapeHtml(absoluteUrl(req, '/experiences'))}">Experiences</a> /
+      <span>${escapeHtml(event.title)}</span>
+    </nav>
+    <h1>${escapeHtml(event.title)}</h1>
+    <p><strong>${escapeHtml(event.tag || 'Experience')}</strong>
+      ${when ? ` · ${escapeHtml(when)}` : ''}
+      ${event.place ? ` · ${escapeHtml(event.place)}` : ''}
+      ${event.spots ? ` · ${escapeHtml(event.spots)}` : ''}
+    </p>
+    <p>${escapeHtml(description)}</p>
+    ${event.details ? `<h2>About</h2><p>${escapeHtml(event.details).replace(/\n+/g, '</p><p>')}</p>` : ''}
+    ${event.instructions ? `<h2>Instructions</h2><p>${escapeHtml(event.instructions).replace(/\n+/g, '</p><p>')}</p>` : ''}
+    ${event.guidelines ? `<h2>Guidelines</h2><p>${escapeHtml(event.guidelines).replace(/\n+/g, '</p><p>')}</p>` : ''}
+    ${event.pricing ? `<h2>Pricing</h2><p>${escapeHtml(event.pricing).replace(/\n+/g, '</p><p>')}</p>` : ''}
+    ${event.locationDetails ? `<h2>Location</h2><p>${escapeHtml(event.locationDetails).replace(/\n+/g, '</p><p>')}</p>` : ''}
+    <p><a href="${escapeHtml(absoluteUrl(req, path))}">View this experience on Ezy Escape</a></p>
+  `;
+
+  return seoDocument(req, {
+    path,
+    title,
+    description: description || `${event.title} with Ezy Escape in the hills.`,
+    image,
+    jsonLd: [
+      organizationJsonLd(origin),
+      breadcrumbJsonLd(origin, [
+        { name: 'Home', path: '/' },
+        { name: 'Experiences', path: '/experiences' },
+        { name: event.title, path },
+      ]),
+    ],
+    bodyHtml,
+  });
+}

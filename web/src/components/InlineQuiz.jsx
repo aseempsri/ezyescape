@@ -78,7 +78,7 @@ export default function InlineQuiz() {
           <div className="match-result-actions">
             <Magnetic>
               <a href={staysIndexPath()} className="btn btn-amber">
-                See matched stays <span className="btn-arrow">→</span>
+                See matched stays
               </a>
             </Magnetic>
             <a
@@ -141,7 +141,7 @@ export default function InlineQuiz() {
               style={{ visibility: cur > 0 ? 'visible' : 'hidden' }}
               onClick={goBack}
             >
-              ← Back
+              Back
             </button>
             <span className="q-counter">{cur + 1} / {QUESTIONS.length}</span>
             <button
@@ -149,7 +149,7 @@ export default function InlineQuiz() {
               className={`q-next-btn${sel ? ' active' : ''}`}
               onClick={goNext}
             >
-              {cur >= QUESTIONS.length - 1 ? 'See my vibe →' : 'Next →'}
+              {cur >= QUESTIONS.length - 1 ? 'See my vibe' : 'Next'}
             </button>
           </div>
         </div>

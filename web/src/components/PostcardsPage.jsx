@@ -133,7 +133,7 @@ export default function PostcardsPage({ focusId = '' }) {
           <h2>Send the next postcard</h2>
           <p>Match your stay first — then leave a note for the next traveller.</p>
           <a href={homeSectionPath('quiz')} className="btn btn-amber">
-            Match my stay →
+            Match my stay
           </a>
         </div>
       </section>

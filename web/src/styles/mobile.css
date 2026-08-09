@@ -249,10 +249,6 @@
     flex: 0 1 auto;
     text-align: center;
   }
-  .honest-section .honest-cta .btn-arrow {
-    flex-shrink: 0;
-    margin-left: 0;
-  }
   .quiz-left-intro { padding-top: 0 !important; }
 
   /* ─── COMPARE CARDS — match desktop overlap look ─── */
@@ -706,8 +702,8 @@
     gap: 12px;
     padding: 0 4px;
   }
-  .cta-btns .mag { display: block; width: 100%; }
-  .cta-btns .btn { width: 100%; justify-content: center; cursor: pointer; }
+  .cta-btns .mag { display: flex; width: 100%; max-width: none; }
+  .cta-btns .btn { width: 100%; min-height: 48px; justify-content: center; cursor: pointer; }
   .cta-sub { font-size: 0.92rem; padding: 0 8px; }
 
   /* ─── FOOTER ─── */

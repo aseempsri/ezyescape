@@ -170,13 +170,14 @@ function MediaStage({ media, idx, setIdx, current }) {
 
 function Stamp() {
   return (
-    <img
-      className="pc-card-stamp"
-      src={STAMP_URL}
-      alt=""
-      aria-hidden="true"
-      draggable={false}
-    />
+    <span className="pc-card-stamp-wrap" aria-hidden="true">
+      <img
+        className="pc-card-stamp"
+        src={`${STAMP_URL}?v=solid3`}
+        alt=""
+        draggable={false}
+      />
+    </span>
   );
 }
 

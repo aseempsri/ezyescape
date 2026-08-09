@@ -197,38 +197,75 @@
   z-index: 0;
 }
 
-.pc-card-stamp {
+.pc-card-stamp-wrap {
   position: absolute;
-  top: 12px;
-  z-index: 4;
-  width: clamp(56px, 18%, 78px);
+  top: 10px;
+  z-index: 6;
+  width: clamp(58px, 19%, 82px);
+  pointer-events: none;
+  isolation: isolate;
+  /* Solid plate so bright photos never show through soft PNG edges */
+  background: #d6b88a;
+  border-radius: 6px;
+  padding: 3px;
+  box-shadow: 0 4px 12px rgba(40, 20, 10, 0.35);
+  line-height: 0;
+}
+
+.pc-card--media-right .pc-card-stamp-wrap {
+  right: 10px;
+  left: auto;
+  transform: rotate(8deg);
+}
+
+.pc-card--media-left .pc-card-stamp-wrap {
+  left: 10px;
+  right: auto;
+  transform: rotate(-8deg);
+}
+
+.pc-card-stamp {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: 1;
+  width: 100%;
   height: auto;
   border: none;
   border-radius: 0;
-  background: transparent;
+  background: #d6b88a;
   box-shadow: none;
   padding: 0;
   margin: 0;
   display: block;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(40, 20, 10, 0.28));
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+  filter: none;
   user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* Image on the right → stamp top-right; image on the left → stamp top-left */
-.pc-card--media-right .pc-card-stamp {
-  right: 12px;
-  left: auto;
-  transform: rotate(8deg);
-}
-
+.pc-card--media-right .pc-card-stamp,
 .pc-card--media-left .pc-card-stamp {
-  left: 12px;
-  right: auto;
-  transform: rotate(-8deg);
+  transform: none;
 }
 
 /* Same stamp asset on every paper style */
+.pc-card--airmail .pc-card-stamp-wrap,
+.pc-card--letter .pc-card-stamp-wrap,
+.pc-card--polaroid .pc-card-stamp-wrap,
+.pc-card--telegram .pc-card-stamp-wrap,
+.pc-card--kraft .pc-card-stamp-wrap,
+.pc-card--night .pc-card-stamp-wrap,
+.pc-card--meadow .pc-card-stamp-wrap,
+.pc-card--ticket .pc-card-stamp-wrap {
+  top: 10px;
+  width: clamp(58px, 19%, 82px);
+}
+
 .pc-card--airmail .pc-card-stamp,
 .pc-card--letter .pc-card-stamp,
 .pc-card--polaroid .pc-card-stamp,
@@ -237,15 +274,16 @@
 .pc-card--night .pc-card-stamp,
 .pc-card--meadow .pc-card-stamp,
 .pc-card--ticket .pc-card-stamp {
-  top: 12px;
-  width: clamp(56px, 18%, 78px);
+  width: 100%;
   height: auto;
   border: none;
   border-radius: 0;
-  background: transparent;
+  background: #d6b88a;
   color: transparent;
   font-size: 0;
   box-shadow: none;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
 }
 
 .pc-card-inner {
@@ -740,8 +778,15 @@
 .pc-home-stage-wrap {
   position: relative;
   z-index: 1;
-  max-width: 920px;
+  max-width: 1196px; /* 920px + 30% */
+  width: 100%;
   margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .pc-home > .container {
+    max-width: 1280px; /* room for the larger postcard */
+  }
 }
 
 .pc-stage {
@@ -751,7 +796,8 @@
 .pc-stage-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.72 / 1;
+  /* Matches postcard-2.png (background_pstcard, left-cropped for even corners) */
+  aspect-ratio: 1488 / 1037;
   background-image: var(--pc-template);
   background-size: 100% 100%;
   background-position: center;
@@ -792,12 +838,47 @@
   user-select: none;
 }
 
+.pc-stage-stamp--classic {
+  display: none;
+}
+
+.pc-stage-stamp--postal {
+  display: block;
+  top: 9.5%;
+  right: 9%;
+  width: clamp(100px, 15.5%, 138px);
+  /* Asset is already tilted; keep a light extra lean */
+  transform: rotate(3deg);
+  filter: drop-shadow(0 3px 6px rgba(40, 25, 10, 0.22));
+}
+
+.pc-stage-stamp--postal-straight {
+  display: none;
+}
+
 .pc-stage-share-fixed {
   position: absolute;
   z-index: 7;
-  right: 4.5%;
-  bottom: clamp(1.4rem, 10.5cqh, 3rem);
+  right: 7.5%;
+  /* Match left image bottom inset (14cqh) + align share bottom with avatar */
+  bottom: 14cqh;
   pointer-events: auto;
+}
+
+/* Soft parchment disc under share — hides template diamond without a visible patch */
+.pc-stage-share-fixed::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  background: #d9b890;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.pc-stage-share-fixed > * {
+  position: relative;
+  z-index: 1;
 }
 
 .pc-stage-share-slot {
@@ -808,6 +889,41 @@
   visibility: hidden;
   pointer-events: none;
 }
+
+.pc-stage-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 8;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(92, 70, 42, 0.28);
+  background: rgba(255, 248, 238, 0.94);
+  color: #3a2a18;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(40, 28, 14, 0.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  pointer-events: auto;
+}
+
+.pc-stage-nav:hover {
+  transform: translateY(-50%) scale(1.06);
+  background: var(--amber, #f5a623);
+  color: #0b1520;
+  border-color: transparent;
+  box-shadow: 0 10px 26px rgba(245, 166, 35, 0.35);
+}
+
+.pc-stage-nav:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.pc-stage-nav--prev { left: 10px; }
+.pc-stage-nav--next { right: 10px; }
 
 .pc-stage-slide {
   position: absolute;
@@ -843,13 +959,19 @@
 
 .pc-stage-media {
   position: relative;
-  margin: 7.5% 1.5% 8.5% 10.5%;
+  /* Equal gaps to TL/BL corner frames (cqh = postcard height) */
+  width: auto;
+  height: auto;
+  left: auto;
+  top: auto;
+  justify-self: stretch;
+  align-self: stretch;
+  margin: 14cqh 9% 14cqh 16%;
   border-radius: 12px;
   overflow: hidden;
   background: rgba(40, 30, 20, 0.06);
   isolation: isolate;
   min-height: 0;
-  align-self: stretch;
 }
 
 .pc-stage-media-el {
@@ -900,7 +1022,8 @@
   flex-direction: column;
   margin: 0 10% 0 4.5%;
   padding-top: clamp(1.75rem, 10cqh, 3rem);
-  padding-bottom: clamp(1.5rem, 10cqh, 2.75rem);
+  /* Match .pc-stage-media bottom margin so signer lines up with image */
+  padding-bottom: 14cqh;
   padding-right: 1%;
   min-height: 0;
   max-height: 100%;
@@ -911,18 +1034,35 @@
 }
 
 .pc-stage-copy .pc-card-kicker {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   flex-shrink: 0;
   color: rgba(110, 78, 48, 0.72);
 }
 
+/* Kicker + quote travel together; centered on left-image midline */
+.pc-stage-quote-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  max-height: calc(100% - 14cqh - 5.5rem);
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
 .pc-stage-text {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
   margin: 0;
   color: rgba(52, 36, 24, 0.92);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   overflow: hidden;
 }
 
@@ -944,18 +1084,21 @@
 }
 
 .pc-stage-signer {
-  margin-top: 10px;
+  margin-top: auto;
   padding-top: 10px;
   flex: 0 0 auto;
   position: relative;
   z-index: 4;
   transform: none;
+  gap: 16px;
+  align-items: center;
 }
 
 .pc-stage-signer .pc-avatar {
-  width: 40px;
-  height: 40px;
-  font-size: 1.25rem;
+  width: 56px;
+  height: 56px;
+  font-size: 1.7rem;
+  border-width: 2.5px;
 }
 
 .pc-stage-signer .pc-share-btn {
@@ -965,10 +1108,15 @@
 
 .pc-stage-signer .pc-card-name {
   color: rgba(40, 28, 18, 0.92);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .pc-stage-signer .pc-card-from {
-  color: rgba(90, 70, 50, 0.7);
+  color: rgba(90, 70, 50, 0.78);
+  font-size: 0.9rem;
+  margin-top: 3px;
 }
 
 @media (max-width: 720px) {
@@ -987,6 +1135,20 @@
     border-radius: 0;
   }
 
+  .pc-stage-nav {
+    width: 26px;
+    height: 26px;
+    top: 50%; /* align with postcard middle divider */
+  }
+
+  .pc-stage-nav--prev { left: 8px; }
+  .pc-stage-nav--next { right: 8px; }
+
+  .pc-stage-nav svg {
+    width: 14px;
+    height: 14px;
+  }
+
   .pc-stage-slide {
     grid-template-columns: 1fr;
     /* Midline of postcard-mobile template — image above, copy below */
@@ -995,7 +1157,18 @@
 
   .pc-stage-media {
     /* One line-gap above the template’s center horizontal rule */
+    width: auto;
+    height: auto;
+    left: auto;
+    top: auto;
+    align-self: stretch;
+    justify-self: stretch;
     margin: 22% 10% 0.85rem 10%;
+    touch-action: pan-y;
+  }
+
+  .pc-stage-media .pc-media-nav {
+    display: none;
   }
 
   .pc-stage-copy {
@@ -1004,6 +1177,8 @@
     padding-top: 0.85rem;
     padding-bottom: 0.35rem;
     justify-content: flex-start;
+    align-items: stretch;
+    text-align: left;
     /* Quote band: one line after kicker → one line before signer rule */
     --pc-quote-gap: 0.95rem;
   }
@@ -1012,12 +1187,28 @@
     margin-top: 0;
     margin-bottom: var(--pc-quote-gap);
     font-size: 0.62rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .pc-stage-quote-block {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+    flex: 1 1 0;
+    justify-content: flex-start;
+    min-height: 0;
+    max-height: none;
+    width: auto;
   }
 
   .pc-stage-text {
     /* basis 0 keeps band height stable while probing font sizes */
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
+    text-align: center;
     flex: 1 1 0;
     min-height: 0;
     min-width: 0;
@@ -1037,25 +1228,51 @@
     box-sizing: border-box;
     overflow-wrap: anywhere;
     word-break: break-word;
+    text-align: center;
   }
 
   .pc-stage-signer {
     /* One line gap above the dotted rule (border-top) */
     margin-top: var(--pc-quote-gap);
     padding-top: 8px;
+    align-self: stretch;
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .pc-stage-stamp {
-    width: clamp(48px, 16%, 68px);
     top: 3%;
     right: 42%;
     left: auto;
   }
 
-  /* Icon-only share, parked above the bottom-right diamond ornament */
+  .pc-stage-stamp--postal {
+    display: none;
+  }
+
+  .pc-stage-stamp--postal-straight {
+    display: block;
+    top: 3%;
+    right: 42%;
+    width: clamp(47.88px, 15.96%, 67.83px);
+    transform: none;
+    filter: drop-shadow(0 2px 4px rgba(40, 25, 10, 0.2));
+  }
+
+  .pc-stage-stamp--classic {
+    display: none;
+  }
+
+  /* Icon-only share in the bottom-right corner */
   .pc-stage-share-fixed {
     right: 10%;
     bottom: 5.2%;
+  }
+
+  /* No parchment patch on mobile — keep the template diamond */
+  .pc-stage-share-fixed::before {
+    content: none;
+    display: none;
   }
 
   .pc-stage-share-fixed .pc-share-btn {
@@ -1110,7 +1327,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pc-modal-backdrop {
@@ -1124,20 +1348,35 @@
 .pc-modal {
   position: relative;
   z-index: 1;
-  width: min(560px, 100%);
-  max-height: min(90vh, 860px);
-  overflow: auto;
+  width: min(520px, calc(100vw - 24px));
+  max-width: 100%;
+  min-width: 0;
+  max-height: min(86vh, 720px);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: hidden;
   background: linear-gradient(160deg, #faf6ef, #f0e8db);
   border-radius: 12px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
-  padding: 28px 28px 24px;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .pc-modal-head {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+  padding: 20px 22px 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pc-modal-head > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .pc-modal-eyebrow {
@@ -1150,8 +1389,10 @@
 
 .pc-modal-head h3 {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
+  line-height: 1.25;
   color: #2a241c;
+  overflow-wrap: anywhere;
 }
 
 .pc-modal-close {
@@ -1163,12 +1404,22 @@
   color: #5c5348;
   width: 36px;
   height: 36px;
+  flex-shrink: 0;
 }
 
 .pc-modal-form {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px 14px;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px 22px 18px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pc-name-row {
@@ -1191,11 +1442,15 @@
   justify-content: center;
   gap: 4px;
   text-align: center;
-  padding: 18px 14px;
+  padding: 14px 12px;
   border: 1.5px dashed rgba(92, 70, 42, 0.35);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.55);
   cursor: pointer;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .pc-dropzone-card input {
@@ -1213,12 +1468,16 @@
 .pc-dropzone-card strong {
   font-size: 0.88rem;
   color: #2a241c;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .pc-dropzone-card em {
   font-style: normal;
   font-size: 0.72rem;
   color: #8a6a3e;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .pc-dropzone-title {
@@ -1252,6 +1511,8 @@
   gap: 6px;
   font-size: 0.78rem;
   color: #5c5348;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .pc-field--full {
@@ -1267,6 +1528,16 @@
   font-size: 0.92rem;
   color: #2a241c;
   background: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.pc-field textarea {
+  min-height: 88px;
+  max-height: 160px;
+  resize: vertical;
 }
 
 .pc-field small {
@@ -1305,6 +1576,8 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 12px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .pc-mode-btn {
@@ -1315,6 +1588,11 @@
   font-size: 0.8rem;
   cursor: pointer;
   color: #2a241c;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .pc-mode-btn.is-on {
@@ -1408,6 +1686,9 @@
   font-size: 0.72rem;
   color: #8a6a3e;
   margin: -4px 0 0;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .pc-form-error {
@@ -1421,13 +1702,30 @@
   grid-column: 1 / -1;
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 4px;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: 12px 0 2px;
+  background: linear-gradient(180deg, rgba(240, 232, 219, 0) 0%, #f0e8db 28%, #f0e8db 100%);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pc-modal-actions .btn {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .pc-modal-success {
   text-align: center;
-  padding: 28px 12px 12px;
+  padding: 36px 22px 28px;
+  overflow-y: auto;
 }
 
 .pc-modal-success-stamp {
@@ -1476,20 +1774,24 @@
     border-top: 2px dashed rgba(196, 154, 108, 0.55);
   }
 
-  .pc-card-stamp {
-    top: 10px;
-    width: clamp(48px, 16%, 64px);
-    height: auto;
+  .pc-card-stamp-wrap {
+    top: 8px;
+    width: clamp(50px, 17%, 68px);
   }
 
-  .pc-card--media-right .pc-card-stamp {
-    right: 10px;
+  .pc-card--media-right .pc-card-stamp-wrap {
+    right: 8px;
     left: auto;
   }
 
-  .pc-card--media-left .pc-card-stamp {
-    left: 10px;
+  .pc-card--media-left .pc-card-stamp-wrap {
+    left: 8px;
     right: auto;
+  }
+
+  .pc-card-stamp {
+    width: 100%;
+    height: auto;
   }
 
   .pc-card-copy {
@@ -1504,6 +1806,75 @@
 
   .pc-add-btn {
     align-self: flex-end;
+  }
+
+  .pc-modal-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Laptop / shorter desktop viewports — keep modal fully usable */
+@media (max-height: 900px) {
+  .pc-modal-root {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .pc-modal {
+    max-height: calc(100dvh - 24px);
+    width: min(500px, calc(100vw - 24px));
+    margin: auto 0;
+  }
+
+  .pc-modal-head {
+    padding: 14px 18px 6px;
+  }
+
+  .pc-modal-head h3 {
+    font-size: 1.08rem;
+  }
+
+  .pc-modal-form {
+    gap: 10px 12px;
+    padding: 2px 18px 14px;
+  }
+
+  .pc-dropzone-card {
+    padding: 10px 10px;
+  }
+
+  .pc-dropzone-icon {
+    font-size: 1.15rem;
+    margin-bottom: 0;
+  }
+
+  .pc-field textarea {
+    min-height: 72px;
+    max-height: 120px;
+  }
+
+  .pc-avatar-block {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .pc-char-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 6px;
+  }
+}
+
+@media (max-height: 760px) {
+  .pc-modal {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .pc-modal-head h3 {
+    font-size: 1rem;
+  }
+
+  .pc-font-hint {
+    font-size: 0.68rem;
   }
 }
 

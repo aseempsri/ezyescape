@@ -60,7 +60,7 @@ function BookingCard({ booking }) {
           </p>
           <h3>{booking.stayTitle || 'Homestay'}</h3>
         </div>
-        <a href={stayHref} className="pf-booking-link">View stay →</a>
+        <a href={stayHref} className="pf-booking-link">View stay</a>
       </div>
       <div className="pf-booking-meta">
         <div>
@@ -310,8 +310,8 @@ export default function ProfilePage() {
                 {!dataLoading && current.length === 0 && (
                   <div className="pf-empty">
                     <p>No current bookings.</p>
-                    <a href={staysIndexPath()} className="btn btn-ghost">Browse homestays →</a>
-                    <a href={homeSectionPath('quiz')} className="btn btn-ghost">Match my stay →</a>
+                    <a href={staysIndexPath()} className="btn btn-ghost">Browse homestays</a>
+                    <a href={homeSectionPath('quiz')} className="btn btn-ghost">Match my stay</a>
                   </div>
                 )}
                 <div className="pf-booking-list">

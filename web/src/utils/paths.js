@@ -43,6 +43,14 @@ export function experiencesPath() {
   return appPath('experiences');
 }
 
+export function experiencePath(slugOrId) {
+  return appPath(`experiences/${encodeURIComponent(slugOrId)}`);
+}
+
+export function goExperience(slugOrId) {
+  window.location.assign(experiencePath(slugOrId));
+}
+
 export function profilePath() {
   return appPath('profile');
 }

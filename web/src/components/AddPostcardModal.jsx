@@ -39,6 +39,20 @@ export default function AddPostcardModal({ open, onClose }) {
     return () => mq.removeEventListener('change', sync);
   }, []);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    const prevOverflowX = document.body.style.overflowX;
+    document.body.style.overflow = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.documentElement.style.overflowX = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.overflowX = prevOverflowX;
+      document.documentElement.style.overflowX = '';
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const reset = () => {

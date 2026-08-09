@@ -6,7 +6,6 @@ import {
   FALLBACK_STAYS,
   STAY_FILTERS,
   normalizeApiStay,
-  stayCardChip,
   stayMatchesFilter,
 } from '../utils/stays';
 
@@ -30,7 +29,6 @@ function buildLoop(items, viewportWidth = 1440) {
 }
 
 function StayCard({ stay, onOpen }) {
-  const chip = stayCardChip(stay);
   const touchRef = useRef({ x: 0, y: 0, dragged: false });
 
   return (
@@ -69,18 +67,17 @@ function StayCard({ stay, onOpen }) {
     >
       <div className="stay-img" style={{ backgroundImage: `url('${stay.image}')` }}>
         <div className="stay-img-overlay" />
-        <div className="stay-img-tags">
-          <span className={`s-tag s-tag--chip s-tag--${chip.kind}`}>
-            {chip.label}
-          </span>
-        </div>
       </div>
       <div className="stay-body">
         <div className="stay-host">{stay.location}</div>
         <div className="stay-name" title={stay.title}>{stay.title}</div>
         <div className="stay-footer">
-          <span className="stay-best">{stay.best}</span>
-          <span className="stay-link stay-book-btn">View stay →</span>
+          {stay.guest ? (
+            <span className="stay-capacity">Hosts up to <em>{stay.guest}</em></span>
+          ) : (
+            <span className="stay-capacity" />
+          )}
+          <span className="stay-link stay-book-btn">View stay</span>
         </div>
       </div>
     </div>
@@ -258,7 +255,7 @@ export default function StaysSection() {
       <div className="container">
         <div className="w" style={{ textAlign: 'center', marginTop: 8 }} data-reveal="up">
           <a href={staysIndexPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
-            View All Homestays <span className="btn-arrow">→</span>
+            View All Homestays
           </a>
         </div>
       </div>

@@ -322,9 +322,10 @@ nav#mainNav.solid {
 .hero.loaded .hero-title .line-inner:nth-child(3) { transition-delay:.24s; }
 
 .hero-sub {
-  font-size:1.05rem; line-height:1.8; font-weight:300;
-  color:#fff; max-width:480px;
+  font-size:clamp(1.12rem, 1.6vw, 1.35rem); line-height:1.55; font-weight:300;
+  color:#fff; max-width:560px;
   margin:28px 0 36px;
+  text-align:left;
   opacity:0; transform:translateY(16px);
   transition:opacity .9s .6s var(--ease), transform .9s .6s var(--ease);
 }
@@ -378,8 +379,6 @@ nav#mainNav.solid {
   border-color:var(--amber); color:var(--amber);
   box-shadow:0 0 20px rgba(245,166,35,.1);
 }
-.btn-arrow { font-size:1rem; transition:transform .3s var(--easeBack); }
-.btn:hover .btn-arrow { transform:translateX(4px); }
 
 .hero-right {
   display:flex; flex-direction:column; gap:14px; align-items:flex-end;
@@ -997,13 +996,20 @@ nav#mainNav.solid {
   background: var(--section-cream, #F9F6F1);
   padding: 100px 0 110px;
 }
-.home-exp-intro { max-width: 720px; margin-bottom: 36px; }
+.home-exp-intro { max-width: none; margin-bottom: 36px; }
 .home-exp-sub {
   margin: 0;
-  max-width: 36rem;
+  max-width: none;
   color: var(--text-muted);
   font-size: 0.95rem;
   line-height: 1.7;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .home-exp-sub {
+    white-space: normal;
+  }
 }
 .home-exp-grid {
   display: grid;
@@ -1088,13 +1094,46 @@ nav#mainNav.solid {
   text-overflow: ellipsis;
   min-width: 0;
 }
-.stay-link {
-  display:flex; align-items:center; gap:5px;
-  font-size:.78rem; font-weight:700; color:var(--amber);
-  text-decoration:none; transition:gap .3s var(--easeBack);
-  flex-shrink: 0;
+.stay-capacity {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(237, 232, 225, 0.78);
+  white-space: nowrap;
+  min-width: 0;
 }
-.stay-link:hover { gap:9px; }
+
+.stay-capacity em {
+  font-style: normal;
+  font-weight: 700;
+  color: #fff;
+}
+.stay-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--bg, #060c15);
+  background: var(--amber, #f5a623);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.25s var(--easeBack), box-shadow 0.25s ease;
+}
+.stay-link:hover {
+  gap: 0;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(245, 166, 35, 0.35);
+}
+
+.stay-card .stay-book-btn {
+  padding: 8px 14px;
+  background: var(--amber, #f5a623);
+  cursor: pointer;
+}
 
 /* ─────────────────────────────────────────
    PERSONALITIES — STACKED CARDS
@@ -1604,7 +1643,24 @@ nav#mainNav.solid {
     margin-left: auto;
     margin-right: auto;
 }
-.cta-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.cta-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; align-items:stretch; }
+.cta-btns .mag {
+  flex: 1 1 0;
+  min-width: min(100%, 260px);
+  max-width: 300px;
+  display: flex;
+}
+.cta-btns .btn {
+  width: 100%;
+  min-height: 48px;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  line-height: 1.2;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
 
 /* ─────────────────────────────────────────
    FOOTER

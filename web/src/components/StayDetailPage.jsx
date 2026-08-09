@@ -212,7 +212,7 @@ export default function StayDetailPage({ idOrSlug }) {
             </div>
 
             <div className="stay-cinematic-copy">
-              <a href={staysIndexPath()} className="stay-back-link">← All stays</a>
+              <a href={staysIndexPath()} className="stay-back-link">All stays</a>
               <p className="stay-hero-location">{stay.location}</p>
               <h1>{stay.title}</h1>
               {stay.description && <p className="stay-hero-desc stay-hero-desc--full">{stay.description}</p>}
@@ -233,7 +233,7 @@ export default function StayDetailPage({ idOrSlug }) {
                   <span>/ night</span>
                 </div>
                 <div className="stay-hero-actions">
-                  <a href="#book" className="btn btn-amber">Book this stay →</a>
+                  <a href="#book" className="btn btn-amber">Book this stay</a>
                   <a
                     href={whatsappChatUrl(waMessage)}
                     className="btn btn-ghost"
@@ -392,7 +392,14 @@ export default function StayDetailPage({ idOrSlug }) {
                 <div className="stay-book-price">
                   {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
                   <strong>₹{stay.price}</strong>
-                  <span>/ night</span>
+                  <span>/night</span>
+                  {stay.rooms > 1 ? (
+                    <>
+                      <span className="stay-book-price-sep">·</span>
+                      <strong>₹{Math.max(1, Math.round(stay.price / stay.rooms))}</strong>
+                      <span>/room</span>
+                    </>
+                  ) : null}
                 </div>
               </div>
               <div className="stay-book-card">
@@ -407,7 +414,7 @@ export default function StayDetailPage({ idOrSlug }) {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Prefer WhatsApp? Talk to a curator →
+                  Prefer WhatsApp? Talk to a curator
                 </a>
               </div>
             </div>

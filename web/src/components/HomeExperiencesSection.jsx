@@ -33,7 +33,7 @@ export default function HomeExperiencesSection() {
               <div className="home-exp-card-img" style={{ backgroundImage: `url('${exp.img}')` }} />
               <div className="home-exp-card-body">
                 <span className="home-exp-card-tag">{exp.tag}</span>
-                <h3>{exp.emoji} {exp.title}</h3>
+                <h3>{exp.title}</h3>
                 <p>{exp.desc}</p>
               </div>
             </a>
@@ -42,7 +42,7 @@ export default function HomeExperiencesSection() {
 
         <div className="home-exp-foot" data-reveal="up">
           <a href={experiencesPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
-            Browse all experiences <span className="btn-arrow">→</span>
+            Browse all experiences
           </a>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { configureGoogleAuth } from './routes/auth.js';
 import walletRoutes from './routes/wallet.js';
 import bookingRoutes from './routes/bookings.js';
 import stayRoutes from './routes/stays.js';
+import eventRoutes from './routes/events.js';
 import adminRoutes from './routes/admin.js';
 import adsRoutes from './routes/ads.js';
 import postcardRoutes, {
@@ -19,10 +20,12 @@ import seoRoutes, {
   handleStaticSeoPage,
   handleStaysIndexSeo,
   handleStaySeo,
+  handleEventSeo,
 } from './routes/seo.js';
 import { scheduleExpiryReminders } from './jobs/expiryReminders.js';
 import { seedStaysIfEmpty } from './data/seedStays.js';
 import { seedPostcardsIfEmpty } from './data/seedPostcards.js';
+import { seedEventsIfEmpty } from './data/seedEvents.js';
 import { UPLOAD_DIR } from './config/upload.js';
 import User from './models/User.js';
 
@@ -57,6 +60,7 @@ app.use('/auth', configureGoogleAuth());
 app.use('/api/wallet', walletRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/stays', stayRoutes);
+app.use('/api/events', eventRoutes);
 app.use('/api/postcards', postcardRoutes);
 app.use('/api/ads', adsRoutes);
 app.use('/api/admin', adminRoutes);
@@ -112,6 +116,15 @@ app.get('/stays/:idOrSlug', async (req, res, next) => {
   }
 });
 
+app.get('/experiences/:idOrSlug', async (req, res, next) => {
+  if (!isSeoBot(req)) return next();
+  try {
+    return await handleEventSeo(req, res, req.params.idOrSlug);
+  } catch (err) {
+    next(err);
+  }
+});
+
 for (const path of ['/experiences', '/postcards', '/shop', '/partner', '/contact']) {
   app.get(path, async (req, res, next) => {
     if (!isSeoBot(req)) return next();
@@ -125,6 +138,7 @@ await connectDB(MONGODB_URI);
 await User.syncIndexes().catch((err) => console.warn('User.syncIndexes failed:', err.message));
 await seedStaysIfEmpty();
 await seedPostcardsIfEmpty();
+await seedEventsIfEmpty();
 
 scheduleExpiryReminders();
 

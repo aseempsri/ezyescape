@@ -11,7 +11,7 @@ const CHANNELS = [
     t: 'WhatsApp',
     d: 'Fastest way to plan a stay, ask about a product, or partner with us.',
     href: whatsappChatUrl(),
-    cta: 'Chat now →',
+    cta: 'Chat now',
     external: true,
   },
   {
@@ -123,7 +123,7 @@ export default function ContactPage() {
                 placeholder="Dates, region, or questions…"
               />
             </label>
-            <button type="submit" className="btn btn-amber">Continue on WhatsApp →</button>
+            <button type="submit" className="btn btn-amber">Continue on WhatsApp</button>
             <p className="sp-form-note">
               Prefer email? Write to <a href="mailto:hello@ezyescape.com">hello@ezyescape.com</a>
             </p>

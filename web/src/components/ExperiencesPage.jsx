@@ -1,34 +1,93 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import SiteChrome from './SiteChrome';
 import Typewriter from './Typewriter';
+import EventShareMenu from './EventShareMenu';
 import { PROPERTY_EXPERIENCES, UPCOMING_EVENTS } from '../data/propertyExperiences';
-import { homeSectionPath, staysIndexPath } from '../utils/paths';
+import { resolveEventIcon } from '../data/eventIcons';
+import { fetchEvents } from '../lib/api';
+import {
+  experiencePath,
+} from '../utils/paths';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import AdSlot from './AdSlot';
 import '../styles/immersion.css';
 
+function normalizeUpcoming(ev) {
+  const month = ev.month || '';
+  const day = ev.day || '';
+  const dateLabel =
+    ev.dateLabel ||
+    (month && day
+      ? `${month.charAt(0)}${month.slice(1).toLowerCase()} ${day}`
+      : ev.date || '');
+  return {
+    ...ev,
+    id: ev.id || ev.slug,
+    slug: ev.slug || ev.id,
+    img: ev.img || ev.images?.[0] || '',
+    emoji: resolveEventIcon(ev.emoji),
+    month,
+    day,
+    dateLabel,
+  };
+}
+
+function normalizePast(ev) {
+  return {
+    ...ev,
+    id: ev.id || ev.slug,
+    slug: ev.slug || ev.id,
+    img: ev.img || ev.images?.[0] || '',
+    emoji: resolveEventIcon(ev.emoji),
+    date: ev.dateLabel || ev.date || '',
+  };
+}
+
+const FALLBACK_UPCOMING = UPCOMING_EVENTS.map(normalizeUpcoming);
+const FALLBACK_PAST = PROPERTY_EXPERIENCES.map(normalizePast);
+
 export default function ExperiencesPage() {
-  const [activeId, setActiveId] = useState(PROPERTY_EXPERIENCES[0].id);
+  const [upcoming, setUpcoming] = useState(FALLBACK_UPCOMING);
+  const [pastEvents, setPastEvents] = useState(FALLBACK_PAST);
+  const [activeId, setActiveId] = useState(FALLBACK_PAST[0]?.id);
   const activeIndex = Math.max(
     0,
-    PROPERTY_EXPERIENCES.findIndex((e) => e.id === activeId),
+    pastEvents.findIndex((e) => e.id === activeId),
   );
-  const active = PROPERTY_EXPERIENCES[activeIndex] || PROPERTY_EXPERIENCES[0];
+  const active = pastEvents[activeIndex] || pastEvents[0];
   const touchRef = useRef({ x: 0, y: 0 });
   const railRef = useRef(null);
   const skipChipScrollRef = useRef(true);
 
+  useEffect(() => {
+    let alive = true;
+    Promise.all([
+      fetchEvents('upcoming').catch(() => null),
+      fetchEvents('past').catch(() => null),
+    ]).then(([up, past]) => {
+      if (!alive) return;
+      if (Array.isArray(up) && up.length) setUpcoming(up.map(normalizeUpcoming));
+      if (Array.isArray(past) && past.length) {
+        const next = past.map(normalizePast);
+        setPastEvents(next);
+        setActiveId((cur) => (next.some((e) => e.id === cur) ? cur : next[0]?.id));
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const selectByOffset = useCallback((delta) => {
-    const next = (activeIndex + delta + PROPERTY_EXPERIENCES.length) % PROPERTY_EXPERIENCES.length;
-    setActiveId(PROPERTY_EXPERIENCES[next].id);
-  }, [activeIndex]);
+    if (!pastEvents.length) return;
+    const next = (activeIndex + delta + pastEvents.length) % pastEvents.length;
+    setActiveId(pastEvents[next].id);
+  }, [activeIndex, pastEvents]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Keep the active chip centered in the horizontal rail only —
-  // never scroll the page (scrollIntoView was jumping past the hero on load).
   useEffect(() => {
     if (skipChipScrollRef.current) {
       skipChipScrollRef.current = false;
@@ -60,7 +119,7 @@ export default function ExperiencesPage() {
     selectByOffset(dx < 0 ? 1 : -1);
   };
 
-  const pastEvents = useMemo(() => PROPERTY_EXPERIENCES, []);
+  const activeKey = useMemo(() => active?.id || 'none', [active?.id]);
 
   return (
     <SiteChrome
@@ -85,7 +144,7 @@ export default function ExperiencesPage() {
         </div>
       </section>
 
-      <section className="exp-upcoming-section section-bg-cream">
+      <section className="exp-upcoming-section section-bg-cream" id="upcoming-events">
         <div className="container">
           <header className="exp-upcoming-head">
             <p className="sp-eyebrow" style={{ color: '#c47a0a' }}>Event bookings</p>
@@ -93,31 +152,45 @@ export default function ExperiencesPage() {
             <p>Reserve a seat for the next gatherings in the hills — limited spots with host families.</p>
           </header>
           <div className="exp-upcoming-grid">
-            {UPCOMING_EVENTS.map((ev) => (
-              <article key={ev.id} className="exp-upcoming-card">
-                <div className="exp-upcoming-media">
-                  <img src={ev.img} alt={ev.title} />
-                  <div className="exp-upcoming-date">
-                    <span className="exp-upcoming-month">{ev.month}</span>
-                    <strong>{ev.day}</strong>
-                  </div>
-                </div>
-                <div className="exp-upcoming-body">
-                  <span className="exp-upcoming-tag">{ev.tag}</span>
-                  <h3>{ev.title}</h3>
-                  <p>{ev.desc}</p>
-                  <p className="exp-upcoming-meta">{ev.place} · {ev.spots}</p>
-                  <a
-                    className="btn btn-amber exp-upcoming-book"
-                    href={whatsappChatUrl(ev.waMessage)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Book now
+            {upcoming.map((ev) => {
+              const when =
+                ev.dateLabel ||
+                (ev.month && ev.day
+                  ? `${ev.month.charAt(0)}${ev.month.slice(1).toLowerCase()} ${ev.day}`
+                  : '');
+              const detailHref = experiencePath(ev.slug || ev.id);
+              return (
+                <article key={ev.id} className="exp-upcoming-card">
+                  <a href={detailHref} className="exp-upcoming-media-link">
+                    <div className="exp-upcoming-media">
+                      <img src={ev.img} alt={ev.title} />
+                      {when ? (
+                        <div className="exp-upcoming-date">
+                          <span className="exp-upcoming-starts">Starts -</span>
+                          <span className="exp-upcoming-when">{when}</span>
+                        </div>
+                      ) : null}
+                    </div>
                   </a>
-                </div>
-              </article>
-            ))}
+                  <div className="exp-upcoming-body">
+                    <span className="exp-upcoming-tag">{ev.tag}</span>
+                    <h3>
+                      <a href={detailHref}>{ev.title}</a>
+                    </h3>
+                    <p>{ev.desc}</p>
+                    <p className="exp-upcoming-meta">
+                      {[ev.place, ev.spots].filter(Boolean).join(' · ')}
+                    </p>
+                    <div className="exp-upcoming-actions">
+                      <a className="btn btn-amber exp-upcoming-book" href={detailHref}>
+                        Book now
+                      </a>
+                      <EventShareMenu event={ev} className="exp-upcoming-share" />
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -137,51 +210,59 @@ export default function ExperiencesPage() {
             </p>
           </header>
 
-          <div className="immersion-stage" data-reveal="up">
-            <article
-              className="immersion-hero"
-              key={active.id}
-              onTouchStart={onHeroTouchStart}
-              onTouchEnd={onHeroTouchEnd}
-            >
-              <img className="immersion-hero-photo" src={active.img} alt={active.title} />
-              <div className="immersion-hero-shade" />
-              <div className="immersion-hero-copy">
-                <div className="immersion-hero-meta">
-                  <span className="immersion-tag">{active.tag}</span>
-                  <span className="immersion-hero-count" aria-hidden="true">
-                    {String(activeIndex + 1).padStart(2, '0')}
-                    <span> / {String(pastEvents.length).padStart(2, '0')}</span>
-                  </span>
+          {active ? (
+            <div className="immersion-stage" data-reveal="up">
+              <a
+                className="immersion-hero"
+                href={experiencePath(active.slug || active.id)}
+                key={activeKey}
+                onTouchStart={onHeroTouchStart}
+                onTouchEnd={onHeroTouchEnd}
+              >
+                <img className="immersion-hero-photo" src={active.img} alt={active.title} />
+                <div className="immersion-hero-shade" />
+                <div className="immersion-hero-copy">
+                  <div className="immersion-hero-meta">
+                    <span className="immersion-tag">{active.tag}</span>
+                    {active.date ? (
+                      <span className="immersion-hero-date">{active.date}</span>
+                    ) : null}
+                  </div>
+                  <h3 className="immersion-hero-title">{active.title}</h3>
+                  <p className="immersion-hero-desc">{active.desc}</p>
+                  <p className="immersion-hero-swipe-hint">Swipe photo · tap a card · open details</p>
                 </div>
-                <span className="immersion-hero-emoji" aria-hidden="true">{active.emoji}</span>
-                <h3 className="immersion-hero-title">{active.title}</h3>
-                <p className="immersion-hero-desc">{active.desc}</p>
-                <p className="immersion-hero-swipe-hint">Swipe photo · tap a card below</p>
-              </div>
-            </article>
+              </a>
 
-            <div className="immersion-rail" role="list" aria-label="Browse past experiences" ref={railRef}>
-              {pastEvents.map((exp, i) => (
-                <button
-                  key={exp.id}
-                  type="button"
-                  role="listitem"
-                  className={`immersion-chip immersion-chip--text immersion-chip--card${activeId === exp.id ? ' is-active' : ''}`}
-                  onClick={() => setActiveId(exp.id)}
-                  aria-pressed={activeId === exp.id}
-                >
-                  <img className="immersion-chip-img" src={exp.img} alt="" />
-                  <span className="immersion-chip-num">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="immersion-chip-body">
-                    <span className="immersion-chip-emoji" aria-hidden="true">{exp.emoji}</span>
-                    <span className="immersion-chip-title">{exp.title}</span>
-                    <span className="immersion-chip-tag">{exp.tag}</span>
-                  </span>
-                </button>
-              ))}
+              <div className="immersion-rail" role="list" aria-label="Browse past experiences" ref={railRef}>
+                {pastEvents.map((exp) => (
+                  <button
+                    key={exp.id}
+                    type="button"
+                    role="listitem"
+                    className={`immersion-chip immersion-chip--text immersion-chip--card${activeId === exp.id ? ' is-active' : ''}`}
+                    onClick={() => setActiveId(exp.id)}
+                    onDoubleClick={() => {
+                      window.location.assign(experiencePath(exp.slug || exp.id));
+                    }}
+                    aria-pressed={activeId === exp.id}
+                  >
+                    <span className="immersion-chip-emoji" aria-hidden="true">
+                      {exp.emoji}
+                    </span>
+                    <img className="immersion-chip-img" src={exp.img} alt="" />
+                    <span className="immersion-chip-body">
+                      <span className="immersion-chip-title">{exp.title}</span>
+                      <span className="immersion-chip-meta">
+                        <span className="immersion-chip-tag">{exp.tag}</span>
+                        {exp.date ? <span className="immersion-chip-date">{exp.date}</span> : null}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </section>
 
@@ -192,8 +273,17 @@ export default function ExperiencesPage() {
           <h2>Ready to join one of these?</h2>
           <p>Match your vibe first — then stay somewhere that opens the door to these gatherings.</p>
           <div className="sp-hero-actions">
-            <a href={homeSectionPath('quiz')} className="btn btn-amber">Match My Stay →</a>
-            <a href={staysIndexPath()} className="btn btn-ghost">View all homestays</a>
+            <a href="#upcoming-events" className="btn btn-amber">Join upcoming events</a>
+            <a
+              href={whatsappChatUrl(
+                "Hi Ezy Escape! I'd like to talk to a curator about joining an experience or festival gathering in the hills. Could you help?"
+              )}
+              className="btn btn-ghost"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Talk to curator
+            </a>
           </div>
         </div>
       </section>

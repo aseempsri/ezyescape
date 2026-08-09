@@ -82,7 +82,7 @@ export default function ProfileModal({ open, onClose }) {
                 : 'Update your details any time.'}
             </p>
             <p className="auth-reason" style={{ marginTop: -8 }}>
-              <a href={profilePath()}>Open full profile →</a>
+              <a href={profilePath()}>Open full profile</a>
             </p>
 
             {error && <p className="auth-error">{error}</p>}

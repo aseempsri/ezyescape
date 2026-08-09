@@ -51,7 +51,14 @@ function StayTile({ stay }) {
           <span>/ night</span>
         </p>
         {stay.best ? <p className="hs-tile-best">{stay.best}</p> : null}
-        <span className="hs-tile-cta">View stay →</span>
+        <div className="hs-tile-footer">
+          {stay.guest ? (
+            <span className="hs-tile-capacity">Hosts up to <em>{stay.guest}</em></span>
+          ) : (
+            <span className="hs-tile-capacity" />
+          )}
+          <span className="hs-tile-cta">View stay</span>
+        </div>
       </div>
     </article>
   );
@@ -149,7 +156,9 @@ export default function HomestaysPage() {
               <h2>
                 {loading
                   ? 'Loading stays…'
-                  : `${visible.length} home${visible.length === 1 ? '' : 's'}${filter === 'all' ? ' in the hills' : ` · ${STAY_FILTERS.find((f) => f.id === filter)?.label || ''}`}`}
+                  : filter === 'all'
+                    ? 'Homes in the hills'
+                    : `Homes · ${STAY_FILTERS.find((f) => f.id === filter)?.label || ''}`}
               </h2>
             </div>
             <form
@@ -228,7 +237,7 @@ export default function HomestaysPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Talk to a curator →
+              Talk to a curator
             </a>
           </div>
         </div>

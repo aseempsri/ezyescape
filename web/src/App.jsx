@@ -116,27 +116,25 @@ export default function App() {
                 </span>
               </h1>
               <p className="hero-sub">
-                Discover authentic mountain homes hosted by local families — matched to how you actually travel.
+                <span className="hero-sub-line">Discover authentic mountain homes hosted by</span>
+                <span className="hero-sub-line">local families — matched to how you actually travel.</span>
               </p>
+              <div className="hero-btns">
+                <Magnetic>
+                  <a href="#quiz" className="btn btn-amber">Match My Stay</a>
+                </Magnetic>
+                <Magnetic>
+                  <a href="#stays" className="btn btn-ghost">Explore Homes</a>
+                </Magnetic>
+              </div>
               <div className="hero-actions">
                 <a href="#quiz" className="btn btn-amber">
-                  Match My Stay <span className="btn-arrow">→</span>
+                  Match My Stay
                 </a>
                 <div className="btn-row">
                   <a href="#stays" className="btn btn-ghost">Explore Homes</a>
                   <a href="#quiz" className="btn btn-ghost">Take the Quiz</a>
                 </div>
-              </div>
-            </div>
-
-            <div className="hero-right">
-              <div className="hero-btns">
-                <Magnetic>
-                  <a href="#quiz" className="btn btn-amber">Match My Stay <span className="btn-arrow">→</span></a>
-                </Magnetic>
-                <Magnetic>
-                  <a href="#stays" className="btn btn-ghost">Explore Homes</a>
-                </Magnetic>
               </div>
             </div>
           </div>
@@ -244,7 +242,6 @@ export default function App() {
               <Magnetic>
                 <a href="#quiz" className="btn btn-amber honest-cta" data-reveal>
                   <span className="honest-cta-text">This sounds like me — Match My Stay</span>
-                  <span className="btn-arrow" aria-hidden="true">→</span>
                 </a>
               </Magnetic>
             </div>
@@ -328,7 +325,7 @@ export default function App() {
             <p className="cta-sub">Skip the endless scrolling. Tell us how you like to travel and we&apos;ll help you choose.</p>
           </div>
           <div className="cta-btns" data-reveal="up" data-delay="2">
-            <Magnetic><a href="#quiz" className="btn btn-amber">Match My Stay <span className="btn-arrow">→</span></a></Magnetic>
+            <Magnetic><a href="#quiz" className="btn btn-amber">Match My Stay</a></Magnetic>
             <Magnetic>
               <a
                 href={whatsappChatUrl()}

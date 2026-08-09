@@ -298,8 +298,17 @@
   color: var(--sp-muted);
 }
 
+.site-page .hs-tile-capacity {
+  color: var(--sp-muted);
+}
+
+.site-page .hs-tile-capacity em {
+  color: var(--sp-ink);
+}
+
 .site-page .hs-tile-cta {
-  color: #d4890f;
+  color: #101e2c;
+  background: var(--amber, #f5a623);
 }
 
 /* Experiences past-events stage — white after cream upcoming */
@@ -319,12 +328,17 @@
   box-shadow: 0 8px 22px rgba(28, 42, 58, 0.08);
 }
 
-.site-page .immersion-section--page .immersion-chip-title,
-.site-page .immersion-section--page .immersion-chip-num {
+.site-page .immersion-section--page .immersion-chip-title {
   color: var(--sp-ink);
 }
 
-.site-page .immersion-section--page .immersion-chip-tag {
+.site-page .immersion-section--page .immersion-chip-emoji {
+  background: rgba(245, 166, 35, 0.12);
+  border-right-color: rgba(28, 42, 58, 0.08);
+}
+
+.site-page .immersion-section--page .immersion-chip-tag,
+.site-page .immersion-section--page .immersion-chip-date {
   color: var(--sp-muted);
 }
 

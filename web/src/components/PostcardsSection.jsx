@@ -48,7 +48,7 @@ export default function PostcardsSection() {
               Add review
             </button>
             <a href={postcardsPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
-              Full wall →
+              Full wall
             </a>
           </div>
         </div>
@@ -65,7 +65,7 @@ export default function PostcardsSection() {
 
         <div className="pc-home-foot" data-reveal="up">
           <a href={postcardsPath()} className="btn btn-ghost" style={{ fontSize: '.85rem' }}>
-            Read more postcards <span className="btn-arrow">→</span>
+            Read more postcards
           </a>
         </div>
       </div>

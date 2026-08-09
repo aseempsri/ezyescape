@@ -55,7 +55,7 @@ export default function ShopPage() {
                   <div className="sp-product-foot">
                     <strong>₹{p.price}</strong>
                     <a href={productWa(p.name)} className="sp-product-buy" target="_blank" rel="noopener noreferrer">
-                      Order on WhatsApp →
+                      Order on WhatsApp
                     </a>
                   </div>
                 </div>

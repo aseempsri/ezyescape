@@ -16,6 +16,7 @@ import {
 } from '../lib/api';
 import { stayPath } from '../utils/paths';
 import AdsManager from './AdsManager';
+import EventsAdmin from './EventsAdmin';
 import '../styles/admin.css';
 
 function computeFinal(price, type, value) {
@@ -483,7 +484,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            View on site →
+            View on site
           </a>
         )}
       </div>
@@ -937,7 +938,7 @@ function Dashboard({ onLogout }) {
         <div>
           <h1>Ezy Escape · Admin</h1>
           <p>
-            Manage property listings and curate guest postcards before they appear on the site.
+            Manage property listings, experiences, and guest postcards before they appear on the site.
           </p>
         </div>
         <div className="admin-header-actions">
@@ -970,6 +971,13 @@ function Dashboard({ onLogout }) {
         </button>
         <button
           type="button"
+          className={`admin-tab${tab === 'events' ? ' is-on' : ''}`}
+          onClick={() => { setTab('events'); setEditing(null); }}
+        >
+          Events
+        </button>
+        <button
+          type="button"
           className={`admin-tab${tab === 'ads' ? ' is-on' : ''}`}
           onClick={() => { setTab('ads'); setEditing(null); }}
         >
@@ -979,6 +987,10 @@ function Dashboard({ onLogout }) {
 
       {tab === 'ads' ? (
         <AdsManager />
+      ) : tab === 'events' ? (
+        <section className="admin-card">
+          <EventsAdmin />
+        </section>
       ) : tab === 'postcards' ? (
         <section className="admin-card">
           <h2>Postcard inbox</h2>

@@ -198,6 +198,52 @@ export async function adminDeleteStay(id) {
   return res.json();
 }
 
+// ── Events / experiences ──
+export async function fetchEvents(status) {
+  const q = status ? `?status=${encodeURIComponent(status)}` : '';
+  const res = await fetch(getApiUrl(`/api/events${q}`));
+  if (!res.ok) throw new Error('Failed to load events');
+  return res.json();
+}
+
+export async function fetchEvent(idOrSlug) {
+  const res = await fetch(getApiUrl(`/api/events/${encodeURIComponent(idOrSlug)}`));
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to load event');
+  return res.json();
+}
+
+export async function adminFetchEvents() {
+  const res = await fetch(getApiUrl('/api/admin/events'), { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to load events');
+  return res.json();
+}
+
+export async function adminSaveEvent(id, payload) {
+  const url = id ? `/api/admin/events/${id}` : '/api/admin/events';
+  const res = await fetch(getApiUrl(url), {
+    method: id ? 'PUT' : 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Save failed');
+  return data;
+}
+
+export async function adminDeleteEvent(id) {
+  const res = await fetch(getApiUrl(`/api/admin/events/${id}`), {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Delete failed');
+  }
+  return res.json();
+}
+
 // ── Postcards ──
 export async function fetchPostcards() {
   const res = await fetch(getApiUrl('/api/postcards'));

@@ -45,7 +45,7 @@ export default function PartnerPage() {
           </p>
           <div className="sp-hero-actions">
             <a href={partnerWa} className="btn btn-amber" target="_blank" rel="noopener noreferrer">
-              Partner on WhatsApp →
+              Partner on WhatsApp
             </a>
             <a href={contactPath()} className="btn btn-ghost">Contact the team</a>
           </div>
@@ -101,7 +101,7 @@ export default function PartnerPage() {
           <p>Share a few photos and how you like to welcome guests. We’ll reply on WhatsApp.</p>
           <div className="sp-hero-actions">
             <a href={partnerWa} className="btn btn-amber" target="_blank" rel="noopener noreferrer">
-              Start a partnership chat →
+              Start a partnership chat
             </a>
             <a href={homeSectionPath('quiz')} className="btn btn-ghost">See how we match travellers</a>
           </div>

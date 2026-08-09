@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import Stay from '../models/Stay.js';
 import Postcard from '../models/Postcard.js';
+import Event from '../models/Event.js';
 import { serializeStay } from '../utils/stayPricing.js';
+import { serializeEvent } from './events.js';
 import { adminCookieOptions, requireAdmin, signAdminToken } from '../middleware/admin.js';
 import { upload } from '../config/upload.js';
 
@@ -124,6 +126,90 @@ router.put('/stays/:id', async (req, res) => {
 router.delete('/stays/:id', async (req, res) => {
   const stay = await Stay.findByIdAndDelete(req.params.id);
   if (!stay) return res.status(404).json({ error: 'Listing not found' });
+  res.json({ ok: true });
+});
+
+function parseEventBody(body = {}) {
+  const images = Array.isArray(body.images)
+    ? body.images.map((u) => String(u || '').trim()).filter(Boolean)
+    : String(body.img || '').trim()
+      ? [String(body.img).trim()]
+      : [];
+
+  let startDate = null;
+  if (body.startDate) {
+    const d = new Date(body.startDate);
+    if (!Number.isNaN(d.getTime())) startDate = d;
+  }
+
+  const title = String(body.title || '').trim();
+  let slug = String(body.slug || '').trim();
+  if (!slug && title) {
+    slug = slugify(title);
+  }
+
+  return {
+    title,
+    slug: slug || undefined,
+    status: ['live', 'upcoming', 'past'].includes(body.status) ? body.status : 'upcoming',
+    tag: String(body.tag || '').trim(),
+    place: String(body.place || '').trim(),
+    spots: String(body.spots || '').trim(),
+    month: String(body.month || '').trim().toUpperCase(),
+    day: String(body.day || '').trim(),
+    dateLabel: String(body.dateLabel || '').trim(),
+    startDate,
+    desc: String(body.desc || '').trim(),
+    details: String(body.details || '').trim(),
+    instructions: String(body.instructions || '').trim(),
+    guidelines: String(body.guidelines || '').trim(),
+    pricing: String(body.pricing || '').trim(),
+    locationDetails: String(body.locationDetails || '').trim(),
+    images,
+    waMessage: String(body.waMessage || '').trim(),
+    emoji: String(body.emoji || '').trim(),
+    active: body.active !== false && body.active !== 'false',
+    adEnabled: body.adEnabled === true || body.adEnabled === 'true',
+    adMediaUrl: String(body.adMediaUrl || '').trim(),
+    adMediaType: body.adMediaType === 'video' ? 'video' : 'image',
+    adLinkUrl: String(body.adLinkUrl || '').trim(),
+    adAltText: String(body.adAltText || '').trim(),
+  };
+}
+
+router.get('/events', async (_req, res) => {
+  const list = await Event.find().sort({ createdAt: -1 });
+  res.json(list.map(serializeEvent));
+});
+
+router.post('/events', async (req, res) => {
+  try {
+    const data = parseEventBody(req.body);
+    if (!data.title) return res.status(400).json({ error: 'Title is required' });
+    if (!data.images.length) return res.status(400).json({ error: 'Add at least one image' });
+    const doc = await Event.create(data);
+    res.status(201).json(serializeEvent(doc));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/events/:id', async (req, res) => {
+  try {
+    const data = parseEventBody(req.body);
+    if (!data.title) return res.status(400).json({ error: 'Title is required' });
+    if (!data.images.length) return res.status(400).json({ error: 'Add at least one image' });
+    const doc = await Event.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
+    if (!doc) return res.status(404).json({ error: 'Event not found' });
+    res.json(serializeEvent(doc));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/events/:id', async (req, res) => {
+  const doc = await Event.findByIdAndDelete(req.params.id);
+  if (!doc) return res.status(404).json({ error: 'Event not found' });
   res.json({ ok: true });
 });
 

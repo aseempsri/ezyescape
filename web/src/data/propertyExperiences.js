@@ -9,6 +9,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Holi in the Hills',
     desc: 'Celebrate the festival of colours with host families — gulal, drums, and laughter echoing across the ridges.',
     tag: 'Festival',
+    date: '14 Mar 2025',
     img: assetUrl('images/experiences/holi-in-the-hills.png'),
   },
   {
@@ -17,6 +18,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Diwali at the Homestay',
     desc: 'Diya-lit courtyards, sweets shared at one table, and mountain nights glowing softer than the city.',
     tag: 'Festival',
+    date: '31 Oct 2024',
     img: assetUrl('images/experiences/diwali-at-the-homestay.png'),
   },
   {
@@ -25,6 +27,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Regional Festivals',
     desc: 'Join village fairs, temple processions and seasonal celebrations that locals mark on the calendar — not tourists.',
     tag: 'Culture',
+    date: '18 Aug 2024',
     img: assetUrl('images/experiences/regional-festivals.png'),
   },
   {
@@ -33,6 +36,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Group Therapy Sessions',
     desc: 'Guided circles for stillness and honest conversation — held outdoors, with mountains as the quiet backdrop.',
     tag: 'Wellness',
+    date: '8 Jun 2025',
     img: assetUrl('images/experiences/group-therapy-sessions.png'),
   },
   {
@@ -41,6 +45,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Sunrise Yoga Circles',
     desc: 'Slow stretches and breathwork on the lawn or ridge as the valley wakes — open to solo travellers and small groups.',
     tag: 'Wellness',
+    date: '3 May 2025',
     img: assetUrl('images/experiences/sunrise-yoga-circles.png'),
   },
   {
@@ -49,6 +54,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Bonfire Story Nights',
     desc: 'Hosts and guests gather around the fire — folk tales, songs, and warm cups that stretch late into the cold.',
     tag: 'Evening',
+    date: '18 Jan 2025',
     img: assetUrl('images/experiences/bonfire-story-nights.png'),
   },
   {
@@ -57,6 +63,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Folk Music Evenings',
     desc: 'Local musicians, mountain instruments and shared rhythms — evenings that feel like a village living room.',
     tag: 'Music',
+    date: '7 Dec 2024',
     img: assetUrl('images/experiences/folk-music-evenings.png'),
   },
   {
@@ -65,6 +72,7 @@ export const PROPERTY_EXPERIENCES = [
     title: 'Harvest Celebrations',
     desc: 'Seasonal gatherings when the fields give back — communal meals, gratitude, and hands-on farm moments.',
     tag: 'Seasonal',
+    date: '22 Sep 2024',
     img: assetUrl('images/experiences/harvest-celebrations.png'),
   },
 ];

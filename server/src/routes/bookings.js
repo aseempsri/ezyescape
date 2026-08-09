@@ -18,16 +18,47 @@ router.get('/', requireAuth, async (req, res) => {
 
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { stayId, nights, guests, checkIn, coinsToRedeem = 0 } = req.body;
+    const {
+      stayId,
+      nights,
+      guests,
+      adults,
+      children,
+      checkIn,
+      coinsToRedeem = 0,
+      bookingMode = 'entire',
+      rooms: roomsRequested,
+      extraMattress = false,
+    } = req.body;
 
     const stay = await Stay.findById(stayId);
     if (!stay || !stay.active) {
       return res.status(400).json({ error: 'Invalid stay' });
     }
-    const pricePerNight = computeFinalPrice(stay);
+    const entirePerNight = computeFinalPrice(stay);
+    const stayRooms = Math.max(1, Number(stay.rooms) || 1);
+    const perRoomRate = Math.max(1, Math.round(entirePerNight / stayRooms));
+    const mode = bookingMode === 'room' ? 'room' : 'entire';
 
     const numNights = Math.max(1, Number(nights) || 1);
-    const numGuests = Math.max(1, Number(guests) || 1);
+    const numRooms =
+      mode === 'room'
+        ? Math.min(stayRooms, Math.max(1, Number(roomsRequested) || 1))
+        : stayRooms;
+
+    const maxAdults = 2 * numRooms;
+    const maxChildren = 1 * numRooms;
+    const numAdults = Math.min(maxAdults, Math.max(1, Number(adults) || Number(guests) || 1));
+    const numChildren = Math.min(maxChildren, Math.max(0, Number(children) || 0));
+    const numGuests = numAdults + numChildren;
+
+    if (numAdults > maxAdults) {
+      return res.status(400).json({ error: `Max ${maxAdults} adults for ${numRooms} room(s)` });
+    }
+    if (numChildren > maxChildren) {
+      return res.status(400).json({ error: `Max ${maxChildren} child(ren) for ${numRooms} room(s)` });
+    }
+
     const checkInDate = new Date(checkIn);
     if (Number.isNaN(checkInDate.getTime())) {
       return res.status(400).json({ error: 'Invalid check-in date' });
@@ -36,6 +67,7 @@ router.post('/', requireAuth, async (req, res) => {
     const checkOutDate = new Date(checkInDate);
     checkOutDate.setDate(checkOutDate.getDate() + numNights);
 
+    const pricePerNight = mode === 'room' ? perRoomRate * numRooms : entirePerNight;
     const subtotal = pricePerNight * numNights;
 
     // Remove any expired coins before offering them for redemption.
@@ -53,7 +85,13 @@ router.post('/', requireAuth, async (req, res) => {
       stayTitle: stay.title,
       nights: numNights,
       guests: numGuests,
+      adults: numAdults,
+      children: numChildren,
+      rooms: numRooms,
+      bookingMode: mode,
+      extraMattress: !!extraMattress,
       pricePerNight,
+      pricePerRoom: perRoomRate,
       subtotal,
       coinsRedeemed: redeemAmount,
       coinsEarned: BOOKING_REWARD,

@@ -1,13 +1,16 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import Stay from '../models/Stay.js';
+import Event from '../models/Event.js';
 import { serializeStay } from '../utils/stayPricing.js';
+import { serializeEvent, findActiveEvent } from './events.js';
 import { absoluteUrl, siteOrigin } from '../utils/siteUrl.js';
 import { SEO_PAGES } from '../utils/seoPages.js';
 import {
   staticPageSeoHtml,
   staySeoHtml,
   staysIndexSeoHtml,
+  eventSeoHtml,
 } from '../utils/seoHtml.js';
 
 const router = Router();
@@ -61,6 +64,7 @@ router.get('/sitemap.xml', async (_req, res) => {
   try {
     const origin = siteOrigin().replace(/\/+$/, '');
     const stays = await Stay.find({ active: true }).select('slug updatedAt createdAt title').sort({ createdAt: 1 });
+    const events = await Event.find({ active: true }).select('slug updatedAt createdAt title').sort({ createdAt: -1 });
 
     const urls = [];
 
@@ -79,6 +83,17 @@ router.get('/sitemap.xml', async (_req, res) => {
         loc: `${origin}/stays/${encodeURIComponent(slug)}`,
         changefreq: 'weekly',
         priority: 0.9,
+        lastmod,
+      });
+    }
+
+    for (const event of events) {
+      const slug = event.slug || String(event._id);
+      const lastmod = (event.updatedAt || event.createdAt || new Date()).toISOString().slice(0, 10);
+      urls.push({
+        loc: `${origin}/experiences/${encodeURIComponent(slug)}`,
+        changefreq: 'weekly',
+        priority: 0.8,
         lastmod,
       });
     }
@@ -129,6 +144,15 @@ export async function handleStaySeo(req, res, idOrSlug) {
     return res.status(404).type('html').send('<!doctype html><title>Stay not found</title><p>Stay not found.</p>');
   }
   return sendHtml(res, staySeoHtml(req, serializeStay(stay)));
+}
+
+/** Crawler HTML for a single experience/event (OG thumbnail + text for WhatsApp etc.). */
+export async function handleEventSeo(req, res, idOrSlug) {
+  const doc = await findActiveEvent(idOrSlug);
+  if (!doc) {
+    return res.status(404).type('html').send('<!doctype html><title>Event not found</title><p>Event not found.</p>');
+  }
+  return sendHtml(res, eventSeoHtml(req, serializeEvent(doc)));
 }
 
 export default router;

@@ -9,6 +9,7 @@ import PostcardsPage from './components/PostcardsPage.jsx';
 import ShopPage from './components/ShopPage.jsx';
 import ContactPage from './components/ContactPage.jsx';
 import ExperiencesPage from './components/ExperiencesPage.jsx';
+import EventDetailPage from './components/EventDetailPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 
@@ -27,6 +28,7 @@ const postcardMatch = path.match(/^\/postcards\/([^/]+)$/) || path.match(/^\/sto
 const isPostcards = path === '/postcards' || path === '/stories';
 const isShop = path === '/shop';
 const isContact = path === '/contact';
+const experienceMatch = path.match(/^\/experiences\/([^/]+)$/);
 const isExperiences = path === '/experiences';
 const isProfile = path === '/profile';
 
@@ -43,6 +45,7 @@ else if (postcardMatch) page = wrap(<PostcardsPage focusId={decodeURIComponent(p
 else if (isPostcards) page = wrap(<PostcardsPage />);
 else if (isShop) page = wrap(<ShopPage />);
 else if (isContact) page = wrap(<ContactPage />);
+else if (experienceMatch) page = wrap(<EventDetailPage idOrSlug={decodeURIComponent(experienceMatch[1])} />);
 else if (isExperiences) page = wrap(<ExperiencesPage />);
 else if (isProfile) page = wrap(<ProfilePage />);
 else page = wrap(<App />);

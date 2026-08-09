@@ -63,7 +63,7 @@ function buildEmail({ name, coins, expiresAt, when }) {
       <a href="${process.env.FRONTEND_URL || 'https://aseempsri.github.io/ezyescape/'}"
          style="display:inline-block;margin-top:8px;background:#F5A623;color:#0a1420;font-weight:700;
                 text-decoration:none;padding:12px 22px;border-radius:999px;font-size:14px;">
-        Book a stay →
+        Book a stay
       </a>
       <p style="margin:22px 0 0;font-size:12px;color:#8a97a6;">— Ezy Escape · Curated mountain homestays</p>
     </div>

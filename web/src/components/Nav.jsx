@@ -136,7 +136,7 @@ export default function Nav() {
             }
           }}
         >
-          Back to home →
+          Back to home
         </a>
       </div>
     </>
