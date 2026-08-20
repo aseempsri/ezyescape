@@ -303,6 +303,7 @@ export default function App() {
             </div>
           </div>
         </div>
+        <AdSlot adId="home-ad2" />
       </section>
 
       <PostcardsSection />

@@ -4,6 +4,7 @@ import HomePostcardStage from './HomePostcardStage';
 import AddPostcardModal from './AddPostcardModal';
 import { fetchPostcards } from '../lib/api';
 import { postcardsPath } from '../utils/paths';
+import AdSlot from './AdSlot';
 import '../styles/postcards.css';
 
 export default function PostcardsSection() {
@@ -69,6 +70,7 @@ export default function PostcardsSection() {
           </a>
         </div>
       </div>
+      <AdSlot adId="home-ad3" />
 
       <AddPostcardModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </section>
