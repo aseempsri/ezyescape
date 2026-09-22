@@ -911,3 +911,91 @@
     height: 70px;
   }
 }
+
+/* ─── Heartfelt Pricing ─── */
+.hf-price {
+  margin: 0;
+}
+.hf-price-hook {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c47d0a;
+}
+.hf-price-row {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+}
+.hf-price-row strong {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #1c2a3a;
+  letter-spacing: -0.02em;
+}
+.hf-price-plus {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(28, 42, 58, 0.35);
+}
+.hf-price-tip {
+  font-style: normal;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #c47d0a;
+}
+.hf-price-unit {
+  font-size: 0.82rem;
+  color: rgba(28, 42, 58, 0.5);
+}
+.hf-price-note {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: rgba(28, 42, 58, 0.55);
+}
+.hf-price--compact .hf-price-row strong {
+  font-size: 1.05rem;
+}
+.hf-price--compact .hf-price-tip {
+  font-size: 1rem;
+}
+.hf-price--compact .hf-price-note {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hf-price-note-tip {
+  color: #c47d0a;
+}
+
+.stay-hero-hf .hf-price-row strong {
+  color: #1c2a3a;
+}
+.stay-hero-hf .hf-price-plus,
+.stay-hero-hf .hf-price-unit,
+.stay-hero-hf .hf-price-note {
+  color: rgba(28, 42, 58, 0.55);
+}
+
+.stay-book-price-wrap {
+  margin-top: 18px;
+}
+.stay-book-hf-blurb {
+  margin: 10px 0 0;
+  max-width: 36rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: rgba(28, 42, 58, 0.68);
+}
+.stay-book-room-rate {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  color: rgba(28, 42, 58, 0.55);
+}

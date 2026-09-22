@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ADULTS_PER_ROOM = 2;
 const CHILDREN_PER_ROOM = 1;
+const MAX_REDEEM_PER_BOOKING = 100;
 
 function tomorrowIso() {
   const d = new Date();
@@ -58,7 +59,10 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
   const nightlyTotal = bookingMode === 'room' ? perRoomRate * roomsBooked : entirePerNight;
 
   const subtotal = useMemo(() => nightlyTotal * nights, [nightlyTotal, nights]);
-  const maxRedeem = useMemo(() => Math.min(user?.ezyCoins ?? 0, subtotal), [user, subtotal]);
+  const maxRedeem = useMemo(
+    () => Math.min(user?.ezyCoins ?? 0, subtotal, MAX_REDEEM_PER_BOOKING),
+    [user, subtotal],
+  );
   const amountPayable = subtotal - coinsToRedeem;
 
   useEffect(() => {
@@ -269,7 +273,9 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
           <div className="booking-redeem">
             <div className="booking-redeem-head">
               <span>Redeem ezy coins</span>
-              <span className="booking-coin-balance">{user.ezyCoins} available</span>
+              <span className="booking-coin-balance">
+                {user.ezyCoins} available · max {MAX_REDEEM_PER_BOOKING}/booking
+              </span>
             </div>
             <input
               type="range"

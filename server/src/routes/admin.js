@@ -75,6 +75,7 @@ function parseStayBody(body) {
     guests: Math.max(1, Number(body.guests) || 1),
     rooms: Math.max(1, Number(body.rooms) || 1),
     price: Math.max(0, Number(body.price) || 0),
+    experienceTip: Math.max(0, Number(body.experienceTip) || 0),
     discountType: ['none', 'percent', 'flat'].includes(body.discountType) ? body.discountType : 'none',
     discountValue: Math.max(0, Number(body.discountValue) || 0),
     description: body.description?.trim() || '',

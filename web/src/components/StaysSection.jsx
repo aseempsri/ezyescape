@@ -8,6 +8,7 @@ import {
   normalizeApiStay,
   stayMatchesFilter,
 } from '../utils/stays';
+import HeartfeltPrice from './HeartfeltPrice';
 
 const MOBILE_MQ = '(max-width: 768px)';
 const TOUCH_RESUME_MS = 3000;
@@ -71,6 +72,7 @@ function StayCard({ stay, onOpen }) {
       <div className="stay-body">
         <div className="stay-host">{stay.location}</div>
         <div className="stay-name" title={stay.title}>{stay.title}</div>
+        <HeartfeltPrice stay={stay} compact className="stay-card-hf" />
         <div className="stay-footer">
           {stay.guest ? (
             <span className="stay-capacity">Hosts up to <em>{stay.guest}</em></span>

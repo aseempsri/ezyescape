@@ -1,4 +1,5 @@
 import { STAYS } from '../data/stays';
+import assetUrl from './assetUrl';
 
 export const STAY_FILTERS = [
   { id: 'all', label: 'All' },
@@ -9,8 +10,26 @@ export const STAY_FILTERS = [
   { id: 'workation', label: 'Remote Work' },
 ];
 
-export function normalizeApiStay(s) {
+export function resolveStayImage(url) {
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+  return assetUrl(String(url).replace(/^\//, ''));
+}
+
+function withResolvedImages(stay) {
+  const images = (stay.images || []).map(resolveStayImage);
   return {
+    ...stay,
+    image: resolveStayImage(stay.image) || images[0] || '',
+    images,
+    storyImage: resolveStayImage(stay.storyImage),
+    hostImage: resolveStayImage(stay.hostImage),
+    videos: stay.videos || [],
+  };
+}
+
+export function normalizeApiStay(s) {
+  return withResolvedImages({
     id: s.id,
     slug: s.slug || s.id,
     cat: s.cat || '',
@@ -18,6 +37,7 @@ export function normalizeApiStay(s) {
     title: s.title,
     disPrice: s.hasDiscount ? s.price : null,
     price: s.finalPrice,
+    experienceTip: Number(s.experienceTip) || 0,
     guest: s.guests,
     rooms: s.rooms,
     image: s.image,
@@ -32,10 +52,14 @@ export function normalizeApiStay(s) {
     directions: s.directions || '',
     mapQuery: s.mapQuery || '',
     highlights: s.highlights || [],
-  };
+  });
 }
 
-export const FALLBACK_STAYS = STAYS.map((s) => ({ ...s, disPrice: s.disPrice ?? null }));
+export const FALLBACK_STAYS = STAYS.map((s) => withResolvedImages({
+  ...s,
+  disPrice: s.disPrice ?? null,
+  experienceTip: Number(s.experienceTip) || 0,
+}));
 
 /** Tokenize category tags for reliable filter matching. */
 export function stayCatTokens(cat) {

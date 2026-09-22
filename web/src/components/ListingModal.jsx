@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import BookingForm from './BookingForm';
+import HeartfeltPrice from './HeartfeltPrice';
 
 function buildMedia(stay) {
   if (!stay) return [];
@@ -103,11 +104,7 @@ export default function ListingModal({ stay, open, onClose, onBookingSuccess }) 
                 </div>
               )}
               {stay.best && <p className="listing-best">Best for: {stay.best}</p>}
-              <div className="listing-price">
-                {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-                <strong>₹{stay.price}</strong>
-                <span className="listing-price-unit">/ night</span>
-              </div>
+              <HeartfeltPrice stay={stay} className="listing-hf" />
             </div>
 
             <div className="listing-book">

@@ -26,6 +26,7 @@ export function serializeStay(stay) {
     guests: stay.guests,
     rooms: stay.rooms,
     price: stay.price,
+    experienceTip: Number(stay.experienceTip) || 0,
     discountType: stay.discountType,
     discountValue: stay.discountValue,
     finalPrice,

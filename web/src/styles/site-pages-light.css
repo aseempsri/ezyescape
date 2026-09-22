@@ -284,8 +284,14 @@
 .site-page .hs-tile-body h2,
 .site-page .hs-tile-body h3,
 .site-page .hs-feature-title,
-.site-page .hs-tile-price strong {
+.site-page .hs-tile-price strong,
+.site-page .hs-tile .hf-price-row strong {
   color: var(--sp-ink);
+}
+
+.site-page .hs-tile .hf-price-tip,
+.site-page .hs-tile .hf-price-note-tip {
+  color: #c47d0a;
 }
 
 .site-page .hs-tile-meta,
@@ -294,7 +300,10 @@
 .site-page .hs-footnote,
 .site-page .hs-tile-best,
 .site-page .hs-tile-price span,
-.site-page .hs-tile-price del {
+.site-page .hs-tile-price del,
+.site-page .hs-tile .hf-price-unit,
+.site-page .hs-tile .hf-price-note,
+.site-page .hs-tile .hf-price-plus {
   color: var(--sp-muted);
 }
 
@@ -530,8 +539,14 @@
     opacity: 0.64;
   }
 
+  .site-page footer .footer-bottom .footer-socials {
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .site-page footer .footer-bottom .ig-btn,
   .site-page footer .footer-bottom .wa-btn {
-    display: none;
+    display: flex;
   }
 }
 

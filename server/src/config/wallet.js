@@ -1,5 +1,7 @@
 export const WELCOME_BONUS = 500;
 export const BOOKING_REWARD = 500;
+/** Max ezy coins a guest can redeem toward a single booking. */
+export const MAX_REDEEM_PER_BOOKING = 100;
 
 // Ezy coins expire this many days after they are earned.
 export const COIN_EXPIRY_DAYS = 30;

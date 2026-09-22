@@ -13,6 +13,7 @@ import {
 import { goStay, homeSectionPath, postcardsPath } from '../utils/paths';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import AdSlot from './AdSlot';
+import HeartfeltPrice from './HeartfeltPrice';
 import '../styles/homestays-page.css';
 
 function StayTile({ stay }) {
@@ -45,11 +46,7 @@ function StayTile({ stay }) {
       <div className="hs-tile-body">
         <p className="hs-tile-loc">{stay.location}</p>
         <h2>{stay.title}</h2>
-        <p className="hs-tile-price">
-          {stay.disPrice ? <del>₹ {stay.disPrice}</del> : null}
-          <strong>₹ {stay.price}</strong>
-          <span>/ night</span>
-        </p>
+        <HeartfeltPrice stay={stay} compact className="hs-tile-hf" />
         {stay.best ? <p className="hs-tile-best">{stay.best}</p> : null}
         <div className="hs-tile-footer">
           {stay.guest ? (

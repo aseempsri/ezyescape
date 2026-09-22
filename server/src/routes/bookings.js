@@ -5,7 +5,7 @@ import Stay from '../models/Stay.js';
 import { requireAuth } from '../middleware/auth.js';
 import { computeFinalPrice } from '../utils/stayPricing.js';
 import { creditBookingReward, redeemCoins, syncCoins } from '../services/wallet.js';
-import { BOOKING_REWARD } from '../config/wallet.js';
+import { BOOKING_REWARD, MAX_REDEEM_PER_BOOKING } from '../config/wallet.js';
 
 const router = Router();
 
@@ -75,7 +75,7 @@ router.post('/', requireAuth, async (req, res) => {
     const user = await User.findById(req.user.sub);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    const maxRedeemable = Math.min(user.ezyCoins, subtotal);
+    const maxRedeemable = Math.min(user.ezyCoins, subtotal, MAX_REDEEM_PER_BOOKING);
     const redeemAmount = Math.min(Math.max(0, Number(coinsToRedeem) || 0), maxRedeemable);
     const amountPayable = subtotal - redeemAmount;
 

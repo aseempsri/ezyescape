@@ -81,7 +81,7 @@ export default function WalletModal({ open, onClose }) {
             <strong>+500</strong> on every booking
           </div>
           <div className="wallet-rule">
-            Redeem on your <strong>next booking</strong>
+            Redeem up to <strong>100</strong> coins per booking
           </div>
           <div className="wallet-rule">
             Coins <strong>expire 30 days</strong> after earning

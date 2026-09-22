@@ -341,6 +341,26 @@
   flex-wrap: wrap;
 }
 
+.hs-tile-hf {
+  margin-top: 6px;
+}
+.hs-tile .hf-price-row strong {
+  color: #fff;
+  font-size: 1.05rem;
+}
+.hs-tile .hf-price-tip {
+  color: #f0c14b;
+  font-size: 1rem;
+}
+.hs-tile .hf-price-plus,
+.hs-tile .hf-price-unit,
+.hs-tile .hf-price-note {
+  color: rgba(255, 255, 255, 0.5);
+}
+.hs-tile .hf-price-note-tip {
+  color: #f0c14b;
+}
+
 .hs-tile-price del {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.88rem;

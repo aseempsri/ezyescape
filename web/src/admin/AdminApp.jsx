@@ -39,6 +39,7 @@ const EMPTY_STAY = {
   guests: 2,
   rooms: 1,
   price: 0,
+  experienceTip: 0,
   discountType: 'none',
   discountValue: 0,
   description: '',
@@ -263,6 +264,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         guests: Number(form.guests),
         rooms: Number(form.rooms),
         price: Number(form.price),
+        experienceTip: Number(form.experienceTip) || 0,
         discountValue: Number(form.discountValue),
         highlights: (Array.isArray(form.highlights) ? form.highlights : String(form.highlights || '').split('\n'))
           .map((s) => String(s).trim())
@@ -399,10 +401,14 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         </p>
       </FormSection>
 
-      <FormSection title="7 · Pricing & booking" blurb="Shown on the booking card. Guests can redeem ezy coins at checkout on the site.">
+      <FormSection title="7 · Pricing & booking" blurb="Heartfelt Pricing: charge the base fare; show an optional experience tip guests can leave if the stay moved them.">
         <label className="admin-field">
-          <span>Price / night (₹)</span>
+          <span>Base price / night (₹)</span>
           <input type="number" min={0} value={form.price} onChange={set('price')} />
+        </label>
+        <label className="admin-field">
+          <span>Experience tip / night (₹)</span>
+          <input type="number" min={0} value={form.experienceTip || 0} onChange={set('experienceTip')} />
         </label>
         <label className="admin-field">
           <span>Discount type</span>
@@ -422,11 +428,17 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
             disabled={form.discountType === 'none'}
           />
         </label>
-        <div className="admin-field admin-price-preview">
+        <div className="admin-field admin-price-preview admin-col-2">
           <span>Property page shows</span>
           <div>
             {finalPrice < Number(form.price) && <del>₹{Number(form.price)}</del>}{' '}
-            <strong>₹{finalPrice}</strong> <em>/night</em>
+            <strong>₹{finalPrice}</strong>
+            {Number(form.experienceTip) > 0 ? (
+              <>
+                {' '}+ <em>₹{Number(form.experienceTip)}</em> tip
+              </>
+            ) : null}
+            {' '}<em>/night</em>
           </div>
         </div>
       </FormSection>
@@ -1024,7 +1036,9 @@ function Dashboard({ onLogout }) {
                 </div>
                 <div className="admin-listing-meta">{s.location} · {s.guests} guests · {s.rooms} rooms</div>
                 <div className="admin-listing-price">
-                  {s.hasDiscount && <del>₹{s.price}</del>} <strong>₹{s.finalPrice}</strong> /night
+                  {s.hasDiscount && <del>₹{s.price}</del>} <strong>₹{s.finalPrice}</strong>
+                  {s.experienceTip > 0 ? <> + ₹{s.experienceTip} tip</> : null}
+                  {' '}/night
                   <span className="admin-listing-media">
                     {(s.images || []).length} img · {(s.videos || []).length} vid
                     {(s.highlights || []).length ? ` · ${s.highlights.length} moments` : ''}

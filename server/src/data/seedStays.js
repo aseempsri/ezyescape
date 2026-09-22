@@ -18,7 +18,6 @@ export function splitStoryHosts(text) {
     .filter(Boolean);
   if (!paras.length) return { story: '', hosts: '' };
 
-  // Avoid matching verbs like "still hosts village festivals".
   const hostIdx = paras.findIndex((p) =>
     /\b(your|the|our)\s+hosts?\b|\bhost family\b|welcomed by/i.test(p)
   );
@@ -44,143 +43,211 @@ export function splitStoryHosts(text) {
   return { story: paras[0], hosts: '' };
 }
 
+const img = (folder, file) => `/images/stays/${folder}/${file}`;
+
 const SEED = [
   {
-    title: 'The Kumaoni Family Home',
-    slug: 'kumaoni-family-home',
+    title: 'Aipan',
+    slug: 'aipan',
     location: 'Almora, Kumaon',
-    cat: 'quiet culture',
-    best: 'Couples · Writers · Slow Travellers',
-    guests: 4,
-    rooms: 3,
-    price: 4500,
-    discountType: 'flat',
-    discountValue: 1300,
-    description:
-      'A lived-in Kumaoni home perched above Almora, where mornings begin with mountain light and evenings settle into slow conversation around the hearth.',
-    story:
-      'This house has belonged to the same family for three generations. The wooden floors remember wedding songs; the courtyard still hosts village festivals. When you stay here, you are not checking into a room — you are welcomed into a way of living that measures days by sunrise tea, forest walks, and home-cooked thalis shared at one long table.',
-    hosts:
-      'Your hosts, Meera and Harish, know every trail above town and every story behind the temples in the valley. Ask them about the rhododendron season, or simply sit on the balcony and watch the clouds pour over the ridges.',
-    directions:
-      'Fly or train into Kathgodam, then drive ~3.5 hours via Bhowali–Almora. The last 4 km is a quiet hill road; a private transfer can be arranged from Kathgodam or Almora bus stand. Parking is available at the house.',
-    highlights: [
-      'Sunrise balcony with Himalayan views',
-      'Home-cooked Kumaoni meals',
-      'Village walks with your hosts',
-      'Quiet workspace for writers',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80',
-    ],
-    storyImage: '/images/experiences/village-kitchen.jpg',
-    hostImage: '/images/experiences/local-culture.jpg',
-    videos: [],
-  },
-  {
-    title: 'The Quiet Pine Retreat',
-    slug: 'quiet-pine-retreat',
-    location: 'Ranikhet, Kumaon',
-    cat: 'quiet forest',
-    best: 'Solo · Nature Lovers',
-    guests: 2,
-    rooms: 2,
-    price: 5200,
-    discountType: 'flat',
-    discountValue: 1400,
-    description:
-      'A secluded pine-forest cottage for travellers who want silence, soft light through the trees, and nights that belong to the stars.',
-    story:
-      'Built for two, this retreat sits deep enough in the pines that the only soundtrack is wind and birds. It was designed as a place to disconnect — no lobby chatter, no schedule, just a wood stove, a reading nook, and trails that start at the gate.',
-    hosts:
-      'Ideal if you are travelling solo or as a couple who wants the forest more than the town. Your host lives a short walk away and checks in gently: fresh bread in the morning, a thermos of chai for your hike, and advice on which ridge catches the best sunset.',
-    directions:
-      'Reach Ranikhet by road from Kathgodam (~3 hours) or Almora (~1.5 hours). From Ranikhet bazaar, follow signs toward Chaubatia; the cottage is 20 minutes up a forest lane. Shared taxis run to the junction; last-mile pickup can be arranged.',
-    highlights: [
-      'Deep pine forest setting',
-      'Ideal for digital detox',
-      'Private cottage for two',
-      'Guided forest walks on request',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80',
-    ],
-    storyImage: '/images/experiences/forest-walk.jpg',
-    hostImage: '/images/experiences/sunrise-tea.jpg',
-    videos: [],
-  },
-  {
-    title: 'The Family Valley Stay',
-    slug: 'family-valley-stay',
-    location: 'Nainital Hills',
-    cat: 'family accessible',
-    best: 'Families · Easy Access',
-    guests: 6,
-    rooms: 4,
-    price: 4800,
-    discountType: 'flat',
-    discountValue: 1300,
-    description:
-      'A spacious valley home with easy road access — built for families who want mountain air without a difficult last mile.',
-    story:
-      'Wide rooms, a lawn for kids to run, and a kitchen that never seems empty — this is the stay parents recommend to each other. You are close enough to Nainital for day trips, far enough that evenings feel like the hills again. Grandparents settle into the veranda chairs; teenagers claim the attic room with the best view.',
-    hosts:
-      'The hosts have raised their own children here and know how to pace a family holiday: a gentle morning hike, lunch at home, an afternoon at the lake, and early nights under warm blankets.',
-    directions:
-      'From Kathgodam, drive ~1.5 hours toward Nainital; the home is 25 minutes before the main lake road, on a paved village approach. Suitable for sedan and SUV. Private transfers available from the railway station.',
-    highlights: [
-      'Road-accessible for families',
-      'Lawn and outdoor play space',
-      'Four rooms for groups',
-      'Day trips to Nainital lake',
-    ],
-    images: [
-      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80',
-    ],
-    storyImage: '/images/experiences/farm-to-table.jpg',
-    hostImage: '/images/experiences/local-culture.jpg',
-    videos: [],
-  },
-  {
-    title: 'The Valley View Cottage',
-    slug: 'valley-view-cottage',
-    location: 'Kausani, Kumaon',
-    cat: 'quiet accessible workation',
-    best: 'Remote Workers · Couples',
+    cat: 'quiet culture accessible',
+    best: 'Couples · Culture lovers · Slow evenings',
     guests: 3,
-    rooms: 2,
-    price: 5500,
-    discountType: 'flat',
-    discountValue: 1300,
+    rooms: 1,
+    price: 1999,
+    experienceTip: 1299,
+    discountType: 'none',
+    discountValue: 0,
     description:
-      'A bright cottage overlooking long Kausani valleys — quiet enough to work, beautiful enough to forget the laptop.',
+      'Aipan is a mountain home with neon nights, forest windows, and a terrace that faces the hills — named for the folk art that still marks Kumaoni doorways.',
     story:
-      'Kausani is famous for its horizon of snow peaks, and this cottage faces that stretch of sky. Mornings are for coffee and email if you must; afternoons for the ridge walk; evenings for watching the mountains turn pink.',
+      'Evenings here often end around the grill under the Aipan Homestay light. Days open onto green ridges through the bedroom window. The house is simple, warm, and made for travellers who want a real Almora stay — not a hotel lobby.',
     hosts:
-      'Reliable enough connectivity for focused remote work, soft enough evenings that you will still feel like you escaped. The hosts keep the cottage stocked simply — fresh eggs, local honey, and a bookshelf that rewards slow reading.',
+      'Your hosts keep the home ready with local care: chai when you arrive, tips for quiet walks, and the kind of welcome that turns a booking into belonging.',
     directions:
-      'From Kathgodam, drive ~5–6 hours via Almora–Kausani. The cottage is 10 minutes from Kausani bazaar on a motorable road. Bus services reach Kausani; ask hosts for a pickup from the stand.',
+      'Reach Kathgodam by train or Pantnagar by air, then drive toward Almora. Private transfers can be arranged — ask us on WhatsApp when you book.',
     highlights: [
-      'Panoramic valley & peak views',
-      'Work-friendly quiet corners',
-      'Walkable to Kausani viewpoints',
-      'Local honey & farm produce',
+      'Neon courtyard evenings & BBQ nights',
+      'Forest-facing bedroom windows',
+      'Terrace seating with hill views',
+      'Heartfelt Pricing — Heart Price if the stay was good',
     ],
     images: [
-      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1400&q=80',
+      img('aipan', '01-cover.jpg'),
+      img('aipan', '02-bedroom.jpg'),
+      img('aipan', '03-exterior.jpg'),
+      img('aipan', '04-terrace.jpg'),
+      img('aipan', '05-view.jpg'),
+      img('aipan', '06-room.jpg'),
     ],
-    storyImage: '/images/experiences/sunrise-tea.jpg',
-    hostImage: '/images/experiences/farm-to-table.jpg',
+    storyImage: img('aipan', '04-terrace.jpg'),
+    hostImage: img('aipan', '02-bedroom.jpg'),
     videos: [],
+    mapQuery: 'Aipan Homestay, Almora, Uttarakhand',
   },
+  {
+    title: 'Gulmohar',
+    slug: 'gulmohar',
+    location: 'Almora, Kumaon',
+    cat: 'family quiet accessible',
+    best: 'Couples · Small families · Quiet weekends',
+    guests: 4,
+    rooms: 1,
+    price: 2199,
+    experienceTip: 1499,
+    discountType: 'none',
+    discountValue: 0,
+    description:
+      'Gulmohar is a bright hillside cottage with a loft, flower-edged porch, and a living room that feels like a mountain home — not a showroom.',
+    story:
+      'White walls, a red trim, mudha seats outside, and a loft upstairs for extra sleep space. Inside, wood floors and large windows pull the hillside into the room. Gulmohar is built for unhurried mornings and early nights.',
+    hosts:
+      'Hosts are a short call away — fresh recommendations for viewpoints, local food, and when the light is softest on the ridge.',
+    directions:
+      'Road-accessible from Almora. Share your arrival time and we will help with the last stretch and parking.',
+    highlights: [
+      'Hillside cottage with garden porch',
+      'Loft sleeping for flexible groups',
+      'Bright living room with valley light',
+      'Heartfelt Pricing — Heart Price if the stay was good',
+    ],
+    images: [
+      img('gulmohar', '01-cover.jpg'),
+      img('gulmohar', '02-living.jpg'),
+      img('gulmohar', '03-interior.jpg'),
+      img('gulmohar', '04-loft.jpg'),
+      img('gulmohar', '05-detail.jpg'),
+      img('gulmohar', '06-exterior.jpg'),
+    ],
+    storyImage: img('gulmohar', '02-living.jpg'),
+    hostImage: img('gulmohar', '04-loft.jpg'),
+    videos: [],
+    mapQuery: 'Gulmohar Homestay, Almora, Uttarakhand',
+  },
+  {
+    title: 'Sanjh',
+    slug: 'sanjh',
+    location: 'Almora, Kumaon',
+    cat: 'quiet accessible',
+    best: 'Couples · Friends · Calm getaways',
+    guests: 4,
+    rooms: 2,
+    price: 2499,
+    experienceTip: 1499,
+    discountType: 'none',
+    discountValue: 0,
+    description:
+      'Sanjh — evening in Hindi — is a calm two-room stay with soft light, modern baths, and spaces made for winding down after a day in the hills.',
+    story:
+      'Named for dusk, Sanjh is where the day slows. Clean rooms, a quiet lounge corner, and thoughtful finishes. Ideal when you want comfort without leaving the mountain mood behind.',
+    hosts:
+      'Your hosts help you plan golden-hour walks and simple dinners nearby — or stay in and let the evening do the work.',
+    directions:
+      'Easy road access from Almora town. We share exact pin and parking notes after confirmation.',
+    highlights: [
+      'Two comfortable guest rooms',
+      'Modern bathroom finishes',
+      'Quiet lounge corner for evenings',
+      'Heartfelt Pricing — Heart Price if the stay was good',
+    ],
+    images: [
+      img('sanjh', '01-cover.jpg'),
+      img('sanjh', '02-lounge.jpg'),
+      img('sanjh', '03-bath.jpg'),
+      img('sanjh', '04-room.jpg'),
+      img('sanjh', '05-room2.jpg'),
+      img('sanjh', '06-detail.jpg'),
+    ],
+    storyImage: img('sanjh', '02-lounge.jpg'),
+    hostImage: img('sanjh', '01-cover.jpg'),
+    videos: [],
+    mapQuery: 'Sanjh Homestay, Almora, Uttarakhand',
+  },
+  {
+    title: 'Virasat',
+    slug: 'virasat',
+    location: 'Almora, Kumaon',
+    cat: 'quiet culture accessible',
+    best: 'Budget travellers · Friends · First hill trips',
+    guests: 4,
+    rooms: 2,
+    price: 1499,
+    experienceTip: 999,
+    discountType: 'none',
+    discountValue: 0,
+    description:
+      'Virasat is our bold yellow-and-blue hillside home — two rooms, honest comfort, and the easiest Heartfelt Pricing entry into the mountains.',
+    story:
+      'Heritage in colour, not in fuss. Bright exterior stairs lead to simple, clean rooms with teal accents and wooden beds. Virasat is for travellers who want a real Almora base without overpaying for the night.',
+    hosts:
+      'Hosts greet you with practical hill tips — where to eat, which ridge for sunrise, and how to settle in without a checklist.',
+    directions:
+      'Motorable approach near Almora. We send the location pin and arrival notes on WhatsApp after you book.',
+    highlights: [
+      'Striking yellow & blue hillside home',
+      'Two private rooms',
+      'Best-value Heartfelt Pricing',
+      'Ideal first stay in Kumaon',
+    ],
+    images: [
+      img('virasat', '01-cover.jpg'),
+      img('virasat', '02-bedroom.jpg'),
+      img('virasat', '03-bedroom.jpg'),
+      img('virasat', '04-room2.jpg'),
+      img('virasat', '05-room2.jpg'),
+      img('virasat', '06-exterior.jpg'),
+    ],
+    storyImage: img('virasat', '06-exterior.jpg'),
+    hostImage: img('virasat', '02-bedroom.jpg'),
+    videos: [],
+    mapQuery: 'Virasat Homestay, Almora, Uttarakhand',
+  },
+  {
+    title: 'Virasat Suite',
+    slug: 'virasat-suite',
+    location: 'Almora, Kumaon',
+    cat: 'family quiet accessible',
+    best: 'Families · Longer stays · Extra space',
+    guests: 5,
+    rooms: 1,
+    price: 1999,
+    experienceTip: 1299,
+    discountType: 'none',
+    discountValue: 0,
+    description:
+      'Virasat Suite is the family wing of Virasat — more room to spread out, bold colour, and space for parents and kids to stay together comfortably.',
+    story:
+      'Drawn from the Family Suite at Virasat, this stay gives you a larger footprint: room to sleep, move, and settle in as a small family or a longer-stay couple who wants breathing room.',
+    hosts:
+      'Same warm Virasat hosts — extra help with family timing, early breakfasts, and quiet evenings after kids sleep.',
+    directions:
+      'Same hillside as Virasat. We confirm suite access and parking when your dates are locked.',
+    highlights: [
+      'Family-suite layout with more space',
+      'Bold Virasat colour story',
+      'Comfortable for small families',
+      'Heartfelt Pricing — Heart Price if the stay was good',
+    ],
+    images: [
+      img('virasat-suite', '01-cover.jpg'),
+      img('virasat-suite', '02-bedroom.jpg'),
+      img('virasat-suite', '03-space.jpg'),
+      img('virasat-suite', '04-detail.jpg'),
+      img('virasat-suite', '05-room.jpg'),
+      img('virasat-suite', '06-view.jpg'),
+    ],
+    storyImage: img('virasat-suite', '03-space.jpg'),
+    hostImage: img('virasat-suite', '02-bedroom.jpg'),
+    videos: [],
+    mapQuery: 'Virasat Suite Homestay, Almora, Uttarakhand',
+  },
+];
+
+const LEGACY_PLACEHOLDER_SLUGS = [
+  'kumaoni-family-home',
+  'quiet-pine-retreat',
+  'family-valley-stay',
+  'valley-view-cottage',
 ];
 
 export async function seedStaysIfEmpty() {
@@ -189,13 +256,49 @@ export async function seedStaysIfEmpty() {
     await Stay.insertMany(SEED);
     console.log(`Seeded ${SEED.length} stays`);
   }
+  await syncCanonicalHomestays();
   await backfillStayDetails();
+}
+
+/** Upsert the real Almora catalogue and retire old Unsplash placeholders. */
+export async function syncCanonicalHomestays() {
+  for (const seed of SEED) {
+    await Stay.findOneAndUpdate(
+      { slug: seed.slug },
+      { $set: { ...seed, active: true } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+  }
+
+  const deactivated = await Stay.updateMany(
+    {
+      $or: [
+        { slug: { $in: LEGACY_PLACEHOLDER_SLUGS } },
+        {
+          title: {
+            $in: [
+              'The Kumaoni Family Home',
+              'The Quiet Pine Retreat',
+              'The Family Valley Stay',
+              'The Valley View Cottage',
+            ],
+          },
+        },
+      ],
+    },
+    { $set: { active: false } }
+  );
+
+  if (deactivated.modifiedCount) {
+    console.log(`Deactivated ${deactivated.modifiedCount} legacy placeholder stay(s)`);
+  }
+  console.log(`Synced ${SEED.length} canonical homestays`);
 }
 
 /** Fill slug / story / hosts / directions on existing listings that are missing them. */
 export async function backfillStayDetails() {
   for (const seed of SEED) {
-    const stay = await Stay.findOne({ title: seed.title });
+    const stay = await Stay.findOne({ slug: seed.slug });
     if (!stay) continue;
 
     let changed = false;
@@ -208,33 +311,10 @@ export async function backfillStayDetails() {
       changed = true;
     }
 
-    // Always align seeded listings to separate story + hosts when seed has both.
     if (seed.story && seed.hosts) {
-      const storyLooksLikeHosts =
-        /\b(your|the|our)\s+hosts?\b/i.test(stay.story || '')
-        && !(stay.story || '').includes(seed.story.slice(0, 48));
-      const hostsLooksLikeStory =
-        stay.hosts
-        && seed.story
-        && (stay.hosts || '').includes(seed.story.slice(0, 48));
       const missingHosts = !stay.hosts;
-      const combinedInStory =
-        stay.story
-        && seed.hosts
-        && stay.story.includes(seed.hosts.slice(0, 40))
-        && stay.story.includes(seed.story.slice(0, 40));
-
-      if (missingHosts || storyLooksLikeHosts || hostsLooksLikeStory || combinedInStory) {
+      if (missingHosts) {
         stay.story = seed.story;
-        stay.hosts = seed.hosts;
-        changed = true;
-      }
-    } else {
-      if (!stay.story && seed.story) {
-        stay.story = seed.story;
-        changed = true;
-      }
-      if (!stay.hosts && seed.hosts) {
         stay.hosts = seed.hosts;
         changed = true;
       }
@@ -252,25 +332,19 @@ export async function backfillStayDetails() {
       stay.images = seed.images;
       changed = true;
     }
-    if (!stay.storyImage && seed.storyImage) {
-      stay.storyImage = seed.storyImage;
-      changed = true;
-    }
-    if (!stay.hostImage && seed.hostImage) {
-      stay.hostImage = seed.hostImage;
+    if (stay.experienceTip == null && seed.experienceTip != null) {
+      stay.experienceTip = seed.experienceTip;
       changed = true;
     }
     if (changed) await stay.save();
   }
 
-  // Any other stays without a slug get one from their title.
   const missingSlug = await Stay.find({ $or: [{ slug: { $exists: false } }, { slug: '' }] });
   for (const stay of missingSlug) {
     stay.slug = slugify(stay.title) || String(stay._id);
     await stay.save();
   }
 
-  // Generic migration for non-seed stays with story but no hosts.
   const needsHosts = await Stay.find({
     $or: [{ hosts: { $exists: false } }, { hosts: '' }],
     story: { $ne: '' },

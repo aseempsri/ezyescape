@@ -779,17 +779,18 @@
   .footer-bottom {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     gap: 14px;
     text-align: center;
   }
-  .footer-bottom .f-copy,
-  .footer-bottom .wa-btn {
-    grid-column: auto;
-    justify-self: auto;
+  .footer-bottom .footer-socials {
+    justify-content: center;
+    flex-wrap: nowrap;
   }
+  .footer-bottom .ig-btn,
   .footer-bottom .wa-btn {
-    display: none;
+    display: flex;
+    padding: 10px 16px;
   }
 
   /* ─── BUTTONS ─── */

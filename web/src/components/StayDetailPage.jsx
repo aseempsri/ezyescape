@@ -4,10 +4,13 @@ import BookingForm from './BookingForm';
 import { BookingSuccessToast } from './BookingFlow';
 import { fetchStay } from '../lib/api';
 import { STAYS } from '../data/stays';
+import { FALLBACK_STAYS } from '../utils/stays';
 import { appPath, staysIndexPath } from '../utils/paths';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import assetUrl from '../utils/assetUrl';
 import { lodgingJsonLd } from './SeoHead';
+import HeartfeltPrice from './HeartfeltPrice';
+import { HEARTFELT_BLURB, HEARTFELT_HOOK } from '../utils/stayPricingDisplay';
 import '../styles/stay-page.css';
 
 const STORY_FALLBACK = assetUrl('images/experiences/village-kitchen.jpg');
@@ -38,6 +41,7 @@ function normalizeApiStay(s) {
     title: s.title,
     disPrice: s.hasDiscount ? s.price : null,
     price: s.finalPrice,
+    experienceTip: Number(s.experienceTip) || 0,
     guest: s.guests,
     rooms: s.rooms,
     image: s.image,
@@ -57,7 +61,8 @@ function normalizeApiStay(s) {
 
 function fallbackStay(idOrSlug) {
   const key = String(idOrSlug);
-  const found = STAYS.find((s) => s.slug === key || String(s.id) === key);
+  const found = FALLBACK_STAYS.find((s) => s.slug === key || String(s.id) === key)
+    || STAYS.find((s) => s.slug === key || String(s.id) === key);
   return found ? { ...found } : null;
 }
 
@@ -227,11 +232,7 @@ export default function StayDetailPage({ idOrSlug }) {
                 </div>
               )}
               <div className="stay-cinematic-foot">
-                <div className="stay-hero-price">
-                  {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-                  <strong>₹{stay.price}</strong>
-                  <span>/ night</span>
-                </div>
+                <HeartfeltPrice stay={stay} className="stay-hero-hf" />
                 <div className="stay-hero-actions">
                   <a href="#book" className="btn btn-amber">Book this stay</a>
                   <a
@@ -389,16 +390,17 @@ export default function StayDetailPage({ idOrSlug }) {
                 <p className="stay-booking-lead">
                   Choose your dates below. A curator will confirm availability and help shape the rest of your trip.
                 </p>
-                <div className="stay-book-price">
-                  {stay.disPrice ? <del>₹{stay.disPrice}</del> : null}
-                  <strong>₹{stay.price}</strong>
-                  <span>/night</span>
+                <div className="stay-book-price-wrap">
+                  <HeartfeltPrice stay={stay} className="stay-book-hf" />
+                  {stay.experienceTip > 0 ? (
+                    <p className="stay-book-hf-blurb">
+                      <strong>{HEARTFELT_HOOK}.</strong> {HEARTFELT_BLURB}
+                    </p>
+                  ) : null}
                   {stay.rooms > 1 ? (
-                    <>
-                      <span className="stay-book-price-sep">·</span>
-                      <strong>₹{Math.max(1, Math.round(stay.price / stay.rooms))}</strong>
-                      <span>/room</span>
-                    </>
+                    <p className="stay-book-room-rate">
+                      About <strong>₹{Math.max(1, Math.round(stay.price / stay.rooms)).toLocaleString('en-IN')}</strong> / room / night
+                    </p>
                   ) : null}
                 </div>
               </div>

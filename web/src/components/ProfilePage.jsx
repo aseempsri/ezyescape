@@ -276,7 +276,7 @@ export default function ProfilePage() {
               <div className="pf-rules">
                 <div>+{wallet?.rules?.welcomeBonus ?? 500} welcome bonus</div>
                 <div>+{wallet?.rules?.bookingReward ?? 500} per booking</div>
-                <div>Redeem on your next stay</div>
+                <div>Max {wallet?.rules?.maxRedeemPerBooking ?? 100} coins per booking</div>
                 <div>Expire 30 days after earning</div>
               </div>
 
