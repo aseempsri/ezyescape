@@ -24,7 +24,23 @@ const bookingSchema = new mongoose.Schema(
     amountPayable: { type: Number, required: true, min: 0 },
     checkIn: { type: Date, required: true },
     checkOut: { type: Date, required: true },
-    status: { type: String, enum: ['confirmed', 'cancelled'], default: 'confirmed' },
+    status: {
+      type: String,
+      enum: ['requested', 'confirmed', 'rejected', 'cancelled', 'completed'],
+      default: 'requested',
+    },
+    paymentStatus: { type: String, enum: ['unpaid', 'paid'], default: 'unpaid' },
+    adminNote: { type: String, default: '', trim: true },
+    statusNote: { type: String, default: '', trim: true },
+    arrivedAt: { type: Date },
+    coinsRefunded: { type: Boolean, default: false },
+    rewardGranted: { type: Boolean, default: false },
+    remindersSent: {
+      h48: { type: Date },
+      h24: { type: Date },
+      h12: { type: Date },
+    },
+    lastManualReminderAt: { type: Date },
   },
   { timestamps: true }
 );

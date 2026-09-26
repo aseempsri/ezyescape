@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createBooking } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { policiesPath } from '../utils/paths';
 
 const ADULTS_PER_ROOM = 2;
 const CHILDREN_PER_ROOM = 1;
@@ -296,14 +297,19 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
           <span>₹{amountPayable}</span>
         </div>
         <p className="booking-reward-hint">
-          You&apos;ll earn <strong>+500 ezy coins</strong> after this booking.
+          You&apos;ll earn <strong>+500 ezy coins</strong> when the host confirms.
+        </p>
+        <p className="booking-legal-note">
+          By requesting this stay you agree to the{' '}
+          <a href={policiesPath('terms')}>terms</a>, the{' '}
+          <a href={policiesPath('privacy')}>privacy policy</a>, and the host&apos;s right of admission.
         </p>
       </div>
 
       {error && <p className="booking-error">{error}</p>}
 
       <button type="submit" className="btn btn-amber booking-submit" disabled={submitting}>
-        {submitting ? 'Confirming…' : `Confirm Booking · ₹${amountPayable}`}
+        {submitting ? 'Sending request…' : `Request stay · ₹${amountPayable}`}
       </button>
     </form>
   );

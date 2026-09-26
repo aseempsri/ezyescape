@@ -39,6 +39,11 @@ export function contactPath() {
   return appPath('contact');
 }
 
+export function policiesPath(hash = '') {
+  const base = appPath('policies');
+  return hash ? `${base}#${hash}` : base;
+}
+
 export function experiencesPath() {
   return appPath('experiences');
 }

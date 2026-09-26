@@ -55,6 +55,18 @@ function syncLegacyMedia(doc) {
   doc.mediaUrl = first?.mediaUrl || '';
 }
 
+function safeMediaUrl(url) {
+  const raw = String(url || '').trim();
+  if (raw.startsWith('/uploads/') && !raw.includes('..') && !raw.includes('\\')) return raw.slice(0, 500);
+  try {
+    const parsed = new URL(raw);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+    return parsed.toString().slice(0, 500);
+  } catch {
+    return '';
+  }
+}
+
 function mediaKindFromUrl(url, mime) {
   if (mime?.startsWith('video/')) return 'video';
   if (mime?.startsWith('image/')) return 'image';
@@ -65,8 +77,14 @@ function mediaKindFromUrl(url, mime) {
 function normalizeLink(url) {
   const raw = String(url || '').trim();
   if (!raw) return '';
-  if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return raw;
-  return `https://${raw}`;
+  if (raw.startsWith('/') && !raw.startsWith('//') && !raw.includes('\\')) return raw.slice(0, 500);
+  try {
+    const parsed = new URL(raw.includes('://') ? raw : `https://${raw}`);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return '';
+    return parsed.toString().slice(0, 500);
+  } catch {
+    return '';
+  }
 }
 
 // ─── Public ───────────────────────────────────────────────
@@ -116,8 +134,9 @@ router.put('/:adId', async (req, res) => {
 
     // Optional append media via JSON { mediaUrl, mediaType }
     if (req.body.mediaUrl) {
-      const mediaType = mediaKindFromUrl(req.body.mediaUrl, req.body.mediaType);
-      ad.mediaItems.push({ mediaType, mediaUrl: String(req.body.mediaUrl).trim() });
+      const mediaUrl = safeMediaUrl(req.body.mediaUrl);
+      if (!mediaUrl) return res.status(400).json({ error: 'Media must be an uploaded file or an http(s) link.' });
+      ad.mediaItems.push({ mediaType: mediaKindFromUrl(mediaUrl, req.body.mediaType), mediaUrl });
     }
 
     syncLegacyMedia(ad);
@@ -137,7 +156,7 @@ router.post('/:adId/media', async (req, res) => {
 
     const items = Array.isArray(req.body?.items) ? req.body.items : [req.body];
     for (const item of items) {
-      const url = String(item?.mediaUrl || item?.url || '').trim();
+      const url = safeMediaUrl(item?.mediaUrl || item?.url);
       if (!url) continue;
       ad.mediaItems.push({
         mediaType: mediaKindFromUrl(url, item?.mediaType || item?.type),

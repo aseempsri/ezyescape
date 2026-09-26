@@ -16,6 +16,7 @@ import {
 } from '../lib/api';
 import { stayPath } from '../utils/paths';
 import AdsManager from './AdsManager';
+import BookingsAdmin from './BookingsAdmin';
 import EventsAdmin from './EventsAdmin';
 import '../styles/admin.css';
 
@@ -950,7 +951,7 @@ function Dashboard({ onLogout }) {
         <div>
           <h1>Ezy Escape · Admin</h1>
           <p>
-            Manage property listings, experiences, and guest postcards before they appear on the site.
+            Manage listings, bookings, experiences, and guest postcards.
           </p>
         </div>
         <div className="admin-header-actions">
@@ -972,6 +973,13 @@ function Dashboard({ onLogout }) {
           onClick={() => { setTab('listings'); setEditing(null); }}
         >
           Listings
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === 'bookings' ? ' is-on' : ''}`}
+          onClick={() => { setTab('bookings'); setEditing(null); }}
+        >
+          Bookings
         </button>
         <button
           type="button"
@@ -997,7 +1005,9 @@ function Dashboard({ onLogout }) {
         </button>
       </nav>
 
-      {tab === 'ads' ? (
+      {tab === 'bookings' ? (
+        <BookingsAdmin />
+      ) : tab === 'ads' ? (
         <AdsManager />
       ) : tab === 'events' ? (
         <section className="admin-card">
@@ -1096,7 +1106,7 @@ function LoginView({ onSuccess }) {
     <div className="admin-login">
       <form className="admin-login-card" onSubmit={submit}>
         <h1>Admin access</h1>
-        <p>Enter the admin password to manage listings and postcards.</p>
+        <p>Enter the admin password to manage listings, bookings, and postcards.</p>
         <input
           type="password"
           value={password}

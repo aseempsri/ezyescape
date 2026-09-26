@@ -1352,6 +1352,19 @@ body.nav-menu-scroll-lock .nav-drawer {
   color: var(--gold);
 }
 
+.booking-legal-note {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.booking-legal-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .booking-error {
   color: #ff8f8f;
   font-size: 0.85rem;

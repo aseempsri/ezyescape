@@ -7,7 +7,7 @@ const walletTransactionSchema = new mongoose.Schema(
     amount: { type: Number, required: true, min: 1 },
     reason: {
       type: String,
-      enum: ['welcome_bonus', 'booking_reward', 'booking_redemption', 'expiry'],
+      enum: ['welcome_bonus', 'booking_reward', 'booking_redemption', 'booking_refund', 'expiry'],
       required: true,
     },
     bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },

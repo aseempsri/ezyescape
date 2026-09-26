@@ -122,6 +122,19 @@ export async function grantWelcomeBonus(user) {
   return { awarded: true, balance, amount: WELCOME_BONUS };
 }
 
+export async function refundRedeemedCoins(userId, amount, bookingId) {
+  if (amount <= 0) {
+    const user = await User.findById(userId);
+    return { balance: user?.ezyCoins ?? 0 };
+  }
+  return creditCoins(userId, {
+    amount,
+    reason: 'booking_refund',
+    bookingId,
+    description: `Refunded ${amount} ezy coins from a cancelled booking`,
+  });
+}
+
 export async function creditBookingReward(userId, bookingId) {
   return creditCoins(userId, {
     amount: BOOKING_REWARD,
@@ -137,30 +150,33 @@ export async function redeemCoins(userId, amount, bookingId) {
     return { balance: user?.ezyCoins ?? 0 };
   }
 
-  // Spend soonest-to-expire coins first.
-  const lots = await CoinLot.find({
-    userId,
-    expired: false,
-    remaining: { $gt: 0 },
-  }).sort({ expiresAt: 1 });
-
-  const available = lots.reduce((sum, lot) => sum + lot.remaining, 0);
-  if (available < amount) throw new Error('Insufficient ezy coins');
-
-  let toConsume = amount;
-  for (const lot of lots) {
-    if (toConsume <= 0) break;
-    const take = Math.min(lot.remaining, toConsume);
-    lot.remaining -= take;
-    toConsume -= take;
-    await lot.save();
-  }
-
-  const user = await User.findByIdAndUpdate(
-    userId,
+  // One winner if two bookings are submitted at the same time.
+  const user = await User.findOneAndUpdate(
+    { _id: userId, ezyCoins: { $gte: amount } },
     { $inc: { ezyCoins: -amount } },
     { new: true }
   );
+  if (!user) throw new Error('Insufficient ezy coins');
+
+  try {
+    const lots = await CoinLot.find({
+      userId,
+      expired: false,
+      remaining: { $gt: 0 },
+    }).sort({ expiresAt: 1 });
+
+    let toConsume = amount;
+    for (const lot of lots) {
+      if (toConsume <= 0) break;
+      const take = Math.min(lot.remaining, toConsume);
+      lot.remaining -= take;
+      toConsume -= take;
+      await lot.save();
+    }
+  } catch (err) {
+    await User.findByIdAndUpdate(userId, { $inc: { ezyCoins: amount } });
+    throw err;
+  }
 
   await WalletTransaction.create({
     userId,

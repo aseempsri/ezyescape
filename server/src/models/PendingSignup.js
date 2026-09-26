@@ -8,7 +8,9 @@ const pendingSignupSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     name: { type: String, trim: true },
     mobile: { type: String, trim: true },
-    passwordHash: { type: String, required: true },
+    // 'signup' creates the account after the code is confirmed. 'login' signs an existing account in.
+    purpose: { type: String, enum: ['signup', 'login'], default: 'signup' },
+    passwordHash: { type: String },
     otpHash: { type: String, required: true },
     otpExpires: { type: Date, required: true },
     otpAttempts: { type: Number, default: 0 },

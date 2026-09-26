@@ -30,6 +30,7 @@ function formatReason(reason) {
     welcome_bonus: 'Welcome bonus',
     booking_reward: 'Booking reward',
     booking_redemption: 'Redeemed on booking',
+    booking_refund: 'Coins returned',
     expiry: 'Coins expired',
   };
   return map[reason] || reason;
@@ -42,9 +43,18 @@ function startOfToday() {
 }
 
 function isCurrentBooking(b) {
-  if (b.status === 'cancelled') return false;
+  if (b.status === 'cancelled' || b.status === 'rejected' || b.status === 'completed') return false;
   const out = new Date(b.checkOut);
   return !Number.isNaN(out.getTime()) && out >= startOfToday();
+}
+
+function bookingStatusLabel(b) {
+  if (b.status === 'requested') return 'Awaiting confirmation';
+  if (b.status === 'rejected') return 'Not confirmed';
+  if (b.status === 'cancelled') return 'Cancelled';
+  if (b.status === 'completed') return 'Completed';
+  if (b.status === 'confirmed') return 'Confirmed';
+  return isCurrentBooking(b) ? 'Upcoming / current' : 'Completed';
 }
 
 function BookingCard({ booking }) {
@@ -56,7 +66,7 @@ function BookingCard({ booking }) {
       <div className="pf-booking-top">
         <div>
           <p className="pf-booking-status">
-            {cancelled ? 'Cancelled' : isCurrentBooking(booking) ? 'Upcoming / current' : 'Completed'}
+            {bookingStatusLabel(booking)}
           </p>
           <h3>{booking.stayTitle || 'Homestay'}</h3>
         </div>
@@ -82,7 +92,7 @@ function BookingCard({ booking }) {
       </div>
       <div className="pf-booking-foot">
         <div>
-          <span>Paid</span>
+          <span>{booking.paymentStatus === 'paid' ? 'Paid' : 'Payable'}</span>
           <strong>₹{Number(booking.amountPayable || 0).toLocaleString('en-IN')}</strong>
           {booking.coinsRedeemed > 0 && (
             <em> · −{booking.coinsRedeemed} coins</em>

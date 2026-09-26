@@ -11,6 +11,7 @@ import ContactPage from './components/ContactPage.jsx';
 import ExperiencesPage from './components/ExperiencesPage.jsx';
 import EventDetailPage from './components/EventDetailPage.jsx';
 import ProfilePage from './components/ProfilePage.jsx';
+import PoliciesPage from './components/PoliciesPage.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 
 const rawPath = window.location.pathname.replace(/\/+$/, '') || '/';
@@ -31,6 +32,8 @@ const isContact = path === '/contact';
 const experienceMatch = path.match(/^\/experiences\/([^/]+)$/);
 const isExperiences = path === '/experiences';
 const isProfile = path === '/profile';
+const isPolicies = path === '/policies' || path === '/terms' || path === '/privacy';
+const policyFocus = path === '/terms' ? 'terms' : path === '/privacy' ? 'privacy' : '';
 
 function wrap(node) {
   return <AuthProvider>{node}</AuthProvider>;
@@ -48,6 +51,7 @@ else if (isContact) page = wrap(<ContactPage />);
 else if (experienceMatch) page = wrap(<EventDetailPage idOrSlug={decodeURIComponent(experienceMatch[1])} />);
 else if (isExperiences) page = wrap(<ExperiencesPage />);
 else if (isProfile) page = wrap(<ProfilePage />);
+else if (isPolicies) page = wrap(<PoliciesPage focus={policyFocus} />);
 else page = wrap(<App />);
 
 createRoot(document.getElementById('root')).render(

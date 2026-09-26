@@ -10,6 +10,7 @@ import {
   experiencesPath,
   profilePath,
   homeSectionPath,
+  policiesPath,
 } from '../utils/paths';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/ezyescape/';
@@ -62,6 +63,8 @@ export default function Footer() {
                 <li><a href={homeSectionPath('impact')}>Our Impact</a></li>
                 <li><a href={partnerPath()}>Partner With Us</a></li>
                 <li><a href={contactPath()}>Contact</a></li>
+                <li><a href={policiesPath('terms')}>Terms</a></li>
+                <li><a href={policiesPath('privacy')}>Privacy</a></li>
               </ul>
             </div>
             <div className="footer-col footer-col--help">
@@ -75,11 +78,12 @@ export default function Footer() {
                   </a>
                 </li>
                 <li><a href={profilePath()}>Your Profile</a></li>
+                <li><a href={policiesPath('data')}>Your data</a></li>
               </ul>
             </div>
           </div>
           <div className="footer-bottom">
-            <span className="f-copy">© 2026 Ezy Escape. All rights reserved.</span>
+            <span className="f-copy">© 2026 Ezy Escape. All rights reserved. Rights of admission reserved.</span>
             <div className="footer-socials">
               <a
                 href={INSTAGRAM_URL}

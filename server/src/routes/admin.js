@@ -4,19 +4,26 @@ import Postcard from '../models/Postcard.js';
 import Event from '../models/Event.js';
 import { serializeStay } from '../utils/stayPricing.js';
 import { serializeEvent } from './events.js';
-import { adminCookieOptions, requireAdmin, signAdminToken } from '../middleware/admin.js';
-import { upload } from '../config/upload.js';
+import { adminCookieOptions, requireAdmin, secretsMatch, signAdminToken } from '../middleware/admin.js';
+import { upload, assertSafeUpload } from '../config/upload.js';
+import { rateLimit } from '../middleware/rateLimit.js';
+import { absoluteUrl } from '../utils/siteUrl.js';
+import bookingAdminRoutes from './adminBookings.js';
 
 const router = Router();
 
-router.post('/login', (req, res) => {
+router.post('/login', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 8,
+  key: (req) => `admin-login:${req.ip}`,
+}), (req, res) => {
   const { password } = req.body || {};
   const expected = process.env.ADMIN_PASSWORD;
 
   if (!expected) {
     return res.status(500).json({ error: 'ADMIN_PASSWORD is not configured on the server' });
   }
-  if (!password || password !== expected) {
+  if (!password || !secretsMatch(password, expected)) {
     return res.status(401).json({ error: 'Incorrect password' });
   }
 
@@ -36,14 +43,20 @@ router.get('/session', requireAdmin, (_req, res) => {
 
 // All routes below require admin auth.
 router.use(requireAdmin);
+router.use('/bookings', bookingAdminRoutes);
 
 // Upload an image or video from the admin's desktop. Returns a public URL.
 router.post('/upload', (req, res) => {
   upload.single('file')(req, res, (err) => {
-    if (err) return res.status(400).json({ error: err.message });
+    if (err) return res.status(400).json({ error: 'Upload failed. Use a JPEG, PNG, WEBP, GIF, MP4, or WEBM file.' });
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-    res.json({ url, type: req.file.mimetype });
+    try {
+      assertSafeUpload(req.file);
+    } catch {
+      return res.status(400).json({ error: 'Only JPEG, PNG, WEBP, GIF, MP4, or WEBM files are allowed' });
+    }
+    const url = absoluteUrl(req, `/uploads/${req.file.filename}`);
+    res.json({ url, type: req.file.mimetype.startsWith('video/') ? 'video' : 'image' });
   });
 });
 

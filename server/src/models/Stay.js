@@ -28,6 +28,9 @@ const staySchema = new mongoose.Schema(
     images: { type: [String], default: [] },
     videos: { type: [String], default: [] },
     active: { type: Boolean, default: true },
+    // Short lock so two guests cannot confirm the same dates at the same moment.
+    bookingLock: { type: String, default: null },
+    bookingLockUntil: { type: Date, default: null },
   },
   { timestamps: true }
 );

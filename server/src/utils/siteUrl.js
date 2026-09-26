@@ -1,14 +1,22 @@
-/** Public site origin for absolute share / OG URLs. */
+function allowedHosts() {
+  const fromEnv = String(process.env.ALLOWED_HOSTS || 'ezyescape.com,www.ezyescape.com')
+    .split(',')
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean);
+  return new Set([...fromEnv, 'localhost', '127.0.0.1']);
+}
+
+/** Public site origin. Host headers are ignored unless they are on the allow list. */
 export function siteOrigin(req) {
-  // Prefer the public Host on the incoming request (WhatsApp crawler → ezyescape.com).
   if (req) {
     const host = String(req.get('x-forwarded-host') || req.get('host') || '')
       .split(',')[0]
-      .trim();
-    if (host && !/localhost|127\.0\.0\.1/i.test(host)) {
-      const proto = String(req.get('x-forwarded-proto') || req.protocol || 'https')
-        .split(',')[0]
-        .trim();
+      .trim()
+      .toLowerCase();
+    const hostname = host.replace(/:\d+$/, '');
+    if (host && allowedHosts().has(hostname)) {
+      const local = hostname === 'localhost' || hostname === '127.0.0.1';
+      const proto = local ? 'http' : 'https';
       return `${proto}://${host}`.replace(/\/+$/, '');
     }
   }

@@ -15,6 +15,11 @@ export default function PostcardsPage({ focusId = '' }) {
   const [missingFocus, setMissingFocus] = useState(false);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('write') === '1') setModalOpen(true);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     (async () => {
       try {

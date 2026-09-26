@@ -926,3 +926,88 @@ video.admin-thumb {
   font-size: 0.74rem;
   color: rgba(245, 166, 35, 0.9);
 }
+
+.bk-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.bk-stats div {
+  padding: 12px 10px;
+  border: 1px solid var(--admin-line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.bk-stats strong {
+  display: block;
+  font-size: 1.35rem;
+  color: var(--admin-gold);
+}
+.bk-stats span {
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+.bk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.bk-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.bk-search {
+  min-width: min(100%, 260px);
+  background: transparent;
+  color: var(--admin-text);
+  border: 1px solid var(--admin-line);
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+.bk-list { display: grid; gap: 14px; }
+.bk-card {
+  border: 1px solid var(--admin-line);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.bk-card-head, .bk-grid, .bk-actions, .bk-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.bk-card-head { justify-content: space-between; align-items: flex-start; }
+.bk-card h3 { margin: 0; font-size: 1.15rem; }
+.bk-ref, .bk-dates, .bk-kicker { margin: 0; color: var(--admin-muted); font-size: 0.8rem; }
+.bk-kicker { letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+.bk-grid { margin-top: 12px; }
+.bk-grid > div { flex: 1 1 180px; }
+.bk-grid p { margin: 0 0 4px; }
+.bk-pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--admin-line);
+}
+.bk-pill--requested { color: #ffd166; }
+.bk-pill--confirmed, .bk-pill--paid { color: #8ee0b0; }
+.bk-pill--rejected, .bk-pill--cancelled, .bk-pill--unpaid { color: #ffb4b4; }
+.bk-pill--completed { color: #b9c7d6; }
+.bk-note { display: block; margin-top: 12px; }
+.bk-note span { display: block; margin-bottom: 6px; color: var(--admin-muted); font-size: 0.78rem; }
+.bk-note textarea, .bk-mail textarea, .bk-mail input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.bk-actions { margin-top: 12px; }
+.bk-mail { display: grid; gap: 8px; margin-top: 12px; }
+@media (max-width: 800px) {
+  .bk-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

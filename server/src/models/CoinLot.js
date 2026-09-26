@@ -10,7 +10,7 @@ const coinLotSchema = new mongoose.Schema(
     remaining: { type: Number, required: true, min: 0 },
     reason: {
       type: String,
-      enum: ['welcome_bonus', 'booking_reward'],
+      enum: ['welcome_bonus', 'booking_reward', 'booking_refund'],
       required: true,
     },
     bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },

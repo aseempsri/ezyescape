@@ -471,10 +471,8 @@
   border-color: rgba(28, 42, 58, 0.22) !important;
 }
 
-/* Navbar stays dark on every page (same as homepage) */
-.site-page nav,
+/* Top bar stays dark on every page. Other menus, such as the policy contents, stay on the page color. */
 .site-page nav#mainNav,
-.site-page nav.solid,
 .site-page nav#mainNav.solid {
   background: rgba(6, 12, 21, 0.94) !important;
   background-color: rgba(6, 12, 21, 0.94) !important;

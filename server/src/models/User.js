@@ -12,13 +12,15 @@ const userSchema = new mongoose.Schema(
     mobile: { type: String, trim: true, default: '' },
     // Hashed password for email/password accounts (absent for Google accounts).
     passwordHash: { type: String },
-    authProvider: { type: String, enum: ['password', 'google'], default: 'password' },
-    // Non-Gmail sign ups confirm ownership via an emailed OTP before the User is
+    authProvider: { type: String, enum: ['password', 'email', 'google'], default: 'email' },
+    // Email sign-ups confirm ownership via an emailed OTP before the User is
     // created (see PendingSignup), so every persisted account is already verified.
     emailVerified: { type: Boolean, default: false },
     ezyCoins: { type: Number, default: 0, min: 0 },
     welcomeBonusGranted: { type: Boolean, default: false },
     lastLoginAt: { type: Date, default: Date.now },
+    // One live sign-in. A second browser cannot start a session until this one ends.
+    sessionId: { type: String, default: '' },
   },
   { timestamps: true }
 );

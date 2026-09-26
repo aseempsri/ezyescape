@@ -154,6 +154,51 @@ export async function adminSession() {
   }
 }
 
+export async function adminFetchBookings({ status = 'all', q = '' } = {}) {
+  const params = new URLSearchParams();
+  if (status && status !== 'all') params.set('status', status);
+  if (q) params.set('q', q);
+  const qs = params.toString();
+  const res = await fetch(getApiUrl(`/api/admin/bookings${qs ? `?${qs}` : ''}`), { credentials: 'include' });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Failed to load bookings');
+  return data;
+}
+
+export async function adminUpdateBooking(id, payload) {
+  const res = await fetch(getApiUrl(`/api/admin/bookings/${id}`), {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Update failed');
+  return data;
+}
+
+export async function adminRemindBooking(id) {
+  const res = await fetch(getApiUrl(`/api/admin/bookings/${id}/remind`), {
+    method: 'POST',
+    credentials: 'include',
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Reminder failed');
+  return data;
+}
+
+export async function adminEmailBooking(id, payload) {
+  const res = await fetch(getApiUrl(`/api/admin/bookings/${id}/email`), {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Email failed');
+  return data;
+}
+
 export async function adminFetchStays() {
   const res = await fetch(getApiUrl('/api/admin/stays'), { credentials: 'include' });
   if (!res.ok) throw new Error('Failed to load listings');

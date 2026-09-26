@@ -12,54 +12,7 @@ function GoogleIcon() {
   );
 }
 
-function EyeIcon({ off }) {
-  return (
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {off ? (
-        <>
-          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.61 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a9.12 9.12 0 0 0 5.39-1.61" />
-          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-          <line x1="2" y1="2" x2="22" y2="22" />
-        </>
-      ) : (
-        <>
-          <path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8z" />
-          <circle cx="12" cy="12" r="3" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-function PasswordField({ value, onChange, autoComplete, placeholder }) {
-  const [show, setShow] = useState(false);
-  return (
-    <label className="auth-field">
-      <span>Password</span>
-      <div className="auth-password-wrap">
-        <input
-          type={show ? 'text' : 'password'}
-          value={value}
-          onChange={onChange}
-          autoComplete={autoComplete}
-          placeholder={placeholder}
-          required
-        />
-        <button
-          type="button"
-          className="auth-password-toggle"
-          onClick={() => setShow((s) => !s)}
-          aria-label={show ? 'Hide password' : 'Show password'}
-          title={show ? 'Hide password' : 'Show password'}
-        >
-          <EyeIcon off={show} />
-        </button>
-      </div>
-    </label>
-  );
-}
-
-const EMPTY = { name: '', email: '', mobile: '', password: '' };
+const EMPTY = { name: '', email: '', mobile: '' };
 
 export default function AuthModal({ open, onClose, reason }) {
   const { signup, login, verifyOtp, resendOtp, signIn } = useAuth();
@@ -67,6 +20,7 @@ export default function AuthModal({ open, onClose, reason }) {
   const [form, setForm] = useState(EMPTY);
   const [otp, setOtp] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
+  const [otpFrom, setOtpFrom] = useState('signin');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [busy, setBusy] = useState(false);
@@ -79,6 +33,7 @@ export default function AuthModal({ open, onClose, reason }) {
       setForm(EMPTY);
       setOtp('');
       setPendingEmail('');
+      setOtpFrom('signin');
       setError('');
       setInfo('');
       setBusy(false);
@@ -102,12 +57,12 @@ export default function AuthModal({ open, onClose, reason }) {
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  function goOtp(email, phone) {
+  function goOtp(email, from) {
     setPendingEmail(email);
+    setOtpFrom(from);
     setMode('otp');
     setOtp('');
-    const where = phone ? `your WhatsApp on +91 ${phone}` : 'your WhatsApp';
-    setInfo(`We sent a 6-digit code to ${where}. Enter it below to confirm your account.`);
+    setInfo(`We sent a 6-digit code to ${email}. Enter it below to continue.`);
     startCooldown();
   }
 
@@ -116,8 +71,8 @@ export default function AuthModal({ open, onClose, reason }) {
     setBusy(true);
     setError('');
     try {
-      const res = await login({ email: form.email, password: form.password });
-      if (res?.needsOtp) goOtp(res.email, form.mobile);
+      const res = await login({ email: form.email });
+      if (res?.needsOtp) goOtp(res.email, 'signin');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -130,8 +85,12 @@ export default function AuthModal({ open, onClose, reason }) {
     setBusy(true);
     setError('');
     try {
-      const res = await signup(form);
-      if (res?.needsOtp) goOtp(res.email, form.mobile);
+      const res = await signup({
+        name: form.name,
+        email: form.email,
+        mobile: form.mobile,
+      });
+      if (res?.needsOtp) goOtp(res.email, 'signup');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -157,14 +116,14 @@ export default function AuthModal({ open, onClose, reason }) {
     setError('');
     try {
       await resendOtp(pendingEmail);
-      setInfo('A new code was sent to your WhatsApp.');
+      setInfo(`A new code was sent to ${pendingEmail}.`);
       startCooldown();
     } catch (err) {
       setError(err.message);
     }
   }
 
-  const title = mode === 'signup' ? 'Create your account' : mode === 'otp' ? 'Verify your number' : 'Welcome back';
+  const title = mode === 'signup' ? 'Create your account' : mode === 'otp' ? 'Check your email' : 'Welcome back';
 
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
@@ -203,10 +162,10 @@ export default function AuthModal({ open, onClose, reason }) {
               <span>Email</span>
               <input type="email" value={form.email} onChange={set('email')} autoComplete="email" placeholder="you@example.com" required />
             </label>
-            <PasswordField value={form.password} onChange={set('password')} autoComplete="current-password" placeholder="••••••••" />
             <button type="submit" className="btn btn-amber auth-submit" disabled={busy}>
-              {busy ? 'Signing in…' : 'Sign in'}
+              {busy ? 'Sending code…' : 'Email me a code'}
             </button>
+            <p className="auth-hint">We&apos;ll send a one-time code to this inbox. Any email works — not only Gmail.</p>
           </form>
         )}
 
@@ -217,11 +176,11 @@ export default function AuthModal({ open, onClose, reason }) {
               <input type="text" value={form.name} onChange={set('name')} autoComplete="name" placeholder="Your name" />
             </label>
             <label className="auth-field">
-              <span>Email <em>(your official contact email)</em></span>
+              <span>Email</span>
               <input type="email" value={form.email} onChange={set('email')} autoComplete="email" placeholder="you@example.com" required />
             </label>
             <label className="auth-field">
-              <span>Mobile number</span>
+              <span>Mobile number <em>(optional)</em></span>
               <input
                 type="tel"
                 inputMode="numeric"
@@ -230,14 +189,12 @@ export default function AuthModal({ open, onClose, reason }) {
                 onChange={(e) => setForm((f) => ({ ...f, mobile: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
                 autoComplete="tel"
                 placeholder="10-digit mobile number"
-                required
               />
             </label>
-            <PasswordField value={form.password} onChange={set('password')} autoComplete="new-password" placeholder="At least 6 characters" />
             <button type="submit" className="btn btn-amber auth-submit" disabled={busy}>
-              {busy ? 'Creating…' : 'Create account'}
+              {busy ? 'Sending code…' : 'Email me a code'}
             </button>
-            <p className="auth-hint">We&apos;ll send a one-time code to your WhatsApp to confirm your number.</p>
+            <p className="auth-hint">Confirm the code from your inbox and your account is created. You can finish your profile after.</p>
           </form>
         )}
 
@@ -265,7 +222,7 @@ export default function AuthModal({ open, onClose, reason }) {
               <button type="button" className="auth-linkbtn" onClick={handleResend} disabled={cooldown > 0}>
                 {cooldown > 0 ? `Resend code in ${cooldown}s` : 'Resend code'}
               </button>
-              <button type="button" className="auth-linkbtn" onClick={() => { setMode('signup'); setError(''); setInfo(''); }}>
+              <button type="button" className="auth-linkbtn" onClick={() => { setMode(otpFrom); setError(''); setInfo(''); }}>
                 Use a different email
               </button>
             </div>

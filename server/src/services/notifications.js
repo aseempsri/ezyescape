@@ -113,7 +113,7 @@ export async function runExpiryReminders(now = new Date()) {
           expiresAt: entry.expiresAt,
           when: offset.when,
         });
-        await sendMail({ to: user.email, subject, text, html });
+        await sendMail({ to: user.email, subject, text, html, channel: 'info' });
 
         await CoinLot.updateMany(
           { _id: { $in: entry.lotIds } },

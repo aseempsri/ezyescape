@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import Postcard from '../models/Postcard.js';
-import { upload } from '../config/upload.js';
+import { guestUpload, assertSafeUpload } from '../config/upload.js';
+import { rateLimit } from '../middleware/rateLimit.js';
 import { styleForIndex } from '../data/postcardStyles.js';
 import { renderPostcardOgImage } from '../services/postcardOg.js';
 import { absoluteUrl } from '../utils/siteUrl.js';
@@ -9,9 +10,7 @@ import { absoluteUrl } from '../utils/siteUrl.js';
 const router = Router();
 
 function publicUrl(req, filename) {
-  const proto = req.get('x-forwarded-proto') || req.protocol || 'https';
-  const host = req.get('x-forwarded-host') || req.get('host');
-  return `${proto}://${host}/uploads/${filename}`;
+  return absoluteUrl(req, `/uploads/${filename}`);
 }
 
 function serialize(doc) {
@@ -162,19 +161,24 @@ router.get('/:id', async (req, res) => {
  */
 router.post(
   '/',
-  upload.fields([
-    { name: 'media', maxCount: 8 },
+  rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 4,
+    key: (req) => `postcard:${req.ip}`,
+  }),
+  guestUpload.fields([
+    { name: 'media', maxCount: 6 },
     { name: 'avatar', maxCount: 1 },
   ]),
   async (req, res) => {
     try {
-      const name = String(req.body.name || '').trim();
-      const from = String(req.body.from || '').trim();
-      const text = String(req.body.text || '').trim();
+      const name = String(req.body.name || '').trim().slice(0, 80);
+      const from = String(req.body.from || '').trim().slice(0, 80);
+      const text = String(req.body.text || '').trim().slice(0, 4000);
       const avatarMode = String(req.body.avatarMode || '').trim();
       const gender = String(req.body.gender || '').trim();
-      const characterId = String(req.body.characterId || '').trim();
-      const characterEmoji = String(req.body.characterEmoji || '').trim();
+      const characterId = String(req.body.characterId || '').trim().slice(0, 40);
+      const characterEmoji = String(req.body.characterEmoji || '').trim().slice(0, 8);
 
       if (!name || name.length < 2) {
         return res.status(400).json({ error: 'Please share your name' });
@@ -187,6 +191,13 @@ router.post(
       }
 
       const mediaFiles = req.files?.media || [];
+      const avatarFile = req.files?.avatar?.[0];
+      try {
+        mediaFiles.forEach(assertSafeUpload);
+        if (avatarFile) assertSafeUpload(avatarFile);
+      } catch {
+        return res.status(400).json({ error: 'Only JPEG, PNG, WEBP, GIF, MP4, or WEBM files are allowed' });
+      }
       if (!mediaFiles.length) {
         return res.status(400).json({ error: 'Add at least one photo or video for your postcard' });
       }
@@ -198,7 +209,6 @@ router.post(
 
       let avatarUrl = '';
       if (avatarMode === 'photo') {
-        const avatarFile = req.files?.avatar?.[0];
         if (!avatarFile || !avatarFile.mimetype.startsWith('image/')) {
           return res.status(400).json({ error: 'Upload a clear photo of yourself, or pick a character' });
         }
@@ -237,7 +247,8 @@ router.post(
         id: String(doc._id),
       });
     } catch (err) {
-      res.status(500).json({ error: err.message || 'Could not submit postcard' });
+      console.error('postcard submit failed', err);
+      res.status(500).json({ error: 'Could not submit postcard' });
     }
   }
 );

@@ -18,7 +18,8 @@ router.get('/', requireAuth, async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('wallet read failed', err);
+    res.status(500).json({ error: 'Could not load the wallet.' });
   }
 });
 

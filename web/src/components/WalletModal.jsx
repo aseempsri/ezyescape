@@ -8,6 +8,7 @@ function formatReason(reason) {
     welcome_bonus: 'Welcome bonus',
     booking_reward: 'Booking reward',
     booking_redemption: 'Redeemed on booking',
+    booking_refund: 'Coins returned',
     expiry: 'Coins expired',
   };
   return map[reason] || reason;
@@ -78,7 +79,7 @@ export default function WalletModal({ open, onClose }) {
             <strong>+500</strong> on first sign-in
           </div>
           <div className="wallet-rule">
-            <strong>+500</strong> on every booking
+            <strong>+500</strong> when the host confirms a booking
           </div>
           <div className="wallet-rule">
             Redeem up to <strong>100</strong> coins per booking

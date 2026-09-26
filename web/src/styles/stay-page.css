@@ -794,8 +794,13 @@
 .stay-page .booking-summary,
 .stay-page .booking-line,
 .stay-page .booking-redeem,
-.stay-page .booking-reward-hint {
+.stay-page .booking-reward-hint,
+.stay-page .booking-legal-note {
   color: var(--stay-muted);
+}
+
+.stay-page .booking-legal-note a {
+  color: var(--stay-ink);
 }
 
 .stay-page .booking-line--total,

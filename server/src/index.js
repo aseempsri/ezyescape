@@ -23,6 +23,7 @@ import seoRoutes, {
   handleEventSeo,
 } from './routes/seo.js';
 import { scheduleExpiryReminders } from './jobs/expiryReminders.js';
+import { scheduleBookingReminders } from './jobs/bookingReminders.js';
 import { seedStaysIfEmpty } from './data/seedStays.js';
 import { seedPostcardsIfEmpty } from './data/seedPostcards.js';
 import { seedEventsIfEmpty } from './data/seedEvents.js';
@@ -38,6 +39,18 @@ const {
 const app = express();
 
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+  }
+  next();
+});
 
 app.use(
   cors({
@@ -45,7 +58,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '200kb' }));
 app.use(cookieParser());
 app.use(passport.initialize());
 
@@ -53,8 +66,16 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, db: 'ezyescape' });
 });
 
-// Serve uploaded images/videos.
-app.use('/uploads', express.static(UPLOAD_DIR));
+// Uploaded media. Scripts are blocked even if a file type check is bypassed.
+app.use('/uploads', express.static(UPLOAD_DIR, {
+  dotfiles: 'deny',
+  index: false,
+  setHeaders(res) {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'none'; script-src 'none'");
+    res.setHeader('Content-Disposition', 'inline');
+  },
+}));
 
 app.use('/auth', configureGoogleAuth());
 app.use('/api/wallet', walletRoutes);
@@ -125,11 +146,20 @@ app.get('/experiences/:idOrSlug', async (req, res, next) => {
   }
 });
 
-for (const path of ['/experiences', '/postcards', '/shop', '/partner', '/contact']) {
+for (const path of ['/experiences', '/postcards', '/shop', '/partner', '/contact', '/policies', '/terms', '/privacy']) {
   app.get(path, async (req, res, next) => {
     if (!isSeoBot(req)) return next();
     return handleStaticSeoPage(req, res, path);
   });
+}
+
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error('JWT_SECRET must be a long random value (at least 32 characters).');
+  process.exit(1);
+}
+const adminPassword = process.env.ADMIN_PASSWORD || '';
+if (adminPassword.length < 16 || /admin|password|ezyescape/i.test(adminPassword)) {
+  console.warn('ADMIN_PASSWORD is easy to guess. Replace it with a long random password in server/.env and on the live server.');
 }
 
 await connectDB(MONGODB_URI);
@@ -141,6 +171,17 @@ await seedPostcardsIfEmpty();
 await seedEventsIfEmpty();
 
 scheduleExpiryReminders();
+scheduleBookingReminders();
+
+app.use((err, _req, res, _next) => {
+  const uploadRejected = err?.code === 'LIMIT_FILE_SIZE' || err?.code === 'LIMIT_FILE_COUNT' || err?.code === 'LIMIT_UNEXPECTED_FILE';
+  if (uploadRejected || /JPEG|PNG|WEBP|GIF|MP4|WEBM/i.test(err?.message || '')) {
+    return res.status(400).json({ error: 'Upload rejected. Use a smaller JPEG, PNG, WEBP, GIF, MP4, or WEBM file.' });
+  }
+  console.error(err);
+  if (res.headersSent) return;
+  res.status(500).json({ error: 'Something went wrong.' });
+});
 
 const server = app.listen(PORT, () => {
   console.log(`Ezy Escape API listening on http://localhost:${PORT}`);

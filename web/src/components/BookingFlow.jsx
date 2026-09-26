@@ -11,8 +11,8 @@ export function BookingSuccessToast({ result, onClose }) {
       <div className="toast booking-success-toast" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="modal-close" onClick={onClose} aria-label="Close">×</button>
         <div className="toast-icon">✓</div>
-        <h3>Booking confirmed!</h3>
-        <p>{booking.stayTitle} · {booking.nights} night{booking.nights > 1 ? 's' : ''}</p>
+        <h3>Request sent</h3>
+        <p>{booking.stayTitle} · {booking.nights} night{booking.nights > 1 ? 's' : ''}. The host will confirm by email.</p>
         <div className="toast-stats">
           {wallet.coinsRedeemed > 0 && <span>Redeemed {wallet.coinsRedeemed} coins</span>}
           <span>Earned +{wallet.coinsEarned} coins</span>

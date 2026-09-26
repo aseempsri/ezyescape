@@ -59,13 +59,16 @@ export function AuthProvider({ children }) {
     const params = new URLSearchParams(window.location.search);
     const authResult = params.get('auth');
     const welcome = params.get('welcome');
-    if (authResult === 'success' || authResult === 'failed') {
+    if (authResult === 'success' || authResult === 'failed' || authResult === 'already-in') {
       const hash = window.location.hash;
       params.delete('auth');
       params.delete('welcome');
       const next = `${window.location.pathname}${params.toString() ? `?${params}` : ''}${hash}`;
       window.history.replaceState({}, '', next);
-      if (authResult === 'success') {
+      if (authResult === 'already-in') {
+        setAuthReason('This account is already signed in on another browser. Sign out there first.');
+        setAuthOpen(true);
+      } else if (authResult === 'success') {
         refresh().then(() => {
           if (welcome) setWelcomeToast(Number(welcome) || 500);
           if (hash) {

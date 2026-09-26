@@ -88,6 +88,43 @@ export const SEO_PAGES = {
       <p>Questions about mountain homestays, availability, or listing your home? Reach the Ezy Escape team — we reply like hosts, not a ticket queue.</p>
     `,
   },
+  '/policies': {
+    title: 'Terms, Privacy & Guest Policies | Ezy Escape',
+    description:
+      'Booking terms, privacy policy, personal data use, disclaimers, and rights of admission for Ezy Escape homestays.',
+    priority: 0.4,
+    changefreq: 'yearly',
+    body: `
+      <h1>Terms, privacy, and guest policies</h1>
+      <p>How booking requests work, how personal data is used, the disclaimer for mountain stays, and the host’s right of admission.</p>
+      <ul>
+        <li><a href="/policies#terms">Terms of use</a></li>
+        <li><a href="/policies#privacy">Privacy policy</a></li>
+        <li><a href="/policies#data">Use of personal data</a></li>
+        <li><a href="/policies#admission">Rights of admission reserved</a></li>
+      </ul>
+    `,
+  },
+  '/terms': {
+    title: 'Terms of Use | Ezy Escape',
+    description: 'Terms for requesting a mountain homestay with Ezy Escape, including payment, coins, cancellation, and admission.',
+    priority: 0.3,
+    changefreq: 'yearly',
+    body: `
+      <h1>Terms of use</h1>
+      <p>Booking requests, Heartfelt Pricing, ezy coins, cancellation, and rights of admission reserved. <a href="/policies#terms">Read the terms</a>.</p>
+    `,
+  },
+  '/privacy': {
+    title: 'Privacy Policy | Ezy Escape',
+    description: 'How Ezy Escape collects and uses name, email, mobile, and booking details.',
+    priority: 0.3,
+    changefreq: 'yearly',
+    body: `
+      <h1>Privacy policy</h1>
+      <p>What we collect, why we email you, and how to ask for a correction or deletion. <a href="/policies#privacy">Read the privacy policy</a>.</p>
+    `,
+  },
 };
 
 export function organizationJsonLd(origin) {

@@ -1,4 +1,11 @@
+import { createHash, timingSafeEqual } from 'crypto';
 import jwt from 'jsonwebtoken';
+
+export function secretsMatch(input, expected) {
+  const a = createHash('sha256').update(String(input || '')).digest();
+  const b = createHash('sha256').update(String(expected || '')).digest();
+  return timingSafeEqual(a, b);
+}
 
 export function signAdminToken(secret) {
   return jwt.sign({ role: 'admin' }, secret, { expiresIn: '12h' });
@@ -9,7 +16,7 @@ export function adminCookieOptions() {
   return {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
+    sameSite: 'lax',
     maxAge: 12 * 60 * 60 * 1000,
     path: '/',
   };
