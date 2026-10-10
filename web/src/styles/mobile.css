@@ -396,7 +396,9 @@
     padding: 0;
   }
   .stay-card {
-    width: min(300px, 82vw);
+    --stay-card-w: min(320px, 78vw);
+    width: var(--stay-card-w);
+    aspect-ratio: 10 / 13.5;
   }
   .stay-card:first-child {
     margin-left: 0;
@@ -405,7 +407,10 @@
     cursor: pointer;
     pointer-events: auto;
   }
-  .stay-img { height: 200px; }
+  .stay-img {
+    flex: 7 0 0;
+    height: auto;
+  }
   .stays-scroll-hint {
     display: none;
   }
@@ -851,8 +856,12 @@
   .impact-grid { grid-template-columns: 1fr !important; }
   .impact-item { border-right: none !important; border-bottom: 1px solid rgba(16, 30, 44, 0.08) !important; }
   .impact-item:last-child { border-bottom: none !important; }
-  .stay-card { width: 88vw; }
-  .hero-actions .btn-row { grid-template-columns: 1fr; }
+  .stay-card {
+    --stay-card-w: 88vw;
+    width: var(--stay-card-w);
+  }
+  /* Keep secondary CTAs side-by-side like the Android composition */
+  .hero-actions .btn-row { grid-template-columns: 1fr 1fr; }
 }
 
 @keyframes nudgeRight {

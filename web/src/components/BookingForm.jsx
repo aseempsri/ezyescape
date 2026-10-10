@@ -17,8 +17,9 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
   const { user, refresh, openAuth } = useAuth();
   const requireLogin =
     onRequireLogin ||
-    (() => openAuth(`Sign in to book ${stay?.title || 'this stay'} and use your ezy coins.`));
+    (() => openAuth(`Sign in to request ${stay?.title || 'this stay'} and use your ezy coins.`));
   const stayRooms = Math.max(1, Number(stay?.rooms) || 1);
+  const mattressEnabled = !!stay?.extraMattressEnabled;
   const [bookingMode, setBookingMode] = useState(stayRooms > 1 ? 'room' : 'entire');
   const [rooms, setRooms] = useState(1);
   const [nights, setNights] = useState(1);
@@ -51,6 +52,10 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
   }, [stay]);
 
   useEffect(() => {
+    if (!mattressEnabled) setExtraMattress(false);
+  }, [mattressEnabled]);
+
+  useEffect(() => {
     setAdults((prev) => Math.min(Math.max(1, Number(prev) || 1), maxAdults));
     setChildren((prev) => Math.min(Math.max(0, Number(prev) || 0), maxChildren));
   }, [maxAdults, maxChildren]);
@@ -75,6 +80,13 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!user) {
+      if (!window.location.hash.includes('book')) {
+        window.history.replaceState(
+          {},
+          '',
+          `${window.location.pathname}${window.location.search}#book`,
+        );
+      }
       requireLogin();
       return;
     }
@@ -95,7 +107,7 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
         coinsToRedeem: Number(coinsToRedeem),
         bookingMode,
         rooms: roomsBooked,
-        extraMattress: !!extraMattress,
+        extraMattress: mattressEnabled && !!extraMattress,
       });
       await refresh();
       onSuccess?.(result);
@@ -104,30 +116,6 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (!user) {
-    return (
-      <div className="booking-signin-prompt">
-        <p>Sign in to book this cottage and use your ezy coins.</p>
-        <button
-          type="button"
-          className="auth-btn auth-btn--google"
-          onClick={() => {
-            if (!window.location.hash.includes('book')) {
-              window.history.replaceState(
-                {},
-                '',
-                `${window.location.pathname}${window.location.search}#book`
-              );
-            }
-            requireLogin();
-          }}
-        >
-          Sign in to book
-        </button>
-      </div>
-    );
   }
 
   const priceLine =
@@ -223,14 +211,16 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
         </label>
       </div>
 
-      <label className="booking-check">
-        <input
-          type="checkbox"
-          checked={extraMattress}
-          onChange={(e) => setExtraMattress(e.target.checked)}
-        />
-        <span>Request an extra mattress</span>
-      </label>
+      {mattressEnabled ? (
+        <label className="booking-check">
+          <input
+            type="checkbox"
+            checked={extraMattress}
+            onChange={(e) => setExtraMattress(e.target.checked)}
+          />
+          <span>Request an extra mattress</span>
+        </label>
+      ) : null}
 
       <div className="booking-summary">
         <div className="booking-rate-hint">
@@ -266,11 +256,11 @@ export default function BookingForm({ stay, onSuccess, onRequireLogin }) {
             {Number(children) > 0
               ? ` · ${children} child${Number(children) === 1 ? '' : 'ren'}`
               : ''}
-            {extraMattress ? ' · extra mattress' : ''}
+            {mattressEnabled && extraMattress ? ' · extra mattress' : ''}
           </span>
         </div>
 
-        {user.ezyCoins > 0 && (
+        {user?.ezyCoins > 0 && (
           <div className="booking-redeem">
             <div className="booking-redeem-head">
               <span>Redeem ezy coins</span>

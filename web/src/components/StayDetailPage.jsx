@@ -198,26 +198,28 @@ export default function StayDetailPage({ idOrSlug }) {
           <div className="stay-cinematic-veil" aria-hidden="true" />
 
           <div className="stay-cinematic-stage">
-            <div className="stay-cinematic-frame">
-              {media.length === 0 ? (
-                <div className="stay-hero-empty">No photos yet</div>
-              ) : current.type === 'video' ? (
-                <video src={current.url} controls playsInline className="stay-cinematic-media" />
-              ) : (
-                <img src={current.url} alt={stay.title} className="stay-cinematic-media" key={current.url} />
-              )}
+            <div className="stay-cinematic-media-col">
+              <a href={staysIndexPath()} className="stay-back-pill">All stays</a>
+              <div className="stay-cinematic-frame">
+                {media.length === 0 ? (
+                  <div className="stay-hero-empty">No photos yet</div>
+                ) : current.type === 'video' ? (
+                  <video src={current.url} controls playsInline className="stay-cinematic-media" />
+                ) : (
+                  <img src={current.url} alt={stay.title} className="stay-cinematic-media" key={current.url} />
+                )}
 
-              {media.length > 1 && (
-                <>
-                  <button type="button" className="stay-hero-nav stay-hero-nav--prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
-                  <button type="button" className="stay-hero-nav stay-hero-nav--next" onClick={() => go(1)} aria-label="Next">›</button>
-                  <div className="stay-hero-counter">{index + 1} / {media.length}</div>
-                </>
-              )}
+                {media.length > 1 && (
+                  <>
+                    <button type="button" className="stay-hero-nav stay-hero-nav--prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
+                    <button type="button" className="stay-hero-nav stay-hero-nav--next" onClick={() => go(1)} aria-label="Next">›</button>
+                    <div className="stay-hero-counter">{index + 1} / {media.length}</div>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="stay-cinematic-copy">
-              <a href={staysIndexPath()} className="stay-back-link">All stays</a>
               <p className="stay-hero-location">{stay.location}</p>
               <h1>{stay.title}</h1>
               {stay.description && <p className="stay-hero-desc stay-hero-desc--full">{stay.description}</p>}

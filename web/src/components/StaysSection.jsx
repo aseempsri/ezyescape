@@ -12,8 +12,8 @@ import HeartfeltPrice from './HeartfeltPrice';
 
 const MOBILE_MQ = '(max-width: 768px)';
 const TOUCH_RESUME_MS = 3000;
-const CARD_W = 340;
-const CARD_GAP = 24;
+const CARD_W = 420;
+const CARD_GAP = 28;
 
 /** Duplicate cards until one half fills the viewport — keeps the marquee gap-free. */
 function buildLoop(items, viewportWidth = 1440) {

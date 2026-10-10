@@ -19,10 +19,20 @@ function parseDateLabel(label) {
   return new Date(Date.UTC(Number(m[3]), mi, Number(m[1])));
 }
 
-function upcomingDate(month, day, year = 2025) {
+/** Next occurrence of month/day on or after today (UTC calendar). */
+function upcomingDate(month, day) {
   const mi = MONTHS[String(month || '').toUpperCase()];
   if (mi == null) return null;
-  return new Date(Date.UTC(year, mi, Number(day) || 1));
+  const d = Number(day) || 1;
+  const now = new Date();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  let year = now.getUTCFullYear();
+  let stamp = Date.UTC(year, mi, d);
+  if (stamp < today) {
+    year += 1;
+    stamp = Date.UTC(year, mi, d);
+  }
+  return new Date(stamp);
 }
 
 const SEED = [

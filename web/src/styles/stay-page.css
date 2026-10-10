@@ -44,6 +44,46 @@
   color: var(--stay-amber);
 }
 
+.stay-cinematic-media-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  align-self: start;
+  width: 100%;
+}
+
+.stay-cinematic-media-col .stay-cinematic-frame {
+  width: 100%;
+}
+
+.stay-back-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(28, 42, 58, 0.12);
+  box-shadow: 0 6px 16px rgba(28, 42, 58, 0.08);
+  color: var(--stay-ink);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.stay-back-pill:hover {
+  transform: translateY(-1px);
+  background: #fff;
+  border-color: rgba(196, 125, 10, 0.35);
+  color: var(--stay-amber);
+}
+
 /* Showcase */
 .stay-cinematic {
   position: relative;
@@ -82,47 +122,61 @@
   gap: 28px;
   max-width: 1240px;
   margin: 0 auto;
-  align-items: stretch;
+  align-items: start;
 }
 
 .stay-cinematic-frame {
   position: relative;
-  align-self: stretch;
-  min-height: min(58vh, 520px);
-  height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
   border-radius: 28px;
-  overflow: hidden;
-  background: var(--stay-soft);
-  border: 1px solid var(--stay-line);
+  overflow: visible;
+  background: transparent;
+  border: none;
   isolation: isolate;
-  box-shadow: 0 18px 40px rgba(28, 42, 58, 0.08);
+  box-shadow: none;
+  line-height: 0;
 }
 
-.stay-cinematic-media,
-.stay-hero-empty {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+.stay-cinematic-media {
+  position: relative;
+  inset: auto;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(78vh, 760px);
   object-fit: contain;
   object-position: center;
-  display: block;
   border: 0;
-  border-radius: 0;
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(28, 42, 58, 0.08);
   animation: stayMediaIn 0.55s ease both;
 }
 
-@keyframes stayMediaIn {
-  from { opacity: 0.45; transform: scale(1.04); }
-  to { opacity: 1; transform: none; }
-}
-
 .stay-hero-empty {
+  position: relative;
+  inset: auto;
   display: grid;
   place-items: center;
+  width: 100%;
+  min-height: 280px;
   color: var(--stay-muted);
-  min-height: 0;
   background: var(--stay-soft);
+  border: 1px solid var(--stay-line);
+  border-radius: 28px;
+  box-shadow: 0 18px 40px rgba(28, 42, 58, 0.08);
+  line-height: normal;
+}
+
+@keyframes stayMediaIn {
+  from { opacity: 0.45; transform: scale(1.02); }
+  to { opacity: 1; transform: none; }
 }
 
 .stay-hero-nav {
@@ -829,40 +883,18 @@
   }
 
   .stay-cinematic-frame {
-    min-height: 0;
-    height: auto;
-    aspect-ratio: auto;
-    /* Image is the frame — full media, any orientation, no crop / letterbox mat */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    box-shadow: none;
     border-radius: 18px;
-    overflow: visible;
   }
 
   .stay-cinematic-media {
-    position: relative;
-    inset: auto;
-    width: auto;
-    height: auto;
-    max-width: 100%;
     max-height: min(78vh, 720px);
-    object-fit: contain;
-    object-position: center;
     border-radius: 18px;
     box-shadow: 0 12px 28px rgba(28, 42, 58, 0.12);
   }
 
   .stay-hero-empty {
-    position: relative;
-    inset: auto;
-    width: 100%;
     min-height: 220px;
     border-radius: 18px;
-    background: var(--stay-soft);
   }
 
   .stay-hero-nav {
@@ -935,18 +967,28 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 6px 8px;
+  gap: 4px 7px;
 }
-.hf-price-row strong {
+.hf-price-mrp {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: rgba(28, 42, 58, 0.42);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+.hf-price-row strong,
+.hf-price-booking {
   font-size: 1.55rem;
   font-weight: 700;
   color: #1c2a3a;
   letter-spacing: -0.02em;
 }
 .hf-price-plus {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: rgba(28, 42, 58, 0.35);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: rgba(28, 42, 58, 0.72);
+  line-height: 1;
+  padding: 0 1px;
 }
 .hf-price-tip {
   font-style: normal;
@@ -960,12 +1002,21 @@
 }
 .hf-price-note {
   margin: 6px 0 0;
-  font-size: 0.78rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 1.35;
   color: rgba(28, 42, 58, 0.55);
 }
-.hf-price--compact .hf-price-row strong {
+.hf-price--compact .hf-price-mrp {
+  font-size: 0.88rem;
+}
+.hf-price--compact .hf-price-row strong,
+.hf-price--compact .hf-price-booking {
   font-size: 1.05rem;
+}
+.hf-price--compact .hf-price-plus {
+  font-size: 1rem;
 }
 .hf-price--compact .hf-price-tip {
   font-size: 1rem;
@@ -973,20 +1024,43 @@
 .hf-price--compact .hf-price-note {
   margin-top: 4px;
   font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+}
+.hf-price-note-mrp,
+.hf-price-note-base {
+  color: rgba(28, 42, 58, 0.5);
 }
 .hf-price-note-tip {
   color: #c47d0a;
 }
 
-.stay-hero-hf .hf-price-row strong {
+.stay-hero-hf .hf-price-row strong,
+.stay-hero-hf .hf-price-booking,
+.stay-book-hf .hf-price-row strong,
+.stay-book-hf .hf-price-booking {
   color: #1c2a3a;
 }
+.stay-hero-hf .hf-price-mrp,
+.stay-book-hf .hf-price-mrp {
+  color: rgba(28, 42, 58, 0.42);
+}
 .stay-hero-hf .hf-price-plus,
+.stay-book-hf .hf-price-plus {
+  color: rgba(28, 42, 58, 0.75);
+  font-weight: 700;
+}
 .stay-hero-hf .hf-price-unit,
-.stay-hero-hf .hf-price-note {
+.stay-hero-hf .hf-price-note,
+.stay-book-hf .hf-price-unit,
+.stay-book-hf .hf-price-note,
+.stay-hero-hf .hf-price-note-mrp,
+.stay-hero-hf .hf-price-note-base,
+.stay-book-hf .hf-price-note-mrp,
+.stay-book-hf .hf-price-note-base {
   color: rgba(28, 42, 58, 0.55);
+}
+.stay-hero-hf .hf-price-note-tip,
+.stay-book-hf .hf-price-note-tip {
+  color: #c47d0a;
 }
 
 .stay-book-price-wrap {

@@ -4,15 +4,16 @@
 ═══════════════════════════════════════════════════════════ */
 
 .quiz-section.match-section {
+  --match-nav-offset: 72px;
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: clamp(20px, 3.2vh, 40px) 0;
+  min-height: calc(100dvh - var(--match-nav-offset));
+  padding: clamp(16px, 2.4vh, 32px) 0;
   overflow: hidden;
   background: #070d16;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  scroll-margin-top: var(--match-nav-offset);
 }
 
 /* White background — Match My Stay */
@@ -141,7 +142,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - clamp(40px, 6.4vh, 80px));
+  max-height: calc(100dvh - var(--match-nav-offset) - clamp(20px, 3vh, 40px));
   min-height: 0;
 }
 
@@ -232,9 +233,11 @@
 .match-stage {
   display: grid;
   grid-template-columns: 0.85fr 1.25fr;
+  grid-template-rows: minmax(0, 1fr);
   gap: 0;
-  flex: 1;
-  min-height: clamp(280px, 52vh, 420px);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .match-scene {
@@ -296,6 +299,7 @@
   flex-direction: column;
   justify-content: flex-start;
   min-height: 0;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -329,9 +333,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 16px;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   min-height: 0;
   align-content: start;
+  overflow: auto;
 }
 
 .match-opts--3 {
@@ -551,8 +556,51 @@
   all: unset;
 }
 
-/* Short viewports: tighten further */
-@media (max-height: 820px) {
+/* Short windows: keep Next on screen (wide layout, short height) */
+@media (max-height: 760px) and (min-width: 961px) {
+  .match-intro {
+    margin-bottom: 6px;
+  }
+
+  .match-intro-title .why-big-line {
+    margin-bottom: 0.15em;
+  }
+
+  .match-intro-script {
+    font-size: clamp(2.2rem, 6vh, 2.8rem);
+    line-height: 0.9;
+  }
+
+  .match-question {
+    font-size: clamp(0.98rem, 2.4vh, 1.2rem);
+  }
+
+  .match-hint {
+    margin-bottom: 8px;
+    font-size: 0.75rem;
+  }
+
+  .match-opts {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .match-opt {
+    min-height: 0;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .match-opt-emoji {
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+  }
+
+  .match-nav {
+    padding-top: 6px;
+  }
+
   .match-intro-sub {
     display: none;
   }
@@ -572,7 +620,7 @@
   }
 
   .match-intro-script {
-    font-size: 3.12rem;
+    font-size: clamp(2.2rem, 6vh, 2.8rem);
   }
 
   .match-opt-text {

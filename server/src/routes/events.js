@@ -1,21 +1,30 @@
 import { Router } from 'express';
 import Event from '../models/Event.js';
+import {
+  effectiveEventStatus,
+  formatPastDateLabel,
+  promoteExpiredEvents,
+  startOfTodayUtc,
+} from '../utils/eventSchedule.js';
 
 const router = Router();
 
 export function serializeEvent(doc) {
   const images = Array.isArray(doc.images) ? doc.images.filter(Boolean) : [];
+  const status = effectiveEventStatus(doc);
+  const dateLabel =
+    status === 'past' ? formatPastDateLabel(doc) : (doc.dateLabel || '');
   return {
     id: String(doc._id),
     title: doc.title,
     slug: doc.slug || '',
-    status: doc.status,
+    status,
     tag: doc.tag || '',
     place: doc.place || '',
     spots: doc.spots || '',
     month: doc.month || '',
     day: doc.day || '',
-    dateLabel: doc.dateLabel || '',
+    dateLabel,
     startDate: doc.startDate || null,
     desc: doc.desc || '',
     details: doc.details || '',
@@ -48,20 +57,34 @@ export async function findActiveEvent(idOrSlug) {
   return Event.findOne({ slug: raw, active: true });
 }
 
-/** Public list — upcoming/live latest-created first; past latest startDate first. */
+/** Public list — date-aware: expired startDates leave Upcoming and join Past. */
 router.get('/', async (req, res) => {
   const status = String(req.query.status || '').trim();
   const filter = { active: true };
+  const today = startOfTodayUtc();
+
+  await promoteExpiredEvents();
 
   if (status === 'upcoming') {
-    filter.status = { $in: ['live', 'upcoming'] };
-    const list = await Event.find(filter).sort({ createdAt: -1 });
+    const list = await Event.find({
+      ...filter,
+      status: { $in: ['live', 'upcoming'] },
+      $or: [{ startDate: null }, { startDate: { $gte: today } }],
+    }).sort({ createdAt: -1 });
     return res.json(list.map(serializeEvent));
   }
 
   if (status === 'past') {
-    filter.status = 'past';
-    const list = await Event.find(filter).sort({ startDate: -1, createdAt: -1 });
+    const list = await Event.find({
+      ...filter,
+      $or: [
+        { status: 'past' },
+        {
+          status: { $in: ['live', 'upcoming'] },
+          startDate: { $ne: null, $lt: today },
+        },
+      ],
+    }).sort({ startDate: -1, createdAt: -1 });
     return res.json(list.map(serializeEvent));
   }
 
@@ -70,6 +93,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:idOrSlug', async (req, res) => {
+  await promoteExpiredEvents();
   const doc = await findActiveEvent(req.params.idOrSlug);
   if (!doc) return res.status(404).json({ error: 'Event not found' });
   res.json(serializeEvent(doc));

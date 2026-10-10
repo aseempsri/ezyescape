@@ -4,7 +4,7 @@ export const BOOKING_REWARD = 500;
 export const MAX_REDEEM_PER_BOOKING = 100;
 
 // Ezy coins expire this many days after they are earned.
-export const COIN_EXPIRY_DAYS = 30;
+export const COIN_EXPIRY_DAYS = 90;
 
 export function coinExpiryFrom(from = new Date()) {
   const d = new Date(from);

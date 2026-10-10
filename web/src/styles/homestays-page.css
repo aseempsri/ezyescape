@@ -57,31 +57,53 @@
 .hs-mosaic {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  column-gap: 28px;
+  row-gap: 32px;
+  gap: 32px 28px;
 }
 
 .hs-mosaic--equal .hs-tile {
-  height: 100%;
+  /* Larger cards · 70% image / 30% details — min-width:0 keeps grid gap visible */
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 10 / 14;
+  display: flex;
+  flex-direction: column;
   background: #fff;
-  border-radius: 18px;
+  border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(28, 42, 58, 0.1);
-  box-shadow: 0 10px 28px rgba(28, 42, 58, 0.07);
+  box-shadow: 0 14px 36px rgba(28, 42, 58, 0.09);
+  box-sizing: border-box;
 }
 
 .hs-mosaic--equal .hs-tile-visual {
-  aspect-ratio: 4 / 3;
+  flex: 7 0 0;
+  aspect-ratio: unset;
   min-height: 0;
+  height: auto;
   border-radius: 0;
 }
 
 .hs-mosaic--equal .hs-tile-body {
-  flex: 1;
+  flex: 3 0 0;
   display: flex;
   flex-direction: column;
-  padding: 16px 16px 18px;
-  min-height: 168px;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 14px 16px 16px;
+  min-height: 0;
   background: #fff;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.hs-mosaic--equal .hs-tile-loc {
+  flex-shrink: 0;
+  line-height: 1.3;
 }
 
 .hs-mosaic--equal .hs-tile-body h2 {
@@ -89,7 +111,24 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 2.5em;
+  flex-shrink: 0;
+  min-height: calc(1.35em * 1);
+  max-height: calc(1.35em * 2);
+  margin: 0;
+  padding: 0 0 2px;
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.hs-mosaic--equal .hs-tile-hf {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.hs-mosaic--equal .hs-tile .hf-price--compact .hf-price-note {
+  font-size: 0.58rem;
 }
 
 .hs-mosaic--equal .hs-tile-best {
@@ -97,7 +136,15 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 1.2em;
+  min-height: 0;
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.hs-mosaic--equal .hs-tile-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  flex-shrink: 0;
 }
 
 .hs-mosaic--equal .hs-tile-cta {
@@ -329,7 +376,7 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 1.2rem;
-  line-height: 1.25;
+  line-height: 1.35;
   color: #fff;
 }
 
@@ -344,7 +391,12 @@
 .hs-tile-hf {
   margin-top: 6px;
 }
-.hs-tile .hf-price-row strong {
+.hs-tile .hf-price-mrp {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.88rem;
+}
+.hs-tile .hf-price-row strong,
+.hs-tile .hf-price-booking {
   color: #fff;
   font-size: 1.05rem;
 }
@@ -352,10 +404,16 @@
   color: #f0c14b;
   font-size: 1rem;
 }
-.hs-tile .hf-price-plus,
+.hs-tile .hf-price-plus {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+}
 .hs-tile .hf-price-unit,
 .hs-tile .hf-price-note {
   color: rgba(255, 255, 255, 0.5);
+}
+.hs-tile .hf-price-note-mrp {
+  color: rgba(255, 255, 255, 0.4);
 }
 .hs-tile .hf-price-note-tip {
   color: #f0c14b;
@@ -452,6 +510,9 @@
 @media (max-width: 960px) {
   .hs-mosaic {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 22px;
+    row-gap: 28px;
+    gap: 28px 22px;
   }
 
   .hs-tile--feature .hs-tile-visual {
@@ -470,7 +531,9 @@
   .hs-feature-wrap {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 18px;
+    column-gap: 18px;
+    row-gap: 22px;
+    gap: 22px 18px;
   }
 
   .hs-tile,
@@ -480,15 +543,29 @@
 
   .hs-tile-visual,
   .hs-tile--feature .hs-tile-visual {
-    aspect-ratio: 4 / 3;
     min-height: 0;
     border-radius: 0;
   }
 
+  .hs-mosaic--equal .hs-tile-visual,
+  .hs-tile--feature .hs-tile-visual {
+    flex: 7 0 0;
+    aspect-ratio: unset;
+  }
+
   .hs-mosaic--equal .hs-tile,
   .hs-tile--feature {
-    border-radius: 18px;
+    border-radius: 20px;
     overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 10 / 14;
+  }
+
+  .hs-mosaic--equal .hs-tile-body,
+  .hs-tile--feature .hs-tile-body {
+    flex: 3 0 0;
+    min-height: 0;
   }
 
   .hs-tile--feature .hs-tile-feature-copy {

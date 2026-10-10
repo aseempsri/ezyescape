@@ -41,6 +41,7 @@ const EMPTY_STAY = {
   rooms: 1,
   price: 0,
   experienceTip: 0,
+  extraMattressEnabled: false,
   discountType: 'none',
   discountValue: 0,
   description: '',
@@ -266,6 +267,7 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
         rooms: Number(form.rooms),
         price: Number(form.price),
         experienceTip: Number(form.experienceTip) || 0,
+        extraMattressEnabled: !!form.extraMattressEnabled,
         discountValue: Number(form.discountValue),
         highlights: (Array.isArray(form.highlights) ? form.highlights : String(form.highlights || '').split('\n'))
           .map((s) => String(s).trim())
@@ -442,6 +444,17 @@ function ListingForm({ initial, onSave, onCancel, saving, isNew }) {
             {' '}<em>/night</em>
           </div>
         </div>
+        <label className="admin-checkbox admin-col-2">
+          <input
+            type="checkbox"
+            checked={!!form.extraMattressEnabled}
+            onChange={set('extraMattressEnabled')}
+          />
+          <span>Show “Request an extra mattress” on the booking form</span>
+        </label>
+        <p className="admin-field-hint admin-col-2">
+          Off by default. When enabled, the checkbox appears unchecked for guests until they opt in.
+        </p>
       </FormSection>
 
       <FormSection

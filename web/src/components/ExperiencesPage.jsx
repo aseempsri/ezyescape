@@ -8,6 +8,11 @@ import { fetchEvents } from '../lib/api';
 import {
   experiencePath,
 } from '../utils/paths';
+import {
+  formatPastDateLabel,
+  isEventDatePast,
+  partitionEventsByDate,
+} from '../utils/eventSchedule';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import AdSlot from './AdSlot';
 import '../styles/immersion.css';
@@ -39,12 +44,21 @@ function normalizePast(ev) {
     slug: ev.slug || ev.id,
     img: ev.img || ev.images?.[0] || '',
     emoji: resolveEventIcon(ev.emoji),
-    date: ev.dateLabel || ev.date || '',
+    date: formatPastDateLabel(ev) || ev.dateLabel || ev.date || '',
+    status: 'past',
   };
 }
 
-const FALLBACK_UPCOMING = UPCOMING_EVENTS.map(normalizeUpcoming);
-const FALLBACK_PAST = PROPERTY_EXPERIENCES.map(normalizePast);
+/** Offline fallbacks: expired month/day rows leave Upcoming and join Past. */
+const {
+  upcoming: FALLBACK_UPCOMING_RAW,
+  past: FALLBACK_ROLLED_PAST,
+} = partitionEventsByDate(UPCOMING_EVENTS.map(normalizeUpcoming));
+const FALLBACK_UPCOMING = FALLBACK_UPCOMING_RAW;
+const FALLBACK_PAST = [
+  ...FALLBACK_ROLLED_PAST.map(normalizePast),
+  ...PROPERTY_EXPERIENCES.map(normalizePast),
+];
 
 export default function ExperiencesPage() {
   const [upcoming, setUpcoming] = useState(FALLBACK_UPCOMING);
@@ -66,11 +80,29 @@ export default function ExperiencesPage() {
       fetchEvents('past').catch(() => null),
     ]).then(([up, past]) => {
       if (!alive) return;
-      if (Array.isArray(up) && up.length) setUpcoming(up.map(normalizeUpcoming));
-      if (Array.isArray(past) && past.length) {
-        const next = past.map(normalizePast);
-        setPastEvents(next);
-        setActiveId((cur) => (next.some((e) => e.id === cur) ? cur : next[0]?.id));
+
+      if (Array.isArray(up)) {
+        const normalized = up.map(normalizeUpcoming);
+        setUpcoming(normalized.filter((ev) => !isEventDatePast(ev)));
+      }
+
+      if (Array.isArray(past) || Array.isArray(up)) {
+        const fromPast = Array.isArray(past) ? past.map(normalizePast) : [];
+        const leaked = Array.isArray(up)
+          ? up.map(normalizeUpcoming).filter(isEventDatePast).map(normalizePast)
+          : [];
+        const seen = new Set();
+        const merged = [];
+        for (const ev of [...leaked, ...fromPast]) {
+          const key = String(ev.id || ev.slug || '');
+          if (key && seen.has(key)) continue;
+          if (key) seen.add(key);
+          merged.push(ev);
+        }
+        if (merged.length) {
+          setPastEvents(merged);
+          setActiveId((cur) => (merged.some((e) => e.id === cur) ? cur : merged[0]?.id));
+        }
       }
     });
     return () => {

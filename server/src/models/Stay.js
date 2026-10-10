@@ -14,6 +14,8 @@ const staySchema = new mongoose.Schema(
     price: { type: Number, required: true, min: 0 },
     // Suggested optional experience tip — guests leave it if the stay moved them.
     experienceTip: { type: Number, default: 0, min: 0 },
+    /** When true, booking form shows “Request an extra mattress” (unchecked by default). */
+    extraMattressEnabled: { type: Boolean, default: false },
     discountType: { type: String, enum: ['none', 'percent', 'flat'], default: 'none' },
     discountValue: { type: Number, default: 0, min: 0 },
     description: { type: String, default: '', trim: true },

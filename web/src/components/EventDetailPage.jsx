@@ -3,6 +3,7 @@ import SiteChrome from './SiteChrome';
 import EventShareMenu from './EventShareMenu';
 import { fetchEvent } from '../lib/api';
 import { experiencesPath, experiencePath } from '../utils/paths';
+import { effectiveEventStatus } from '../utils/eventSchedule';
 import { whatsappChatUrl } from '../utils/whatsapp';
 import '../styles/ads.css';
 import '../styles/event-detail.css';
@@ -156,12 +157,15 @@ export default function EventDetailPage({ idOrSlug }) {
     );
   }
 
+  const isPast = effectiveEventStatus(event) === 'past';
   const description = (event.desc || event.details || '').slice(0, 160);
-  const metaLine = [when, event.place, event.spots].filter(Boolean).join(' · ');
-  const startsLine = metaLine
-    ? `Starts — ${metaLine}`
+  const metaLine = isPast
+    ? [when, event.place].filter(Boolean).join(' · ')
+    : [when, event.place, event.spots].filter(Boolean).join(' · ');
+  const whenLine = metaLine
+    ? (isPast ? metaLine : `Starts — ${metaLine}`)
     : when
-      ? `Starts — ${when}`
+      ? (isPast ? when : `Starts — ${when}`)
       : '';
 
   return (
@@ -207,15 +211,15 @@ export default function EventDetailPage({ idOrSlug }) {
             <aside className="ev-detail-aside">
               <div className="ev-detail-card">
                 <p className="ev-detail-card-kicker">
-                  {event.status === 'past' ? 'Past gathering' : 'Reserve your spot'}
+                  {isPast ? 'Past gathering' : 'Reserve your spot'}
                 </p>
-                {startsLine ? (
-                  <p className="ev-detail-card-when ev-detail-card-when--hl">{startsLine}</p>
+                {whenLine ? (
+                  <p className="ev-detail-card-when ev-detail-card-when--hl">{whenLine}</p>
                 ) : null}
                 {event.pricing ? (
                   <p className="ev-detail-card-price">{highlightFacts(event.pricing)}</p>
                 ) : null}
-                {event.status !== 'past' ? (
+                {!isPast ? (
                   <a
                     className="btn btn-amber ev-detail-book"
                     href={bookHref}

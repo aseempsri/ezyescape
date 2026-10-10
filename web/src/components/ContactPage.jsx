@@ -18,8 +18,8 @@ const CHANNELS = [
     e: '✉️',
     t: 'Email',
     d: 'For longer notes, press, or partnership decks.',
-    href: 'mailto:hello@ezyescape.com',
-    cta: 'hello@ezyescape.com',
+    href: 'mailto:nfo@ezyescape.com',
+    cta: 'nfo@ezyescape.com',
     external: false,
   },
   {
@@ -125,7 +125,7 @@ export default function ContactPage() {
             </label>
             <button type="submit" className="btn btn-amber">Continue on WhatsApp</button>
             <p className="sp-form-note">
-              Prefer email? Write to <a href="mailto:hello@ezyescape.com">hello@ezyescape.com</a>
+              Prefer email? Write to <a href="mailto:nfo@ezyescape.com">nfo@ezyescape.com</a>
             </p>
           </form>
         </div>

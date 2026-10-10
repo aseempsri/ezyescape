@@ -38,6 +38,7 @@ export function normalizeApiStay(s) {
     disPrice: s.hasDiscount ? s.price : null,
     price: s.finalPrice,
     experienceTip: Number(s.experienceTip) || 0,
+    extraMattressEnabled: !!s.extraMattressEnabled,
     guest: s.guests,
     rooms: s.rooms,
     image: s.image,
@@ -59,6 +60,7 @@ export const FALLBACK_STAYS = STAYS.map((s) => withResolvedImages({
   ...s,
   disPrice: s.disPrice ?? null,
   experienceTip: Number(s.experienceTip) || 0,
+  extraMattressEnabled: !!s.extraMattressEnabled,
 }));
 
 /** Tokenize category tags for reliable filter matching. */

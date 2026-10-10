@@ -470,9 +470,10 @@ nav#mainNav.solid {
 }
 
 .eyebrow {
+    font-family: 'Figtree', sans-serif;
     font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: .22em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #0b121c;
     display: flex;
@@ -890,7 +891,7 @@ nav#mainNav.solid {
 }
 .stays-track {
   display: flex;
-  gap: 24px;
+  gap: 28px;
   width: max-content;
   padding: 0;
 }
@@ -921,26 +922,37 @@ nav#mainNav.solid {
   }
 }
 .stay-card {
-  width:340px; flex-shrink:0;
-  border-radius:24px; overflow:hidden;
-  background:#080f1a;
+  /* ~3 cards visible across typical laptop/desktop widths */
+  --stay-card-w: min(420px, calc((100vw - 7rem - 56px) / 3));
+  width: var(--stay-card-w);
+  flex-shrink: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #080f1a;
   border: none;
-  transition:transform .45s var(--ease);
-  position:relative;
+  transition: transform .45s var(--ease);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 10 / 13.5;
+  height: auto;
 }
 .stay-card:hover {
   transform: translateY(-8px);
 }
 .stay-img {
-  height:230px;
-  background-size:cover; background-position:center;
-  position:relative;
-  transition:transform .6s var(--ease);
+  flex: 7 0 0;
+  min-height: 0;
+  height: auto;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  transition: transform .6s var(--ease);
   border: none;
   outline: none;
   box-shadow: none;
 }
-.stay-card:hover .stay-img { transform:scale(1.04); }
+.stay-card:hover .stay-img { transform: scale(1.04); }
 .stay-img-overlay {
   position:absolute; inset:0;
   background:linear-gradient(to top, rgba(6,12,21,.85) 0%, transparent 60%);
@@ -1068,39 +1080,81 @@ nav#mainNav.solid {
 @media (max-width: 560px) {
   .home-exp-grid { grid-template-columns: 1fr; }
 }
-.stay-body { padding:22px 26px 24px; }
+.stay-body {
+  flex: 3 0 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 18px 14px;
+  box-sizing: border-box;
+}
 .stay-host {
-  font-size:.68rem; font-weight:700; letter-spacing:.12em;
-  text-transform:uppercase; color:var(--amber); margin-bottom:7px;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 4px;
 }
 .stay-name {
-  font-family:'Poppins', sans-serif;
-  font-size:1.4rem; font-weight:400; color:var(--mist);
-  line-height:1.2; margin-bottom:0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--mist);
+  line-height: 1.15;
+  margin-bottom: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .stay-card-hf {
-  margin-top: 8px;
+  margin-top: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
-.stay-card .hf-price-row strong {
+.stay-card .hf-price-mrp {
+  color: rgba(237, 232, 225, 0.42);
+  font-size: 0.82rem;
+}
+.stay-card .hf-price-row strong,
+.stay-card .hf-price-booking {
   color: #f4ebe0;
-  font-size: 1rem;
+  font-size: 0.95rem;
+}
+.stay-card .hf-price-plus {
+  color: rgba(244, 235, 224, 0.88);
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 .stay-card .hf-price-tip {
   color: #e8b84a;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 .stay-card .hf-price-unit,
 .stay-card .hf-price-note {
   color: rgba(237, 232, 225, 0.45);
 }
+.stay-card .hf-price-note-mrp {
+  color: rgba(237, 232, 225, 0.4);
+}
+.stay-card .hf-price-note-tip {
+  color: #e8b84a;
+}
+.stay-card .hf-price--compact .hf-price-note {
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+}
 .stay-footer {
-  display:flex; align-items:center; justify-content:space-between;
-  gap: 12px;
-  padding-top:16px; margin-top: 16px;
-  border-top:1px solid rgba(255,255,255,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  flex-shrink: 0;
 }
 .stay-best {
   font-size:.72rem; color:rgba(237,232,225,.35);
@@ -1938,5 +1992,21 @@ footer {
 }
 
 /* Nav toggle removed — scrollable nav rail on mobile (hero-nav.css) */
-html{overflow-x:hidden;}
+/* Small section labels — Figtree, tight tracking, whole portal */
+.eyebrow,
+.hero-eyebrow,
+.sp-eyebrow,
+.match-eyebrow,
+.match-intro-eyebrow,
+.match-scene-step,
+.match-result-kicker,
+.stay-eyebrow,
+.pc-modal-eyebrow,
+.q-eyebrow,
+.comp-label,
+.compare-label {
+  font-family: 'Figtree', sans-serif !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 600;
+}
 #loader.done{pointer-events:none;}
