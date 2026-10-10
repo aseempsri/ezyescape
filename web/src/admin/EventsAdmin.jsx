@@ -147,10 +147,10 @@ function EventForm({ initial, onCancel, onSaved }) {
 
       <FormSection title="Basics" blurb="Name, place, status, and visibility.">
         <Field label="Title" className="admin-col-2">
-          <input value={form.title} onChange={set('title')} required />
+          <input value={form.title || ''} onChange={set('title')} required />
         </Field>
         <Field label="Slug (optional)" className="admin-col-2">
-          <input value={form.slug} onChange={set('slug')} placeholder="sunrise-yoga-circle" />
+          <input value={form.slug || ''} onChange={set('slug')} placeholder="sunrise-yoga-circle" />
         </Field>
         <Field label="Status">
           <select value={form.status} onChange={set('status')}>
@@ -240,27 +240,35 @@ function EventForm({ initial, onCancel, onSaved }) {
         </div>
       </FormSection>
 
+      <FormSection title="Pricing" blurb="Shown on the event detail page (e.g. ₹1,200 per person · includes mat & chai).">
+        <Field label="Price / offer text" className="admin-col-full">
+          <textarea
+            rows={2}
+            value={form.pricing || ''}
+            onChange={set('pricing')}
+            placeholder="₹1,200 per person · includes mat, chai, and host guidance"
+          />
+        </Field>
+      </FormSection>
+
       <FormSection title="Copy" blurb="Detail page sections and booking message.">
         <Field label="Short description (card + share text)" className="admin-col-full">
-          <textarea rows={3} value={form.desc} onChange={set('desc')} />
+          <textarea rows={3} value={form.desc || ''} onChange={set('desc')} />
         </Field>
         <Field label="Details / About" className="admin-col-full">
-          <textarea rows={4} value={form.details} onChange={set('details')} />
+          <textarea rows={4} value={form.details || ''} onChange={set('details')} />
         </Field>
         <Field label="Instructions" className="admin-col-2">
-          <textarea rows={3} value={form.instructions} onChange={set('instructions')} />
+          <textarea rows={3} value={form.instructions || ''} onChange={set('instructions')} />
         </Field>
         <Field label="Guidelines" className="admin-col-2">
-          <textarea rows={3} value={form.guidelines} onChange={set('guidelines')} />
+          <textarea rows={3} value={form.guidelines || ''} onChange={set('guidelines')} />
         </Field>
-        <Field label="Pricing" className="admin-col-2">
-          <textarea rows={2} value={form.pricing} onChange={set('pricing')} />
-        </Field>
-        <Field label="Location details" className="admin-col-2">
-          <textarea rows={2} value={form.locationDetails} onChange={set('locationDetails')} />
+        <Field label="Location details" className="admin-col-full">
+          <textarea rows={2} value={form.locationDetails || ''} onChange={set('locationDetails')} />
         </Field>
         <Field label="WhatsApp book message" className="admin-col-full">
-          <textarea rows={3} value={form.waMessage} onChange={set('waMessage')} />
+          <textarea rows={3} value={form.waMessage || ''} onChange={set('waMessage')} />
         </Field>
       </FormSection>
 
@@ -382,13 +390,46 @@ export default function EventsAdmin() {
     if (!editing) return null;
     const found = events.find((e) => e.id === editing);
     if (!found) return null;
+    const str = (v) => (v == null ? '' : String(v));
     return {
       ...EMPTY_EVENT,
-      ...found,
+      id: found.id,
+      title: str(found.title),
+      slug: str(found.slug),
+      status: found.status === 'live' || found.status === 'past' ? found.status : 'upcoming',
+      tag: str(found.tag),
+      place: str(found.place),
+      spots: str(found.spots),
+      month: str(found.month),
+      day: str(found.day),
+      dateLabel: str(found.dateLabel),
       startDate: found.startDate ? String(found.startDate).slice(0, 10) : '',
-      images: found.images?.length ? found.images : found.img ? [found.img] : [],
+      desc: str(found.desc),
+      details: str(found.details),
+      instructions: str(found.instructions),
+      guidelines: str(found.guidelines),
+      pricing: str(found.pricing),
+      locationDetails: str(found.locationDetails),
+      waMessage: str(found.waMessage),
+      emoji: str(found.emoji) || DEFAULT_EVENT_ICON,
+      images: Array.isArray(found.images)
+        ? found.images.map(str).filter(Boolean)
+        : found.img
+          ? [str(found.img)]
+          : [],
+      active: found.active !== false,
+      adEnabled: !!found.adEnabled,
+      adMediaUrl: str(found.adMediaUrl),
+      adMediaType: found.adMediaType === 'video' ? 'video' : 'image',
+      adLinkUrl: str(found.adLinkUrl),
+      adAltText: str(found.adAltText),
     };
   }, [editing, events]);
+
+  const { upcoming: upcomingEvents, past: pastEvents } = useMemo(
+    () => partitionEventsByDate(events),
+    [events],
+  );
 
   const handleDelete = async (id, title) => {
     const entered = window.prompt(`Type the delete password to remove “${title}”`);
@@ -415,11 +456,6 @@ export default function EventsAdmin() {
     );
   }
 
-  const { upcoming: upcomingEvents, past: pastEvents } = useMemo(
-    () => partitionEventsByDate(events),
-    [events],
-  );
-
   const renderEventRow = (ev) => {
     const thumb = ev.img || ev.images?.[0] || '';
     const status = effectiveEventStatus(ev);
@@ -442,6 +478,7 @@ export default function EventsAdmin() {
           <div className="admin-listing-meta">
             {status} · {ev.dateLabel || [ev.month, ev.day].filter(Boolean).join(' ') || 'no date'}
             {ev.place ? ` · ${ev.place}` : ''}
+            {ev.pricing ? ` · ${ev.pricing}` : ''}
           </div>
         </div>
         <div className="admin-listing-actions">
