@@ -130,13 +130,19 @@ const SEED = [
     startDate: parseDateLabel('14 Mar 2025'),
     tag: 'Festival',
     place: 'Kumaon',
+    spots: 'Was a full-colour gathering',
     desc: 'Celebrate the festival of colours with host families — gulal, drums, and laughter echoing across the ridges.',
-    details: 'A colour-soaked gathering with host families — gulal, drums, and laughter across the ridges.',
-    instructions: '',
-    guidelines: '',
-    pricing: '',
-    locationDetails: 'Kumaon partner homes',
+    details:
+      'A colour-soaked day with host families across the ridges — gulal, drums, shared lunch, and laughter that carries over the terraces. Guests are welcomed into the rhythm of a real Kumaoni Holi, not a staged show.',
+    instructions:
+      'Wear clothes you do not mind staining. Carry a change of clothes and a towel. Water and snacks are provided; arrive with energy and an open heart.',
+    guidelines:
+      'Colours are natural where possible. Be gentle with elders and children. Ask before photographing faces up close.',
+    pricing: '₹1,500 per person · includes gulal, lunch, and host welcome',
+    locationDetails: 'Kumaon partner homes — exact pin shared with confirmed guests before the day.',
     images: ['/images/experiences/holi-in-the-hills.png'],
+    waMessage:
+      "Hi Ezy Escape! I'd love to join Holi in the Hills next season. Please tell me when dates open.",
   },
   {
     title: 'Diwali at the Homestay',
@@ -146,9 +152,19 @@ const SEED = [
     startDate: parseDateLabel('31 Oct 2024'),
     tag: 'Festival',
     place: 'Kumaon',
+    spots: 'Intimate courtyard night',
     desc: 'Diya-lit courtyards, sweets shared at one table, and mountain nights glowing softer than the city.',
-    details: 'Diya-lit courtyards and sweets shared at one table with a host family.',
+    details:
+      'Diya lighting with a host family, mithai on one shared table, and courtyard stories under a quiet mountain sky. This is a home celebration — warm, simple, and meant for travellers who want to belong for an evening.',
+    instructions:
+      'Wear festive but warm layers. Slip-on shoes help for the courtyard. Let us know dietary needs when you reserve.',
+    guidelines:
+      'Follow your hosts’ lead for rituals and fireworks (kept family-safe). Phones down during the diya lighting if the family asks.',
+    pricing: '₹2,000 per person · includes sweets, diyas, and evening meal',
+    locationDetails: 'Partner homestay in Kumaon — directions after booking confirmation.',
     images: ['/images/experiences/diwali-at-the-homestay.png'],
+    waMessage:
+      "Hi Ezy Escape! I'm interested in Diwali at the Homestay when you next host it. Could you share details?",
   },
   {
     title: 'Regional Festivals',
@@ -158,9 +174,19 @@ const SEED = [
     startDate: parseDateLabel('18 Aug 2024'),
     tag: 'Culture',
     place: 'Kumaon',
+    spots: 'Small curated groups',
     desc: 'Join village fairs, temple processions and seasonal celebrations that locals mark on the calendar — not tourists.',
-    details: 'Village fairs and temple processions marked on the local calendar.',
+    details:
+      'A day woven into the local calendar — village fairs, temple processions, and seasonal rites that belong to Kumaon. Your host walks with you, introduces customs, and keeps the pace respectful and unhurried.',
+    instructions:
+      'Comfortable walking shoes and a light scarf or shawl help. Carry water. We share timing and dress notes a day before.',
+    guidelines:
+      'Ask before entering sacred spaces with shoes or cameras. Stay with the group in crowded processions.',
+    pricing: '₹1,400 per person · includes host guide and light refreshments',
+    locationDetails: 'Meetup at a partner homestay; village venues vary by festival date.',
     images: ['/images/experiences/regional-festivals.png'],
+    waMessage:
+      "Hi Ezy Escape! I'd like to join a regional festival gathering in Kumaon. Which dates are open?",
   },
   {
     title: 'Group Therapy Sessions',
@@ -170,9 +196,19 @@ const SEED = [
     startDate: parseDateLabel('8 Jun 2025'),
     tag: 'Wellness',
     place: 'Kumaon',
+    spots: 'Closed circle · limited seats',
     desc: 'Guided circles for stillness and honest conversation — held outdoors, with mountains as the quiet backdrop.',
-    details: 'Guided outdoor circles for stillness and honest conversation.',
+    details:
+      'A facilitated outdoor circle for stillness, breath, and honest conversation. Sessions last about 90 minutes, with time to arrive, settle, and close gently. No prior therapy experience needed — only willingness to listen.',
+    instructions:
+      'Arrive 10 minutes early. Bring a warm layer and a notebook if you like. Phones stay on silent outside the circle.',
+    guidelines:
+      'Confidentiality stays in the circle. Share only what feels right. Facilitators may pause the group if needed for care.',
+    pricing: '₹1,100 per person · includes facilitation and tea',
+    locationDetails: 'Quiet lawn or covered verandah near partner stays — pin shared after booking.',
     images: ['/images/experiences/group-therapy-sessions.png'],
+    waMessage:
+      "Hi Ezy Escape! I'm interested in a Group Therapy Session in the hills. Could you share the next dates?",
   },
   {
     title: 'Sunrise Yoga Circles',
@@ -182,9 +218,19 @@ const SEED = [
     startDate: parseDateLabel('3 May 2025'),
     tag: 'Wellness',
     place: 'Kumaon',
+    spots: 'Open to all levels',
     desc: 'Slow stretches and breathwork on the lawn or ridge as the valley wakes — open to solo travellers and small groups.',
-    details: 'Slow stretches and breathwork as the valley wakes.',
+    details:
+      'Slow stretches, breathwork, and quiet sitting as first light fills the valley. Mats are provided; the practice lasts about 75 minutes, followed by chai. Suitable for beginners and returning practitioners alike.',
+    instructions:
+      'Wear soft layers you can move in. Arrive a little early to settle. Leave valuables at your stay if the path is uneven.',
+    guidelines:
+      'Keep phones silent. Photography after practice only. Move at your own pace — nothing is forced.',
+    pricing: '₹1,200 per person · includes mat, chai, and guidance',
+    locationDetails: 'Lawn or ridge near partner homestays — exact spot confirmed on WhatsApp.',
     images: ['/images/experiences/sunrise-yoga-circles.png'],
+    waMessage:
+      "Hi Ezy Escape! I'd like to join a Sunrise Yoga Circle. Please share upcoming dates and how to book.",
   },
   {
     title: 'Bonfire Story Nights',
@@ -194,9 +240,19 @@ const SEED = [
     startDate: parseDateLabel('18 Jan 2025'),
     tag: 'Evening',
     place: 'Kumaon',
+    spots: '10 seats around the fire',
     desc: 'Hosts and guests gather around the fire — folk tales, songs, and warm cups that stretch late into the cold.',
-    details: 'Folk tales and warm cups around the fire.',
+    details:
+      'Gather with hosts and fellow travellers around a designated fire pit — folk tales, soft songs, and warm cups under a clear hill sky. Blankets are provided; nights run cold and the circle usually lasts 90–120 minutes.',
+    instructions:
+      'Wear closed shoes and a warm layer. Arrive as dusk settles. Marshmallows or light snacks may be offered — ask when you book about dietary needs.',
+    guidelines:
+      'Stay within the fire circle. No open flames beyond the designated pit. Children welcome with a supervising adult.',
+    pricing: '₹900 per person · includes blankets and hot drinks',
+    locationDetails: 'Partner homestay lawn in Kumaon — pickup from nearby stays available on request.',
     images: ['/images/experiences/bonfire-story-nights.png'],
+    waMessage:
+      "Hi Ezy Escape! I'd like to book a seat for Bonfire Story Nights. Could you share the next date and how to join?",
   },
   {
     title: 'Folk Music Evenings',
@@ -206,9 +262,19 @@ const SEED = [
     startDate: parseDateLabel('7 Dec 2024'),
     tag: 'Music',
     place: 'Kumaon',
+    spots: 'Courtyard seating',
     desc: 'Local musicians, mountain instruments and shared rhythms — evenings that feel like a village living room.',
-    details: 'Local musicians and mountain instruments in a shared living-room mood.',
+    details:
+      'An intimate courtyard evening with local musicians — mountain instruments, shared dinner, and songs that feel like a village living room. Expect about two hours of music with a vegetarian meal woven through the night.',
+    instructions:
+      'Doors open at 5:30 pm. Dinner is vegetarian; share allergies when you book. Warm layers for after sunset.',
+    guidelines:
+      'Seating is limited. Children welcome with a supervising adult. Quiet between pieces helps the music land.',
+    pricing: '₹1,800 per person · includes dinner and performance',
+    locationDetails: 'Courtyard venue near Almora / partner homes — pin shared after confirmation.',
     images: ['/images/experiences/folk-music-evenings.png'],
+    waMessage:
+      "Hi Ezy Escape! I'm interested in Folk Music Evenings. Can you tell me the next date and reserve a spot?",
   },
   {
     title: 'Harvest Celebrations',
@@ -218,22 +284,83 @@ const SEED = [
     startDate: parseDateLabel('22 Sep 2024'),
     tag: 'Seasonal',
     place: 'Kumaon',
+    spots: 'Hands-on farm day',
     desc: 'Seasonal gatherings when the fields give back — communal meals, gratitude, and hands-on farm moments.',
-    details: 'Communal meals and hands-on farm moments at harvest.',
+    details:
+      'A seasonal day when the fields give back — short farm tasks with hosts, a communal meal, and quiet gratitude for the harvest. Expect soil on your hands, shared stories, and a slow afternoon that belongs to the land.',
+    instructions:
+      'Wear clothes that can get dusty and closed shoes. Sun protection helps. We share the meetup time the day before.',
+    guidelines:
+      'Follow host guidance around tools and animals. Leave no litter. Ask before taking close photos of family members.',
+    pricing: '₹1,600 per person · includes farm session and communal meal',
+    locationDetails: 'Partner farm / homestay fields in Kumaon — directions after booking.',
     images: ['/images/experiences/harvest-celebrations.png'],
+    waMessage:
+      "Hi Ezy Escape! I'd love to join a Harvest Celebration. When is the next one and how do I book?",
   },
 ];
 
+const COPY_FIELDS = [
+  'desc',
+  'details',
+  'instructions',
+  'guidelines',
+  'pricing',
+  'locationDetails',
+  'waMessage',
+  'spots',
+  'place',
+  'tag',
+  'emoji',
+];
+
+function isThin(value) {
+  return !String(value || '').trim() || String(value).trim().length < 60;
+}
+
+function needsEnrichment(doc) {
+  return (
+    isThin(doc.details)
+    || isThin(doc.instructions)
+    || isThin(doc.pricing)
+    || isThin(doc.locationDetails)
+  );
+}
+
+/**
+ * Fill empty / one-line copy on existing events (past seeds were thin by design).
+ * Does not overwrite rich admin-edited fields that already look complete.
+ */
+export async function enrichThinEventCopy() {
+  let patched = 0;
+  for (const seed of SEED) {
+    const doc = await Event.findOne({ title: seed.title });
+    if (!doc || !needsEnrichment(doc)) continue;
+
+    const $set = {};
+    for (const key of COPY_FIELDS) {
+      if (seed[key] == null || seed[key] === '') continue;
+      if (isThin(doc[key])) $set[key] = seed[key];
+    }
+    if (!Object.keys($set).length) continue;
+    await Event.updateOne({ _id: doc._id }, { $set });
+    patched += 1;
+  }
+  if (patched) console.log(`Enriched copy on ${patched} event(s)`);
+}
+
 export async function seedEventsIfEmpty() {
   const count = await Event.countDocuments();
-  if (count > 0) return;
+  if (count === 0) {
+    const docs = SEED.map((ev, i) => ({
+      ...ev,
+      slug: slugify(ev.title) || `event-${i + 1}`,
+      active: true,
+    }));
+    await Event.insertMany(docs);
+    console.log(`Seeded ${docs.length} events`);
+    return;
+  }
 
-  const docs = SEED.map((ev, i) => ({
-    ...ev,
-    slug: slugify(ev.title) || `event-${i + 1}`,
-    active: true,
-  }));
-
-  await Event.insertMany(docs);
-  console.log(`Seeded ${docs.length} events`);
+  await enrichThinEventCopy();
 }
