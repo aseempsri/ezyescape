@@ -4,6 +4,7 @@ import Postcard from '../models/Postcard.js';
 import Event from '../models/Event.js';
 import { serializeStay } from '../utils/stayPricing.js';
 import { serializeEvent } from './events.js';
+import { statusFromStartDate, syncEventStatusesFromDates } from '../utils/eventSchedule.js';
 import { adminCookieOptions, requireAdmin, secretsMatch, signAdminToken } from '../middleware/admin.js';
 import { upload, assertSafeUpload } from '../config/upload.js';
 import { rateLimit } from '../middleware/rateLimit.js';
@@ -163,10 +164,18 @@ function parseEventBody(body = {}) {
     slug = slugify(title);
   }
 
+  const requestedStatus = ['live', 'upcoming', 'past'].includes(body.status)
+    ? body.status
+    : 'upcoming';
+  // Start date wins — moving a past event into the future reopens it as upcoming.
+  const status = startDate
+    ? statusFromStartDate(startDate, requestedStatus)
+    : requestedStatus;
+
   return {
     title,
     slug: slug || undefined,
-    status: ['live', 'upcoming', 'past'].includes(body.status) ? body.status : 'upcoming',
+    status,
     tag: String(body.tag || '').trim(),
     place: String(body.place || '').trim(),
     spots: String(body.spots || '').trim(),
@@ -193,7 +202,8 @@ function parseEventBody(body = {}) {
 }
 
 router.get('/events', async (_req, res) => {
-  const list = await Event.find().sort({ createdAt: -1 });
+  await syncEventStatusesFromDates();
+  const list = await Event.find().sort({ startDate: -1, createdAt: -1 });
   res.json(list.map(serializeEvent));
 });
 

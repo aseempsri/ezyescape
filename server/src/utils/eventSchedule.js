@@ -45,17 +45,37 @@ export function resolveEventStartDate(ev, now = new Date()) {
   return null;
 }
 
+/**
+ * Date wins when we can resolve one.
+ * Stored status is only a fallback when there is no usable date.
+ */
 export function isEventDatePast(ev, now = new Date()) {
-  if (String(ev?.status || '').toLowerCase() === 'past') return true;
   const start = resolveEventStartDate(ev, now);
-  if (!start) return false;
-  return start.getTime() < startOfTodayUtc(now).getTime();
+  if (start) return start.getTime() < startOfTodayUtc(now).getTime();
+  return String(ev?.status || '').toLowerCase() === 'past';
 }
 
 /** Effective list status after date check. */
 export function effectiveEventStatus(ev, now = new Date()) {
-  if (isEventDatePast(ev, now)) return 'past';
+  const start = resolveEventStartDate(ev, now);
+  if (start) {
+    if (start.getTime() < startOfTodayUtc(now).getTime()) return 'past';
+    const s = String(ev?.status || 'upcoming').toLowerCase();
+    return s === 'live' ? 'live' : 'upcoming';
+  }
   const s = String(ev?.status || 'upcoming').toLowerCase();
+  if (s === 'past') return 'past';
+  return s === 'live' ? 'live' : 'upcoming';
+}
+
+/** Status to persist from a startDate (keeps "live" when still current). */
+export function statusFromStartDate(startDate, currentStatus = 'upcoming', now = new Date()) {
+  if (!startDate) return currentStatus;
+  const d = new Date(startDate);
+  if (Number.isNaN(d.getTime())) return currentStatus;
+  if (d.getTime() < startOfTodayUtc(now).getTime()) return 'past';
+  const s = String(currentStatus || 'upcoming').toLowerCase();
+  if (s === 'past') return 'upcoming';
   return s === 'live' ? 'live' : 'upcoming';
 }
 
@@ -77,21 +97,37 @@ export function formatPastDateLabel(ev, now = new Date()) {
 }
 
 /**
- * Persist status=past for live/upcoming rows whose startDate is before today.
- * Called on public list/detail reads so the admin DB stays in sync.
+ * Keep DB status aligned with startDate:
+ * - expired live/upcoming → past
+ * - future-dated past → upcoming
  */
-export async function promoteExpiredEvents(now = new Date()) {
+export async function syncEventStatusesFromDates(now = new Date()) {
   const today = startOfTodayUtc(now);
   try {
-    await Event.updateMany(
-      {
-        active: true,
-        status: { $in: ['live', 'upcoming'] },
-        startDate: { $ne: null, $lt: today },
-      },
-      { $set: { status: 'past' } },
-    );
+    await Promise.all([
+      Event.updateMany(
+        {
+          active: true,
+          status: { $in: ['live', 'upcoming'] },
+          startDate: { $ne: null, $lt: today },
+        },
+        { $set: { status: 'past' } },
+      ),
+      Event.updateMany(
+        {
+          active: true,
+          status: 'past',
+          startDate: { $ne: null, $gte: today },
+        },
+        { $set: { status: 'upcoming' } },
+      ),
+    ]);
   } catch {
     /* listing still filters by date below */
   }
+}
+
+/** @deprecated use syncEventStatusesFromDates */
+export async function promoteExpiredEvents(now = new Date()) {
+  return syncEventStatusesFromDates(now);
 }

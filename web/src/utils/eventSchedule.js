@@ -41,16 +41,22 @@ export function resolveEventStartDate(ev, now = new Date()) {
   return null;
 }
 
+/** Date wins when resolvable; stored status is only a fallback. */
 export function isEventDatePast(ev, now = new Date()) {
-  if (String(ev?.status || '').toLowerCase() === 'past') return true;
   const start = resolveEventStartDate(ev, now);
-  if (!start) return false;
-  return start.getTime() < startOfTodayUtc(now).getTime();
+  if (start) return start.getTime() < startOfTodayUtc(now).getTime();
+  return String(ev?.status || '').toLowerCase() === 'past';
 }
 
 export function effectiveEventStatus(ev, now = new Date()) {
-  if (isEventDatePast(ev, now)) return 'past';
+  const start = resolveEventStartDate(ev, now);
+  if (start) {
+    if (start.getTime() < startOfTodayUtc(now).getTime()) return 'past';
+    const s = String(ev?.status || 'upcoming').toLowerCase();
+    return s === 'live' ? 'live' : 'upcoming';
+  }
   const s = String(ev?.status || 'upcoming').toLowerCase();
+  if (s === 'past') return 'past';
   return s === 'live' ? 'live' : 'upcoming';
 }
 
@@ -70,7 +76,7 @@ export function formatPastDateLabel(ev, now = new Date()) {
   return labeled;
 }
 
-/** Split a mixed list into upcoming vs past by date (for offline fallbacks). */
+/** Split a mixed list into upcoming vs past by date. */
 export function partitionEventsByDate(events, now = new Date()) {
   const upcoming = [];
   const past = [];
@@ -78,6 +84,11 @@ export function partitionEventsByDate(events, now = new Date()) {
     if (isEventDatePast(ev, now)) past.push(ev);
     else upcoming.push(ev);
   }
+  upcoming.sort((a, b) => {
+    const da = resolveEventStartDate(a, now)?.getTime() || 0;
+    const db = resolveEventStartDate(b, now)?.getTime() || 0;
+    return da - db;
+  });
   past.sort((a, b) => {
     const da = resolveEventStartDate(a, now)?.getTime() || 0;
     const db = resolveEventStartDate(b, now)?.getTime() || 0;

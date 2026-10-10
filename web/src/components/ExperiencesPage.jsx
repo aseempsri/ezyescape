@@ -10,7 +10,6 @@ import {
 } from '../utils/paths';
 import {
   formatPastDateLabel,
-  isEventDatePast,
   partitionEventsByDate,
 } from '../utils/eventSchedule';
 import { whatsappChatUrl } from '../utils/whatsapp';
@@ -80,29 +79,27 @@ export default function ExperiencesPage() {
       fetchEvents('past').catch(() => null),
     ]).then(([up, past]) => {
       if (!alive) return;
+      if (!Array.isArray(up) && !Array.isArray(past)) return;
 
-      if (Array.isArray(up)) {
-        const normalized = up.map(normalizeUpcoming);
-        setUpcoming(normalized.filter((ev) => !isEventDatePast(ev)));
+      // Re-partition by start date so a future-dated “past” row still lands in Upcoming.
+      const seen = new Set();
+      const mixed = [];
+      for (const ev of [...(Array.isArray(up) ? up : []), ...(Array.isArray(past) ? past : [])]) {
+        const key = String(ev.id || ev.slug || '');
+        if (key && seen.has(key)) continue;
+        if (key) seen.add(key);
+        mixed.push(normalizeUpcoming(ev));
       }
 
-      if (Array.isArray(past) || Array.isArray(up)) {
-        const fromPast = Array.isArray(past) ? past.map(normalizePast) : [];
-        const leaked = Array.isArray(up)
-          ? up.map(normalizeUpcoming).filter(isEventDatePast).map(normalizePast)
-          : [];
-        const seen = new Set();
-        const merged = [];
-        for (const ev of [...leaked, ...fromPast]) {
-          const key = String(ev.id || ev.slug || '');
-          if (key && seen.has(key)) continue;
-          if (key) seen.add(key);
-          merged.push(ev);
-        }
-        if (merged.length) {
-          setPastEvents(merged);
-          setActiveId((cur) => (merged.some((e) => e.id === cur) ? cur : merged[0]?.id));
-        }
+      const { upcoming: nextUp, past: nextPastRaw } = partitionEventsByDate(mixed);
+      const nextPast = nextPastRaw.map(normalizePast);
+
+      setUpcoming(nextUp);
+      if (nextPast.length) {
+        setPastEvents(nextPast);
+        setActiveId((cur) => (nextPast.some((e) => e.id === cur) ? cur : nextPast[0]?.id));
+      } else if (Array.isArray(past)) {
+        setPastEvents([]);
       }
     });
     return () => {

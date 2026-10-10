@@ -6,6 +6,7 @@ import {
   adminUploadFile,
 } from '../lib/api';
 import { DEFAULT_EVENT_ICON, EVENT_ICONS } from '../data/eventIcons';
+import { effectiveEventStatus, partitionEventsByDate } from '../utils/eventSchedule';
 
 const DELETE_PASSWORD = 'ezyescape-delete';
 
@@ -158,6 +159,9 @@ function EventForm({ initial, onCancel, onSaved }) {
             <option value="past">Past</option>
           </select>
         </Field>
+        <p className="admin-field-hint admin-col-2">
+          If a start date is set, it wins: future dates show under Upcoming, past dates under Past.
+        </p>
         <Field label="Tag">
           <input value={form.tag} onChange={set('tag')} placeholder="Wellness" />
         </Field>
@@ -178,7 +182,23 @@ function EventForm({ initial, onCancel, onSaved }) {
           <input
             type="date"
             value={form.startDate ? String(form.startDate).slice(0, 10) : ''}
-            onChange={set('startDate')}
+            onChange={(e) => {
+              const value = e.target.value;
+              setForm((f) => {
+                let nextStatus = f.status;
+                if (value) {
+                  const today = new Date();
+                  today.setUTCHours(0, 0, 0, 0);
+                  const start = new Date(`${value}T00:00:00.000Z`);
+                  if (!Number.isNaN(start.getTime())) {
+                    nextStatus = start < today
+                      ? 'past'
+                      : (f.status === 'live' ? 'live' : 'upcoming');
+                  }
+                }
+                return { ...f, startDate: value, status: nextStatus };
+              });
+            }}
           />
         </Field>
         <Field label="Date label">
@@ -395,13 +415,62 @@ export default function EventsAdmin() {
     );
   }
 
+  const { upcoming: upcomingEvents, past: pastEvents } = useMemo(
+    () => partitionEventsByDate(events),
+    [events],
+  );
+
+  const renderEventRow = (ev) => {
+    const thumb = ev.img || ev.images?.[0] || '';
+    const status = effectiveEventStatus(ev);
+    return (
+      <article
+        key={ev.id}
+        className={`admin-listing${ev.active === false ? ' admin-listing--inactive' : ''}`}
+      >
+        <span
+          className="admin-listing-thumb"
+          style={thumb ? { backgroundImage: `url('${thumb}')` } : undefined}
+          role="img"
+          aria-label={thumb ? `${ev.title} cover` : 'No image'}
+        />
+        <div className="admin-listing-info">
+          <div className="admin-listing-title">
+            {ev.title}
+            {ev.active === false ? <span className="admin-tag">hidden</span> : null}
+          </div>
+          <div className="admin-listing-meta">
+            {status} · {ev.dateLabel || [ev.month, ev.day].filter(Boolean).join(' ') || 'no date'}
+            {ev.place ? ` · ${ev.place}` : ''}
+          </div>
+        </div>
+        <div className="admin-listing-actions">
+          <button
+            type="button"
+            className="admin-btn admin-btn--sm"
+            onClick={() => setEditing(ev.id)}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn--danger admin-btn--sm"
+            onClick={() => handleDelete(ev.id, ev.title)}
+          >
+            Delete
+          </button>
+        </div>
+      </article>
+    );
+  };
+
   return (
     <div className="admin-events">
       <div className="admin-section-head">
         <div>
           <h2>Events</h2>
           <p className="admin-hint">
-            Live &amp; upcoming show on Experiences (newest first). Past events sort by latest date first.
+            Grouped by start date. Future dates appear under Upcoming on Experiences; past dates under Past events.
           </p>
         </div>
         <button type="button" className="admin-btn" onClick={() => setEditing('new')}>
@@ -412,50 +481,33 @@ export default function EventsAdmin() {
       {loading && <p className="admin-hint">Loading events…</p>}
       {!loading && events.length === 0 && <p className="admin-hint">No events yet. Create one.</p>}
 
-      <div className="admin-list">
-        {events.map((ev) => {
-          const thumb = ev.img || ev.images?.[0] || '';
-          return (
-            <article
-              key={ev.id}
-              className={`admin-listing${ev.active === false ? ' admin-listing--inactive' : ''}`}
-            >
-              <span
-                className="admin-listing-thumb"
-                style={thumb ? { backgroundImage: `url('${thumb}')` } : undefined}
-                role="img"
-                aria-label={thumb ? `${ev.title} cover` : 'No image'}
-              />
-              <div className="admin-listing-info">
-                <div className="admin-listing-title">
-                  {ev.title}
-                  {ev.active === false ? <span className="admin-tag">hidden</span> : null}
-                </div>
-                <div className="admin-listing-meta">
-                  {ev.status} · {ev.dateLabel || [ev.month, ev.day].filter(Boolean).join(' ') || 'no date'}
-                  {ev.place ? ` · ${ev.place}` : ''}
-                </div>
-              </div>
-              <div className="admin-listing-actions">
-                <button
-                  type="button"
-                  className="admin-btn admin-btn--sm"
-                  onClick={() => setEditing(ev.id)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="admin-btn admin-btn--danger admin-btn--sm"
-                  onClick={() => handleDelete(ev.id, ev.title)}
-                >
-                  Delete
-                </button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+      {!loading && events.length > 0 ? (
+        <>
+          <section className="admin-events-group">
+            <header className="admin-events-group-head">
+              <h3>Upcoming</h3>
+              <span>{upcomingEvents.length}</span>
+            </header>
+            {upcomingEvents.length === 0 ? (
+              <p className="admin-hint">No upcoming events — set a start date in the future.</p>
+            ) : (
+              <div className="admin-list">{upcomingEvents.map(renderEventRow)}</div>
+            )}
+          </section>
+
+          <section className="admin-events-group">
+            <header className="admin-events-group-head">
+              <h3>Past</h3>
+              <span>{pastEvents.length}</span>
+            </header>
+            {pastEvents.length === 0 ? (
+              <p className="admin-hint">No past events yet.</p>
+            ) : (
+              <div className="admin-list">{pastEvents.map(renderEventRow)}</div>
+            )}
+          </section>
+        </>
+      ) : null}
     </div>
   );
 }
