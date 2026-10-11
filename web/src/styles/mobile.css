@@ -381,8 +381,13 @@
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    /* Allow vertical page scroll when the finger is on the cards */
+    touch-action: pan-x pan-y;
     scrollbar-width: none;
+  }
+
+  .stays-track-wrap .stay-card {
+    touch-action: pan-x pan-y;
   }
   .stays-track-wrap::-webkit-scrollbar { display: none; }
   /* Touch owns the scroll; CSS marquee is desktop-only */

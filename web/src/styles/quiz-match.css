@@ -84,12 +84,10 @@
 
 .match-section--light .match-opt.is-sel {
   border-color: var(--amber, #f5a623);
-  background: linear-gradient(180deg, rgba(245, 166, 35, 0.18), #ffffff);
-  box-shadow:
-    0 0 0 2px rgba(245, 166, 35, 0.35),
-    0 0 18px rgba(245, 166, 35, 0.45),
-    0 0 36px rgba(245, 166, 35, 0.28),
-    0 10px 28px rgba(245, 166, 35, 0.2);
+  background: linear-gradient(180deg, rgba(245, 166, 35, 0.16), #ffffff);
+  /* Inset-only ring — outer glow was clipped by .match-console overflow into a stray line */
+  box-shadow: inset 0 0 0 2px rgba(245, 166, 35, 0.45);
+  outline: none;
 }
 
 .match-section--light .match-opt-text {
@@ -378,10 +376,9 @@
 .match-opt.is-sel {
   border-color: var(--amber, #f5a623);
   background: linear-gradient(180deg, rgba(245, 166, 35, 0.18), rgba(245, 166, 35, 0.05));
-  box-shadow:
-    0 0 0 2px rgba(245, 166, 35, 0.3),
-    0 8px 22px rgba(245, 166, 35, 0.18);
-  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px rgba(245, 166, 35, 0.4);
+  outline: none;
+  transform: none;
 }
 
 .match-opt-emoji {
@@ -687,7 +684,15 @@
 
   .match-opt:hover,
   .match-opt.is-sel {
-    transform: translateX(4px);
+    transform: none;
+  }
+
+  .match-opts {
+    overflow: visible;
+  }
+
+  .match-board {
+    overflow: visible;
   }
 
   .match-opt-check {
@@ -714,6 +719,7 @@
 
   .match-board {
     padding: 18px 16px 16px;
+    overflow: visible;
   }
 
   .match-intro-sub {
